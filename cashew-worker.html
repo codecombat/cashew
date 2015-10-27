@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Cashew Web Parser</title>
+	 <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+    </style>
+	<script src="jison.js"> </script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script>
+      (function () {
+            var oldLog = console.log;
+            console.log = function (message) {
+                outputText.value += message + "\n";
+                oldLog.apply(console, arguments);
+            };
+        })();
+
+		function submitCode () {
+      outputText.value = "";
+			var code =document.getElementById('codeArea').value;
+			 $.get("coco-java.jison",function(data){
+      				var Parser= require("jison").Parser;
+      				grammar = data;
+      				var parser = new Parser(grammar);
+      				code = code.replace('\r\n', ' ');
+      				code = code.replace('\r', ' ');
+      				code = code.replace('\n', ' ');
+      				parser.parse(code);
+
+			});
+		}
+
+
+	</script>
+
+</head>
+<body>
+	<div><span>Cashew Web Parser </span><button onclick='submitCode()'>Parse it!</button>
+    </div>
+    <textarea id="codeArea" style="border: 1px solid black; width:49%; height:30%;">public class AddTwoNumbers
+{
+   /** main method */
+   public static void main(String[] args)
+   {
+      System.out.println("Type your code here");
+   }
+}</textarea>
+    <textarea id="jsText" style="border: 1px solid blue; width: 49%; height: 30%; " readonly="true"></textarea>
+    <textarea id="astText" style="border: 1px solid purple; width: 49%; height: 69%; " readonly="true"></textarea>
+    <textarea id="outputText" style="border: 1px solid green; width: 49%; height: 69%; " readonly="true"></textarea>
+</body>
+</html>

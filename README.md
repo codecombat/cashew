@@ -9,13 +9,14 @@ Java is the target language.
 
 
 ### Coming Soon!
+This is a work in progress please do not rely on this for production usage
 
 
 ## Testing
 
-```sh
-Coming Soon!
-```
+
+You can test basic syntax [here](https://rawgit.com/codecombat/cashew/master/cashew-worker.html)!
+
 
 ## Get in touch
 
