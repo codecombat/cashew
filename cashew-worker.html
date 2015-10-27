@@ -21,7 +21,7 @@
         })();
 
 		function submitCode () {
-      outputText.value = "";
+			outputText.value = "";
 			var code =document.getElementById('codeArea').value;
 			 $.get("coco-java.jison",function(data){
       				var Parser= require("jison").Parser;
