@@ -34,6 +34,7 @@ BSL               "\\".
 "private"             return 'private';
 
 "static"              return 'static';
+"main"                return 'main';
 
 "final"               return 'final';
 
@@ -122,61 +123,86 @@ BSL               "\\".
 %right OPERATOR_BITWISE_NEGATION OPERATOR_NEGATION
 %right POST_INCREMENT POST_DECREMENT
 
-
-
 // Start to read the file
-
 %start compilation_unit
 
 %% // language grammar
 
 compilation_unit
   : EOF
-    {}
+    {
+    }
   | class_declarations EOF
-    {}
+    {
+     
+     //yy.ast.insert($1);
+    }
   ;
 
 // Lexical Structure
 
 literal
   : integer_literal
-    {}
+    {
+      $$ = $1;
+    }
   | floating_point_literal
-    {}
+    {
+      $$ = $1;
+    }
   | boolean_literal
-    {}
+    {
+      $$ = $1;
+    }
   | string_literal
-    {}
+    {
+      $$ = $1;
+    }
   | null_literal
-    {}
+    {
+      $$ = $1;
+    }
   ;
 
 integer_literal
   : DECIMAL_INTEGER_LITERAL
-    {}
+    {
+      $$ = new yy.createLiteralNode($1, $1, @$.range);
+
+    }
   ;
 
 floating_point_literal
   : FLOATING_POINT_LITERAL
-    {}
+    {
+      $$ = new yy.createLiteralNode($1, $1, @$.range);
+    }
   ;
 
 boolean_literal
   : TRUE_LITERAL
-    {}
+    {
+      $$ = new yy.createLiteralNode($1, $1, @$.range);
+    }
   | FALSE_LITERAL
-    {}
+    {
+      $$ = new yy.createLiteralNode($1, $1, @$.range);
+    }
   ;
 
 string_literal
   : STRING_LITERAL
-    {}
+    {
+      var value = $1.replace("\"", "").replace("\"", "");
+      $$ = new yy.createLiteralNode(value, $1, @$.range);
+    }
   ;
 
 null_literal
   : NULL_LITERAL
-    {}
+    {
+      $$ = new yy.createLiteralNode(value, $1, @$.range);
+    }
   ;
 
 
@@ -184,13 +210,20 @@ null_literal
 
 class_declarations
   : class_declaration
-    {}
+    { 
+      $$ = [$1];
+    }
   | class_declarations class_declaration
-    {}
+    {
+    }
   ;
 
 class_declaration
   : 'public' KEYWORD_CLASS IDENTIFIER class_body
+    {
+        $$ = $4
+    }
+  | KEYWORD_CLASS IDENTIFIER class_body
     {}
   ;
 
@@ -218,26 +251,26 @@ modifier
 
 class_body
   : EMBRACE class_body_declarations UNBRACE 
-    {}
+    { $$ = $2 }
   ;
 
 class_body_declarations
   : class_body_declaration
-    {}
+    { $$ = [$1]}
   | class_body_declarations class_body_declaration
-    {}
+    { $1.push($2); $$ = $1}
   ;
 
 class_body_declaration
   : class_member_declaration
-    {}
+    {$$ = $1}
   ;
 
 class_member_declaration
   : field_declaration
     {}
   | method_declaration
-    {}
+    {$$ = $1}
   ;
 
 // Class Member Declarations
@@ -249,27 +282,37 @@ field_declaration
     {}
   ;
 
+//So far only using main method, so this is the root prgram...
 method_declaration
   : method_header method_body
-    {}
+    {
+      return yy.ast.createRoot($2,@$.range);
+    }
   ;
 
 // Method Declarations
 
 method_header
   : modifiers type method_declarator
-    {}
+    {} 
   | modifiers 'void' method_declarator
     {}
   ;
 
 method_declarator
-  : IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
+//FIXME make sure this is public and static
+  : 'main' LEFT_PAREN STRING_TYPE LEFT_BRACKET RIGHT_BRACKET IDENTIFIER  RIGHT_PAREN
+    {
+       
+    } 
+    //not using this yet
+ /* | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
     {}
   | IDENTIFIER LEFT_PAREN RIGHT_PAREN
     {}
+
   | IDENTIFIER LEFT_PAREN type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER RIGHT_PAREN
-    {}
+    {}*/
   ;
 
 formal_parameter_list
@@ -286,7 +329,7 @@ formal_parameter
 
 method_body
   : block
-    {}
+    { $$ = $1 }
   ;
 
 // Type
@@ -329,19 +372,19 @@ block
   : EMBRACE UNBRACE
     {}
   | EMBRACE block_statements UNBRACE
-    {}
+    { $$ = $2 }
   ;
 
 block_statements
   : block_statement
-    {}
+    { $$ = [$1]}
   | block_statements block_statement
-    {}
+    { $1.push($2); $$ = $1; }
   ;
 
 block_statement
   : statement
-    {}
+    { $$ = $1 }
   ;
 
 // Statements 
@@ -358,7 +401,7 @@ statement
   | for_statement
     {}
   | log_statement
-    {}
+    { $$ = yy.createExpressionStatementNode($1, @$.range); }
   | local_variable_declaration_statement 
     {}
   ;
@@ -407,7 +450,9 @@ break_statement
 
 log_statement
   : SYSOUT 'LEFT_PAREN' expression 'RIGHT_PAREN' 'LINE_TERMINATOR'
-    {}
+    {
+      $$ = consoleNode = yy.createConsoleLogExpression($3, @$.range);
+    }
   ;
 
 statement_expression

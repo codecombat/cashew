@@ -3,9 +3,7 @@
  * Cashew is a JAVA parser written in JavaScript.
  *
  * Cashew is written by Lucas Farias and Rafael Monteiro and released under an MIT
- * license. It was adatped from  [Filbert](https://github.com/marijnh/acorn.git)
- * by Matt Lott which was adapted from  [Acorn](https://github.com/marijnh/acorn.git)
- * by Marijn Haverbeke.
+ * license. It was written using (Jison)[https://github.com/zaach/jison] by Zaach.
  *
  * Git repository for Cashew are available at
  *

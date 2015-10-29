@@ -1,3 +1,5 @@
+/*NOT IN USE, FOR TESTS PURPOSE ONLY*/
+
 /* lexical grammar */
 %lex
 
@@ -136,7 +138,7 @@ BSL               "\\".
 
 compilation_unit
   : EOF
-    {}
+    {console.log(new yy.ASTNode())}
   | package_declaration EOF
     {}
   | import_declarations EOF

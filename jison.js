@@ -1599,6 +1599,7 @@ Jison.Generator = function Jison_Generator (g, options) {
 
 return function Parser (g, options) {
         var opt = typal.mix.call({}, g.options, options);
+        //console.log(opt)
         var gen;
         switch (opt.type) {
             case 'lr0':
@@ -1750,6 +1751,7 @@ function RegExpLexer (dict, input, tokens) {
     }
     dict = dict || {};
     this.options = dict.options || {};
+    this.options.ranges = true;
     this.conditions = prepareStartConditions(dict.startConditions);
     this.conditions.INITIAL = {rules:[],inclusive:true};
 
