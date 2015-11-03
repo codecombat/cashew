@@ -13,7 +13,7 @@ This is a work in progress please do not rely on this for production usage
 
 ## Using Cashew
 
-Cashew is right now an embryo embedded in the "cashew-worker.html" file. To run it simply serve the html and js files. The parser right now only takes code from the "main method".
+Cashew is right now an embryo  in the "cashew.js" file used by the "cashew-worker.html". To run it simply serve the html and js files. Please notice that the parser right now only takes code from the "main method".
 
 ### How cashew works?
 Cashew uses [jison](http://zaach.github.io/jison/)  to transpile Java code into JavaScript, right now in order to simplify the changes to the grammar we're generating the parserusing the 'jison.js' at runtime. The grammar used by cashew is "coco-java.jison" (read more about jison grammars [here](http://zaach.github.io/jison/docs/#specifying-a-language) ).
