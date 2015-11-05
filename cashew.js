@@ -25,6 +25,7 @@ var Parser = function(javaCode){
 	var options = {'type' : 'slr'};
 	var parser = new Parser(javaGrammar, options);
 
+	parser.yy._ = _;
 	//AST Variable declaration and validation
 	var varID = 0;
     function variable(name, access, type, scope, clazz, method, ASTNodeID){
@@ -76,27 +77,55 @@ var Parser = function(javaCode){
 	}
 	parser.yy.node = node; 
 
-	function createLiteralNode(value, raw, range){
+	parser.yy.createLiteralNode = function createLiteralNode(value, raw, range){
 		var literalNode = new node("Literal");
 		literalNode.range = range;
 		literalNode.value = value;
 		literalNode.raw = raw;
 		return literalNode;
 	}
-	parser.yy.createLiteralNode = createLiteralNode;
 
-	function createExpressionStatementNode(expression, range){
+	parser.yy.createVarDeclarationNodeNoInit = function createVarDeclarationNodeNoInit(varName, declarationRange){
+		var varDeclarationNode = new node("VariableDeclaration");
+		varDeclarationNode.range = declarationRange;
+		varDeclarationNode.kind = "var";
+		varDeclarationNode.javaType = null;
+		varDeclarationNode.declarations = [];
+
+
+		var varDeclaratorNode = new node("VariableDeclarator");
+		varDeclaratorNode.range = declarationRange;
+
+		var idNode = new node("Identifier");
+		idNode.range = declarationRange;
+		idNode.name = varName;
+
+		varDeclaratorNode.id = idNode;
+
+		varDeclaratorNode.init = null;
+
+		varDeclarationNode.declarations.push(varDeclaratorNode);
+
+		return varDeclarationNode;
+	}
+
+	parser.yy.setVariableTypes = function setVariableTypes(type, nodes){
+		_.each(nodes, function(node) {
+			node.javaType = type;
+		});
+		return nodes;
+	}
+
+	parser.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
 		var expressionStatementNode = new node("ExpressionStatement");
 		expressionStatementNode.range = range
 		expressionStatementNode.expression = expression;
 		return expressionStatementNode;
 	}
-	parser.yy.createExpressionStatementNode = createExpressionStatementNode;
-
 
 	parser.yy.JSON = JSON;
 
-	function createConsoleLogExpression(arguments, range){
+	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(arguments, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;
 		consoleLogNode.arguments = [];
@@ -132,7 +161,7 @@ var Parser = function(javaCode){
 
 		return consoleLogNode;
 	}
-	parser.yy.createConsoleLogExpression = createConsoleLogExpression;
+	
 
 	var ast = parser.parse(javaCode);
 	return ast;

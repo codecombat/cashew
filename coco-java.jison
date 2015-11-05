@@ -221,9 +221,7 @@ class_declarations
 
 class_declaration
   : 'public' KEYWORD_CLASS IDENTIFIER class_body
-    {
-        $$ = $4
-    }
+    { $$ = $4 }
   | KEYWORD_CLASS IDENTIFIER class_body
     {}
   ;
@@ -232,20 +230,20 @@ class_declaration
 
 modifiers
   : modifier
-    {}
+    { $$ = $1 }
   | modifiers modifier
-    {}
+    { $$ = $1 + ' ' + $2;}
   ;
 
 modifier
   : 'public'
-    {}
+    { $$ = $1 }
   | 'private'
-    {}
+    { $$ = $1 }
   | 'static'
-    {}
+    { $$ = $1 }
   | 'final'
-    {}
+    { $$ = $1 }
   ;
 
 // Class
@@ -257,9 +255,9 @@ class_body
 
 class_body_declarations
   : class_body_declaration
-    { $$ = [$1]}
+    {$$ = [$1]}
   | class_body_declarations class_body_declaration
-    { $1.push($2); $$ = $1}
+    {$1.push($2); $$ = $1}
   ;
 
 class_body_declaration
@@ -287,6 +285,9 @@ field_declaration
 method_declaration
   : method_header method_body
     {
+      var variables = yy._.where($2, {type : "VariableDeclaration"});
+      console.log(variables);
+      console.log($1)
       return yy.ast.createRoot($2,@$.range);
     }
   ;
@@ -297,15 +298,13 @@ method_header
   : modifiers type method_declarator
     {} 
   | modifiers 'void' method_declarator
-    {}
+    { $$ = $1 +  " " + $2 + " " + $3 }
   ;
 
 method_declarator
 //FIXME make sure this is public and static
   : 'main' LEFT_PAREN STRING_TYPE LEFT_BRACKET RIGHT_BRACKET IDENTIFIER  RIGHT_PAREN
-    {
-       
-    } 
+    { $$ = $1 +  $2 + $3 + $4 + $5 + " " + $6 + $7 } 
     //not using this yet
  /* | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
     {}
@@ -373,26 +372,28 @@ block
   : EMBRACE UNBRACE
     {}
   | EMBRACE block_statements UNBRACE
-    { $$ = $2 }
+    {
+      $$ = yy._.flatten($2);
+    }
   ;
 
 block_statements
   : block_statement
-    { $$ = [$1]}
+    { $$ = [$1] }
   | block_statements block_statement
     { $1.push($2); $$ = $1; }
   ;
 
 block_statement
   : local_variable_declaration_statement
-    {console.log("passou no local_variable");}
+    { $$ = $1 }
   | statement
-    {}
+    { $$ = $1 }
   ;
 
 local_variable_declaration_statement
   : local_variable_declaration LINE_TERMINATOR
-    {console.log("passou no declaration msm");}
+    { $$ = $1 }
   ;
 
 // Statements 
@@ -476,29 +477,29 @@ statement_expression
 
 local_variable_declaration
   : type variable_declarators
-    {}
+    {$$ = yy.setVariableTypes($1, $2);}
  /* | modifiers type variable_declarators
     {}*/
   ;
 
 variable_declarators
   : variable_declarator
-    {}
+    {$$ = [$1]}
   | variable_declarators COMMA variable_declarator
-    {}
+    {$1.push($3); $$ = $1}
   ;
 
 
 variable_declarator
   : variable_declarator_id
-    {}
+    {$$ = yy.createVarDeclarationNodeNoInit($1, @$.range)}
   | variable_initializer
     {}
   ;
 
 variable_declarator_id
   : IDENTIFIER
-    {}
+    {$$ = $1}
   ;
 
 variable_initializer
