@@ -131,6 +131,7 @@ BSL               "\\".
 compilation_unit
   : EOF
     {
+      return yy.ast.createRoot($1,@$.range);
     }
   | class_declarations EOF
     {
@@ -383,8 +384,15 @@ block_statements
   ;
 
 block_statement
-  : statement
-    { $$ = $1 }
+  : local_variable_declaration_statement
+    {console.log("passou no local_variable");}
+  | statement
+    {}
+  ;
+
+local_variable_declaration_statement
+  : local_variable_declaration LINE_TERMINATOR
+    {console.log("passou no declaration msm");}
   ;
 
 // Statements 
@@ -402,15 +410,15 @@ statement
     {}
   | log_statement
     { $$ = yy.createExpressionStatementNode($1, @$.range); }
-  | local_variable_declaration_statement 
-    {}
   ;
 
 statement_without_trailing_substatement
   : block
     {}
   | empty_statement
-    {}
+    {}    
+  | assignment
+    {console.log("passou no assignment");}
   | expression_statement
     {}
   | switch_statement
@@ -437,9 +445,9 @@ expression_statement
   ;
 
 return_statement
-  : 'return' expression
+  : 'return' expression LINE_TERMINATOR
     {}
-  | 'return'
+  | 'return' LINE_TERMINATOR
     {}
   ;
 
@@ -460,24 +468,17 @@ statement_expression
     {}
   | post_decrement_expression
     {}
-  //FIXME | assignment
-  //  {}
   // TODO method_invocation
   // TODO class_instance_creation_expression
   ;
 
 // Variable Declarators
 
-local_variable_declaration_statement
-  : local_variable_declaration LINE_TERMINATOR
-    {}
-  ;
-
 local_variable_declaration
   : type variable_declarators
     {}
-  | modifiers type variable_declarators
-    {}
+ /* | modifiers type variable_declarators
+    {}*/
   ;
 
 variable_declarators
@@ -506,15 +507,15 @@ variable_initializer
   ;
 
 assignment
-  : name OPERATOR_ASSIGNMENT expression
+  : IDENTIFIER OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
     {}
-  | name '+=' expression
+  | IDENTIFIER '+=' expression LINE_TERMINATOR
+    {console.log("passou no assignment +=");}
+  | IDENTIFIER '-=' expression LINE_TERMINATOR
     {}
-  | name '-=' expression
+  | IDENTIFIER '*=' expression LINE_TERMINATOR
     {}
-  | name '*=' expression
-    {}
-  | name '/=' expression
+  | IDENTIFIER '/=' expression LINE_TERMINATOR
     {}
   // TODO FieldAccess and ArrayAccess
   ;

@@ -20,14 +20,42 @@ var Parser = function(javaCode){
 	//A little trick so we don't need to generate a static parser and can use a runtime generated parser
 	var javaGrammar;
 	jQuery.ajaxSetup({async:false});
-	$.get("coco-java.jison",function(data){ javaGrammar = data});
-			 
+	$.get("coco-java.jison",function(data){ javaGrammar = data});			 
 	var Parser= require("jison").Parser;
 	var options = {'type' : 'slr'};
 	var parser = new Parser(javaGrammar, options);
+
+	//AST Variable declaration and validation
+	var varID = 0;
+    function variable(name, access, type, scope, clazz, method, ASTNodeID){
+    	varID += 1;
+    	this.id = varID;
+    	this.name = name;
+    	this.access = access;
+    	this.type = type;
+    	this.scope = scope;
+    	this.clazz = clazz;
+    	this.method = method;
+    	this.ASTNodeID = ASTNodeID;
+
+    }
+
+	var variablesDictionary = [];
+
+
+	function lookupNodeVariables(bodyNodes){
+
+
+	} 
+
+	parser.yy.lookupNodeVariables = lookupNodeVariables;
+
+	//AST generation methods and structures
+	var ASTNodeID = 0;
 	var ast = {
 	    rootNode: {
 	        type : "Program",
+	        ASTNodeID: 0,
 	        range: [],
 	        body : []
 	    },
@@ -42,7 +70,9 @@ var Parser = function(javaCode){
 	parser.yy.ast = ast;
 
 	function node (type){
+		ASTNodeID += 1;
 		this.type = type;
+		this.ASTNodeID = ASTNodeID;
 	}
 	parser.yy.node = node; 
 
@@ -117,3 +147,5 @@ var ___JavaRuntime = {
 		}
 	}
 }
+
+
