@@ -25,33 +25,71 @@ var Parser = function(javaCode){
 	var options = {'type' : 'slr'};
 	var parser = new Parser(javaGrammar, options);
 
+	//parser helpers
 	parser.yy._ = _;
-	//AST Variable declaration and validation
-	var varID = 0;
-    function variable(name, access, type, scope, clazz, method, ASTNodeID){
-    	varID += 1;
-    	this.id = varID;
-    	this.name = name;
-    	this.access = access;
-    	this.type = type;
-    	this.scope = scope;
-    	this.clazz = clazz;
-    	this.method = method;
-    	this.ASTNodeID = ASTNodeID;
+	parser.yy.JSON = JSON;
 
-    }
 
+	/** AST Variable declaration and validation **/
 	var variablesDictionary = [];
 
+	var varEntryId = 0;
+	variableEntry = function (varName, varAccess, varType, varScope, varClazz, varMethod, varASTNodeID){
+		this.id = varEntryId;
+    	this.name = varName;
+    	this.access = varAccess;
+    	this.type = varType;
+    	this.scope = varScope;
+    	this.clazz = varClazz;
+    	this.method = varMethod;
+    	this.ASTNodeID = varASTNodeID;
+		this.clazz = varClazz
+		varEntryId += 1;
+	}
 
-	function lookupNodeVariables(bodyNodes){
 
+	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, methodID){
+		if (variablesDictionary.length > 0) {
 
+		}else{
+			_.each(variableNodes, function(variableNode){
+				var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
+					"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
+				variablesDictionary.push(newVar);
+			});
+		}
 	} 
 
-	parser.yy.lookupNodeVariables = lookupNodeVariables;
+	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature){
+		var methodSignatureObject = {
+			'methodName' : methodIdentifier,
+			'methodSignature' : methodSignature,
+			'returnType' : null,
+			'modifiers' : null
+		}
+		return methodSignatureObject;
+	}
 
-	//AST generation methods and structures
+	parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode){
+		var assignmentNode = new node("ExpressionStatement");
+		assignmentNode.range = assignmentRange;
+
+		var assignmentExpressionNode = new node("AssignmentExpression");
+		assignmentExpressionNode.range = assignmentRange;
+		assignmentExpressionNode.operator = '=';
+
+		var varIdentifier = new node("Identifier");
+		varIdentifier.range = varRange;
+		varIdentifier.name = varName;
+
+		assignmentExpressionNode.left = varIdentifier;
+		assignmentExpressionNode.right = expressionNode;
+
+		assignmentNode.expression = assignmentExpressionNode;
+		return assignmentNode;
+	}
+
+	/** AST generation methods and structures **/
 	var ASTNodeID = 0;
 	var ast = {
 	    rootNode: {
@@ -63,7 +101,9 @@ var Parser = function(javaCode){
 	    currentNode: this.rootNode,
 	    createRoot: function(node, range) {
 	     this.rootNode.range = range;
-	     this.rootNode.body = this.rootNode.body.concat(node);
+	     if(node != null){
+	     	this.rootNode.body = this.rootNode.body.concat(node);
+	     }
 	     return this.rootNode;
 	    }
 
@@ -83,6 +123,13 @@ var Parser = function(javaCode){
 		literalNode.value = value;
 		literalNode.raw = raw;
 		return literalNode;
+	}
+
+	parser.yy.createIdentifierNode = function createIdentifierNode(name , range){
+		var identifierNode = new node("Identifier");
+		identifierNode.range = range;
+		identifierNode.name = name;
+		return identifierNode;
 	}
 
 	parser.yy.createVarDeclarationNodeNoInit = function createVarDeclarationNodeNoInit(varName, declarationRange){
@@ -123,13 +170,11 @@ var Parser = function(javaCode){
 		return expressionStatementNode;
 	}
 
-	parser.yy.JSON = JSON;
-
-	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(arguments, range){
+	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;
 		consoleLogNode.arguments = [];
-		consoleLogNode.arguments.push(arguments);
+		consoleLogNode.arguments.push(expression);
 		var callee = new node("MemberExpression");
 		callee.range = range;
 

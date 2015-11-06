@@ -131,7 +131,7 @@ BSL               "\\".
 compilation_unit
   : EOF
     {
-      return yy.ast.createRoot($1,@$.range);
+      return yy.ast.createRoot(null,@$.range);
     }
   | class_declarations EOF
     {
@@ -168,7 +168,7 @@ literal
 integer_literal
   : DECIMAL_INTEGER_LITERAL
     {
-      $$ = new yy.createLiteralNode($1, $1, @$.range);
+      $$ = new yy.createLiteralNode(parseInt($1), $1, @$.range);
 
     }
   ;
@@ -176,7 +176,7 @@ integer_literal
 floating_point_literal
   : FLOATING_POINT_LITERAL
     {
-      $$ = new yy.createLiteralNode($1, $1, @$.range);
+      $$ = new yy.createLiteralNode(parseFloat($1), $1, @$.range);
     }
   ;
 
@@ -202,7 +202,7 @@ string_literal
 null_literal
   : NULL_LITERAL
     {
-      $$ = new yy.createLiteralNode(value, $1, @$.range);
+      $$ = new yy.createLiteralNode(null, $1, @$.range);
     }
   ;
 
@@ -230,9 +230,9 @@ class_declaration
 
 modifiers
   : modifier
-    { $$ = $1 }
+    { $$ = [$1] }
   | modifiers modifier
-    { $$ = $1 + ' ' + $2;}
+    { $1.push($2); $$ = $1; }
   ;
 
 modifier
@@ -255,9 +255,9 @@ class_body
 
 class_body_declarations
   : class_body_declaration
-    {$$ = [$1]}
+    { $$ = [$1] }
   | class_body_declarations class_body_declaration
-    {$1.push($2); $$ = $1}
+    { $1.push($2); $$ = $1; }
   ;
 
 class_body_declaration
@@ -269,7 +269,7 @@ class_member_declaration
   : field_declaration
     {}
   | method_declaration
-    {$$ = $1}
+    { $$ = $1 }
   ;
 
 // Class Member Declarations
@@ -285,10 +285,10 @@ field_declaration
 method_declaration
   : method_header method_body
     {
+      var methodNode = yy.ast.createRoot($2,@$.range);
       var variables = yy._.where($2, {type : "VariableDeclaration"});
-      console.log(variables);
-      console.log($1)
-      return yy.ast.createRoot($2,@$.range);
+      yy.createUpdateMethodVariableReference(variables, $1, methodNode.ASTNodeID);
+      return methodNode;
     }
   ;
 
@@ -298,13 +298,28 @@ method_header
   : modifiers type method_declarator
     {} 
   | modifiers 'void' method_declarator
-    { $$ = $1 +  " " + $2 + " " + $3 }
+    { 
+      var modifiersText = "";
+      var modifiers = [];
+      _.each($1, function(modifier){
+          modifiersText += (modifier + ' ');
+          modifiers.push(modifier);
+      });
+      var updatedSignature = modifiersText + $2 + " " + $3.methodSignature;
+      $3.methodSignature = updatedSignature;
+      $3.returnType = $2;
+      $3.modifiers = modifiers;
+      $$ = $3;
+    }
   ;
 
 method_declarator
 //FIXME make sure this is public and static
   : 'main' LEFT_PAREN STRING_TYPE LEFT_BRACKET RIGHT_BRACKET IDENTIFIER  RIGHT_PAREN
-    { $$ = $1 +  $2 + $3 + $4 + $5 + " " + $6 + $7 } 
+    { 
+      var signature = $1 +  $2 + $3 + $4 + $5 + " " + $6 + $7;
+      $$ = yy.createMethodSignatureObject($1, signature);
+    } 
     //not using this yet
  /* | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
     {}
@@ -370,7 +385,7 @@ floating_point_type
 
 block
   : EMBRACE UNBRACE
-    {}
+    { $$ = null }
   | EMBRACE block_statements UNBRACE
     {
       $$ = yy._.flatten($2);
@@ -400,7 +415,7 @@ local_variable_declaration_statement
 
 statement
   : statement_without_trailing_substatement
-    {}
+    { $$ = $1 }
   | if_then_statement
     {}
   | if_then_else_statement
@@ -419,7 +434,7 @@ statement_without_trailing_substatement
   | empty_statement
     {}    
   | assignment
-    {console.log("passou no assignment");}
+    { $$ = $1 }
   | expression_statement
     {}
   | switch_statement
@@ -477,7 +492,9 @@ statement_expression
 
 local_variable_declaration
   : type variable_declarators
-    {$$ = yy.setVariableTypes($1, $2);}
+    {
+      $$ = yy.setVariableTypes($1, $2);
+    }
  /* | modifiers type variable_declarators
     {}*/
   ;
@@ -492,7 +509,9 @@ variable_declarators
 
 variable_declarator
   : variable_declarator_id
-    {$$ = yy.createVarDeclarationNodeNoInit($1, @$.range)}
+    {
+      $$ = yy.createVarDeclarationNodeNoInit($1, @$.range);
+    }
   | variable_initializer
     {}
   ;
@@ -509,7 +528,9 @@ variable_initializer
 
 assignment
   : IDENTIFIER OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
-    {}
+    {
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
+    }
   | IDENTIFIER '+=' expression LINE_TERMINATOR
     {console.log("passou no assignment +=");}
   | IDENTIFIER '-=' expression LINE_TERMINATOR
@@ -525,7 +546,7 @@ assignment
 
 name
   : IDENTIFIER
-    {}
+    { $$ = yy.createIdentifierNode($1, @$.range); }
   ;
 
 // Expressions 
@@ -642,9 +663,9 @@ unary_expression
 
 postfix_expression
   : primary
-    {}
+    { $$ = $1 }
   | name
-    {}
+    { $$ = $1 }
   ;
 
 primary
