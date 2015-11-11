@@ -183,11 +183,11 @@ floating_point_literal
 boolean_literal
   : TRUE_LITERAL
     {
-      $$ = new yy.createLiteralNode($1, $1, @$.range);
+      $$ = new yy.createLiteralNode(Boolean($1), $1, @$.range);
     }
   | FALSE_LITERAL
     {
-      $$ = new yy.createLiteralNode($1, $1, @$.range);
+      $$ = new yy.createLiteralNode(Boolean($1), $1, @$.range);
     }
   ;
 
@@ -287,7 +287,7 @@ method_declaration
     {
       var methodNode = yy.ast.createRoot($2,@$.range);
       var variables = yy._.where($2, {type : "VariableDeclaration"});
-      yy.createUpdateMethodVariableReference(variables, $1, methodNode.ASTNodeID);
+      yy.createUpdateMethodVariableReference(variables, $1, methodNode);
       return methodNode;
     }
   ;

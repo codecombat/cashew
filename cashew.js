@@ -15,8 +15,10 @@
  *
  **/
 
+var variablesDictionary;
+
 var Parser = function(javaCode){
-	
+	variablesDictionary = [];
 	//A little trick so we don't need to generate a static parser and can use a runtime generated parser
 	var javaGrammar;
 	jQuery.ajaxSetup({async:false});
@@ -29,12 +31,47 @@ var Parser = function(javaCode){
 	parser.yy._ = _;
 	parser.yy.JSON = JSON;
 
+	function getRuntimeFunctions(range){
+		var functions = new node("MemberExpression");
+		functions.range = range;
+		var runtime = createIdentifierNode("___JavaRuntime", range);
+
+		var runtimeMethod =  createIdentifierNode("functions", range);
+
+		functions.object = runtime;
+		functions.property = runtimeMethod;
+		functions.computed = false;
+		return functions;
+	}
+
+	getVariableType = function(varName){
+		console.log(variablesDictionary);
+		var varType = "unknown";
+		_.each(variablesDictionary, function(variableEntry){
+			if(variableEntry.name == varName){
+				varType = variableEntry.type;
+			}
+		});
+		return varType;
+	}
+
+	getArgumentForName = function(name, range){
+		return createLiteralNode(name, "\""+name + "\"", range);
+	}
+
+	getArgumentForVariable = function(name, range){
+		return createIdentifierNode(name, range);
+	}
+
+	getArgumentForNumber = function(number, range){
+		return createLiteralNode(number, number, range);
+
+	}
 
 	/** AST Variable declaration and validation **/
-	var variablesDictionary = [];
 
 	var varEntryId = 0;
-	variableEntry = function (varName, varAccess, varType, varScope, varClazz, varMethod, varASTNodeID){
+	variableEntry = function(varName, varAccess, varType, varScope, varClazz, varMethod, varASTNodeID){
 		this.id = varEntryId;
     	this.name = varName;
     	this.access = varAccess;
@@ -47,14 +84,57 @@ var Parser = function(javaCode){
 		varEntryId += 1;
 	}
 
+	//
+	//This method is going to look for all the references using a variable from this block and bellow it
+	//TODO: make this more clear
+	findUpdateChildren = function(block, variable){
+		if (block.body == undefined){
+			return;
+		}else if(_.isArray(block.body)){
+			_.each(block.body, function(node){
+				if(node.type == "VariableDeclaration"){
+					if(node.declarations[0].id.name == variable.name){
+						node.declarations[0].id.name = "__" + variable.id;
+					}
+				}else if(node.type == "ExpressionStatement" ){
+					if(node.expression.type == "AssignmentExpression"){
+						if (node.expression.left.name == variable.name){
+							node.expression.left.name = "__" + variable.id;
+						}
+						_.each(node.expression.right.arguments, function(argNode){
+							if(argNode.type == "Identifier" && argNode.name == variable.name){
+								argNode.name = "__" + variable.id;
+							}
+						});
+						// Convert variable to variable name in order to identify the variable
+						if(node.expression.right.arguments[1].type == "Identifier" && node.expression.right.arguments[1].name == "__" + variable.id){
+							node.expression.right.arguments[1].type = "Literal";
 
-	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, methodID){
+							node.expression.right.arguments[1].name = undefined;
+
+							node.expression.right.arguments[1].value = "__" + variable.id;
+							node.expression.right.arguments[1].raw = "\"" + node.expression.right.arguments[1].value + "\"";
+						}
+					}else if (node.expression.type == "CallExpression"){
+						_.each(node.expression.arguments, function(argNode){
+							if(argNode.type == "Identifier" && argNode.name == variable.name){
+								argNode.name = "__" + variable.id;
+							}
+						});
+					}
+				}
+			});
+		}
+	}
+
+	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
 		if (variablesDictionary.length > 0) {
 
 		}else{
 			_.each(variableNodes, function(variableNode){
 				var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
 					"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
+				findUpdateChildren(block, newVar);
 				variablesDictionary.push(newVar);
 			});
 		}
@@ -78,12 +158,31 @@ var Parser = function(javaCode){
 		assignmentExpressionNode.range = assignmentRange;
 		assignmentExpressionNode.operator = '=';
 
-		var varIdentifier = new node("Identifier");
-		varIdentifier.range = varRange;
-		varIdentifier.name = varName;
+		var varIdentifier = createIdentifierNode(varName, varRange); 
 
 		assignmentExpressionNode.left = varIdentifier;
-		assignmentExpressionNode.right = expressionNode;
+
+		var setNode = new node("CallExpression");
+		setNode.range = assignmentRange;
+		setNode.arguments = [];
+		setNode.arguments.push(expressionNode);
+		setNode.arguments.push(getArgumentForVariable(varName, varRange));
+		setNode.arguments.push(getArgumentForNumber(assignmentNode.ASTNodeID, assignmentRange));
+		var callee = new node("MemberExpression");
+		callee.range = assignmentRange;
+
+		var functions = getRuntimeFunctions(assignmentRange);
+
+		var setProperty = createIdentifierNode("validateSet", assignmentRange);
+
+		callee.object = functions;
+		callee.property = setProperty;
+		callee.computed  = false;
+
+
+		setNode.callee = callee;
+
+		assignmentExpressionNode.right = setNode;
 
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
@@ -110,20 +209,28 @@ var Parser = function(javaCode){
 	  };
 	parser.yy.ast = ast;
 
-	function node (type){
+	node = function(type){
 		ASTNodeID += 1;
 		this.type = type;
 		this.ASTNodeID = ASTNodeID;
 	}
-	parser.yy.node = node; 
 
-	parser.yy.createLiteralNode = function createLiteralNode(value, raw, range){
+	createLiteralNode = function(value, raw, range){
 		var literalNode = new node("Literal");
 		literalNode.range = range;
 		literalNode.value = value;
 		literalNode.raw = raw;
 		return literalNode;
 	}
+
+	createIdentifierNode = function(name, range){
+		var identifierNode = new node("Identifier");
+		identifierNode.range = range;
+		identifierNode.name = name;
+		return identifierNode;
+	}
+
+	parser.yy.createLiteralNode = createLiteralNode;
 
 	parser.yy.createIdentifierNode = function createIdentifierNode(name , range){
 		var identifierNode = new node("Identifier");
@@ -178,24 +285,9 @@ var Parser = function(javaCode){
 		var callee = new node("MemberExpression");
 		callee.range = range;
 
-		//TODO extract to a function
-		var functions = new node("MemberExpression");
-		functions.range = range;
-		var runtime = new node("Identifier");
-		runtime.range= range;
-		runtime.name = "___JavaRuntime";
+		var functions = getRuntimeFunctions(range);
 
-		var runtimeMethod = new node("Identifier");
-		runtimeMethod.range= range;
-		runtimeMethod.name = "functions";
-
-		functions.object = runtime;
-		functions.property = runtimeMethod;
-		functions.computed = false;
-
-		var printProperty = new node("Identifier");
-		printProperty.range = range;
-		printProperty.name = "print";
+		var printProperty = createIdentifierNode("print", range);
 
 		callee.object = functions;
 		callee.property = printProperty;
@@ -218,6 +310,61 @@ var ___JavaRuntime = {
 	functions : {
 		print: function(str){
 			console.log(str);
+		},
+		validateSet: function(value, variable, ASTNodeID){
+			//Removes the '__' from the variable name
+			var index = parseInt(variable.substring(2));
+			var varType = variablesDictionary[index].type;
+			
+			switch (varType){
+				case 'int':
+					if (typeof value === 'number'){
+						if (value % 1 === 0){
+							return value;
+						}
+					}
+					throw new SyntaxError("This is not an int maybe a cast is missing");
+				
+					break;
+				case 'double':
+					if (typeof value === 'number'){
+							return value;
+					}
+					throw new SyntaxError("This is not a double maybe a cast is missing");
+					break;
+				case 'boolean':
+					if (typeof value === 'boolean'){
+							return value;
+					}
+					throw new SyntaxError("This is not a boolean maybe a cast is missing");
+					break;
+				case 'String':
+					if (typeof value === 'string'){
+							return value;
+					}
+					throw new SyntaxError("This is not a String maybe a cast is missing");
+					break;
+				default:
+					break;
+
+			}
+		}
+	},
+	ops : {
+		add: function(arg1, arg2){
+			return arg1 + arg2;
+		},
+		sub: function(arg1, arg2){
+			return arg1 - arg2;
+		},
+		mul: function(arg1, arg2){
+			return arg1 * arg2;
+		},
+		div: function(arg1, arg2){
+			return arg1 / arg2;
+		},
+		mod: function(arg1, arg2){
+			return arg1 % arg2;
 		}
 	}
 }

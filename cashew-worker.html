@@ -26,19 +26,21 @@
     function submitCode () {
       outputText.value = "";
       var code =document.getElementById('codeArea').value;
-      var ast = Parser(code);
+      try{
+        var ast = Parser(code);
+        //Display the AST text
+        astText.value = JSON.stringify(ast, null, 2);
+         //Generate and display the JS code
+        var js = escodegen.generate(ast);
+        js = "(function(___JavaRuntime){" + js + "})(___JavaRuntime);";
+        jsText.value = js;
 
-      //Display the AST text
-      astText.value = JSON.stringify(ast, null, 2);
-
-      //Generate and display the JS code
-      var js = escodegen.generate(ast);
-      js = "(function(___JavaRuntime){" + js + "})(___JavaRuntime);";
-      jsText.value = js;
-
-      //Execute the transpiled code
-      eval(js);
-    }
+        //Execute the transpiled code
+        eval(js);
+      }catch(err){
+        astText.value = err;
+      }
+    }     
 	</script>
 
 </head>
