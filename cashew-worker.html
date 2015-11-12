@@ -27,7 +27,8 @@
       outputText.value = "";
       var code =document.getElementById('codeArea').value;
       try{
-        var ast = Parser(code);
+        var cashew = new Cashew();
+        var ast = cashew.parse(code);
         //Display the AST text
         astText.value = JSON.stringify(ast, null, 2);
          //Generate and display the JS code

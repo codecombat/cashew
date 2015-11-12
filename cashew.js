@@ -17,9 +17,10 @@
 
 var variablesDictionary;
 
-var Parser = function(javaCode){
+var Cashew = function(){
 	variablesDictionary = [];
 	//A little trick so we don't need to generate a static parser and can use a runtime generated parser
+
 	var javaGrammar;
 	jQuery.ajaxSetup({async:false});
 	$.get("coco-java.jison",function(data){ javaGrammar = data});			 
@@ -209,6 +210,15 @@ var Parser = function(javaCode){
 	  };
 	parser.yy.ast = ast;
 
+	this.toNode = function(p){
+		var node = new node();
+		for(var prop in p){
+			node[prop] = p[prop];
+		}
+		return node;
+		function node(){}
+	}
+
 	node = function(type){
 		ASTNodeID += 1;
 		this.type = type;
@@ -300,8 +310,12 @@ var Parser = function(javaCode){
 	}
 	
 
-	var ast = parser.parse(javaCode);
-	return ast;
+	this.parse = function parse(javaCode){
+		ast = parser.parse(javaCode);
+		return ast;
+	}
+
+	return this;
 }
 
 
