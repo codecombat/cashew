@@ -23,6 +23,7 @@ var Cashew = function(){
 
 	var javaGrammar;
 	jQuery.ajaxSetup({async:false});
+
 	$.get("coco-java.jison",function(data){ javaGrammar = data});			 
 	var Parser= require("jison").Parser;
 	var options = {'type' : 'slr'};
@@ -94,9 +95,28 @@ var Cashew = function(){
 		}else if(_.isArray(block.body)){
 			_.each(block.body, function(node){
 				if(node.type == "VariableDeclaration"){
-					if(node.declarations[0].id.name == variable.name){
-						node.declarations[0].id.name = "__" + variable.id;
+					if(node.declarations[0].init == null){
+						if(node.declarations[0].id.name == variable.name){
+							node.declarations[0].id.name = "__" + variable.id;
+						}
+					}else if(node.declarations[0].init.type == "CallExpression"){
+						if(node.declarations[0].id.name == variable.name){
+							node.declarations[0].id.name = "__" + variable.id;	
+						}
+						_.each(node.declarations[0].init.arguments, function(argNode){
+							if(argNode.type == "Identifier" && argNode.name == variable.name){
+								argNode.name = "__" + variable.id;
+							}
+						});
+						if(node.declarations[0].init.arguments[1].type == "Identifier" && node.declarations[0].init.arguments[1].name == "__" + variable.id){
+							node.declarations[0].init.arguments[1].type = "Literal";
+
+							node.declarations[0].init.arguments[1].name = undefined;
+
+							node.declarations[0].init.arguments[1].value = "__" + variable.id;
+						}
 					}
+					
 				}else if(node.type == "ExpressionStatement" ){
 					if(node.expression.type == "AssignmentExpression"){
 						if (node.expression.left.name == variable.name){
@@ -151,7 +171,7 @@ var Cashew = function(){
 		return methodSignatureObject;
 	}
 
-	parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode){
+	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode){
 		var assignmentNode = new node("ExpressionStatement");
 		assignmentNode.range = assignmentRange;
 
@@ -260,15 +280,59 @@ var Cashew = function(){
 		var varDeclaratorNode = new node("VariableDeclarator");
 		varDeclaratorNode.range = declarationRange;
 
-		var idNode = new node("Identifier");
-		idNode.range = declarationRange;
-		idNode.name = varName;
+		var idNode = createIdentifierNode(varName, declarationRange);
 
 		varDeclaratorNode.id = idNode;
 
 		varDeclaratorNode.init = null;
 
 		varDeclarationNode.declarations.push(varDeclaratorNode);
+
+		return varDeclarationNode;
+	}
+
+	parser.yy.createVarDeclarationNodeWithInit = function createVarDeclarationNodeWithInit(varName, varRange, assignment, assignmentRange, declarationRange){
+		var varDeclarationNode = new node("VariableDeclaration");
+		varDeclarationNode.range = declarationRange;
+		varDeclarationNode.kind = "var";
+		varDeclarationNode.javaType = null;
+		varDeclarationNode.declarations = [];
+
+
+		var varDeclaratorNode = new node("VariableDeclarator");
+		varDeclaratorNode.range = declarationRange;
+
+		var idNode = createIdentifierNode(varName, declarationRange);
+
+		varDeclaratorNode.id = idNode;
+
+
+		var initNode = new node("CallExpression");
+		initNode.range = assignmentRange;
+		initNode.arguments = [];
+		initNode.arguments.push(assignment);
+		initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		initNode.arguments.push(getArgumentForNumber(assignment.ASTNodeID, assignmentRange));
+		var callee = new node("MemberExpression");
+		callee.range = assignmentRange;
+
+		var functions = getRuntimeFunctions(assignmentRange);
+
+		var initProperty = createIdentifierNode("validateSet", assignmentRange);
+
+		callee.object = functions;
+		callee.property = initProperty;
+		callee.computed  = false;
+
+
+		initNode.callee = callee;
+
+
+		varDeclaratorNode.init = initNode;
+
+		varDeclarationNode.declarations.push(varDeclaratorNode);
+
+		attrNode = createVariableAttribution(varName, assignmentRange, declarationRange, assignment);
 
 		return varDeclarationNode;
 	}

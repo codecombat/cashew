@@ -488,6 +488,18 @@ statement_expression
   // TODO class_instance_creation_expression
   ;
 
+
+post_increment_expression
+  : postfix_expression OPERATOR_INCREMENT %prec POST_INCREMENT
+    {}
+  ;
+
+post_decrement_expression
+  : postfix_expression OPERATOR_DECREMENT %prec POST_DECREMENT
+    {}
+  ;
+
+
 // Variable Declarators
 
 local_variable_declaration
@@ -513,7 +525,9 @@ variable_declarator
       $$ = yy.createVarDeclarationNodeNoInit($1, @$.range);
     }
   | variable_initializer
-    {}
+    {
+      $$ = $1;
+    }
   ;
 
 variable_declarator_id
@@ -523,7 +537,9 @@ variable_declarator_id
 
 variable_initializer
   : variable_declarator_id OPERATOR_ASSIGNMENT expression
-    {}
+    {
+      $$ = yy.createVarDeclarationNodeWithInit($1, @1.range, $3, @3.range, @$.range);
+    }
   ;
 
 assignment
