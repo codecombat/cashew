@@ -183,11 +183,11 @@ floating_point_literal
 boolean_literal
   : TRUE_LITERAL
     {
-      $$ = new yy.createLiteralNode(Boolean($1), $1, @$.range);
+      $$ = new yy.createLiteralNode($1 == "true", $1, @$.range);
     }
   | FALSE_LITERAL
     {
-      $$ = new yy.createLiteralNode(Boolean($1), $1, @$.range);
+      $$ = new yy.createLiteralNode($1 == "true", $1, @$.range);
     }
   ;
 
@@ -570,93 +570,145 @@ assignment
 
 name
   : IDENTIFIER
-    { $$ = yy.createIdentifierNode($1, @$.range); }
+    { 
+      $$ = yy.createIdentifierNode($1, @$.range); 
+    }
   ;
 
 // Expressions 
 
 expression
   : conditional_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   ;
 
 conditional_expression
   : conditional_or_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   //TODO TERNARY
   ;
 
 conditional_or_expression
   : conditional_and_expression
-    {}
+    {
+      $$ = $1;
+    }
   | conditional_or_expression OPERATOR_LOGICAL_OR conditional_and_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "LogicalExpression", $1, $3, @$.range);
+    }
   ;
 
 conditional_and_expression
   : inclusive_or_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | conditional_and_expression OPERATOR_LOGICAL_AND inclusive_or_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "LogicalExpression", $1, $3, @$.range);
+    }
   ;
 
 inclusive_or_expression
   : exclusive_or_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | inclusive_or_expression OPERATOR_INCLUSIVE_OR exclusive_or_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   ;
 
 exclusive_or_expression
   : and_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | exclusive_or_expression OPERATOR_XOR and_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   ;
 
 and_expression
   : equality_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | and_expression OPERATOR_INCLUSIVE_AND equality_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   ;
 
 equality_expression
   : relational_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | equality_expression OPERATOR_EQUAL relational_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   | equality_expression OPERATOR_NOT_EQUAL relational_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   ;
 
 relational_expression
   : shift_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | relational_expression OPERATOR_LESS_THAN shift_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   | relational_expression OPERATOR_LESS_THAN_EQUAL shift_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   | relational_expression OPERATOR_GREATER_THAN shift_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   | relational_expression OPERATOR_GREATER_THAN_EQUAL shift_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   ;
 
 shift_expression
   : additive_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | shift_expression OPERATOR_LEFTSHIFT additive_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   | shift_expression OPERATOR_RIGHTSHIFT additive_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   | shift_expression OPERATOR_ZEROFILL_RIGHTSHIFT additive_expression
-    {}
+    {
+      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+    }
   ;
 
 additive_expression
   : multiplicative_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | additive_expression OPERATOR_ADDITION multiplicative_expression
     {
       $$ = yy.createMathOperation($2, $1, $3, @$.range);
@@ -669,7 +721,9 @@ additive_expression
 
 multiplicative_expression
   : unary_expression
-    {}
+    {
+      $$ = $1;
+    }
   | multiplicative_expression OPERATOR_MULTIPLICATION unary_expression
     {
       $$ = yy.createMathOperation($2, $1, $3, @$.range);
@@ -686,20 +740,30 @@ multiplicative_expression
 
 unary_expression
   : postfix_expression
-    {}
+    { 
+      $$ = $1; 
+    }
   | OPERATOR_BITWISE_NEGATION unary_expression
-    {}
+    {
+      $$ = yy.createUnaryExpression($1, $2, @$.range);
+    }
   | OPERATOR_NEGATION unary_expression
-    {}
+    {
+      $$ = yy.createUnaryExpression($1, $2, @$.range);
+    }
   | cast_expression
     {}
   ;
 
 postfix_expression
   : primary
-    { $$ = $1 }
+    { 
+      $$ = $1; 
+    }
   | name
-    { $$ = $1 }
+    { 
+      $$ = $1;
+    }
   ;
 
 primary

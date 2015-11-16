@@ -62,7 +62,6 @@ var Cashew = function(){
 	}
 
 	getVariableType = function(varName){
-		console.log(variablesDictionary);
 		var varType = "unknown";
 		_.each(variablesDictionary, function(variableEntry){
 			if(variableEntry.name == varName){
@@ -102,9 +101,9 @@ var Cashew = function(){
 	}
 
 
-// auxiliary functions
+	// auxiliary functions
 
-//
+	//
 	//This method is going to recursively look for all the references using a variable from this block and bellow it
 	//TODO: make this more clear
 	findUpdateChildren = function(ast, variable) {
@@ -114,6 +113,19 @@ var Cashew = function(){
 	     	if(node.type !== undefined && node.type === "VariableDeclaration"){
 				if(node.declarations[0].id.name == variable.name){
 					node.declarations[0].id.name = "__" + variable.id;
+				}
+			}
+			if(node.type === "LogicalExpression" || node.type === "BinaryExpression"){
+				if(node.left.name == variable.name){
+					node.left.name = "__" + variable.id;
+				}
+				if(node.right.name == variable.name){
+					node.right.name = "__" + variable.id;
+				}
+			}
+			if(node.type === "UnaryExpression"){
+				if(node.argument.type === "Identifier" && node.argument.name == variable.name){
+					node.argument.name = "__" + variable.id;
 				}
 			}
 			if(node.type === "CallExpression"){
@@ -265,6 +277,26 @@ var Cashew = function(){
 
 		return operationNode;
 	}
+
+	parser.yy.createExpression = function createExpression(op, type, left, right, range){
+		var logicalNode = new node(type);
+		logicalNode.range = range;
+		logicalNode.operator = op;
+		logicalNode.left = left;
+		logicalNode.right = right;
+		return logicalNode;
+	}
+
+	parser.yy.createUnaryExpression = function createExpression(op, expression, range){
+		var unaryNode = new node("UnaryExpression");
+		unaryNode.range = range;
+		unaryNode.operator = op;
+		unaryNode.prefix = "true";
+		unaryNode.argument = expression;
+		return unaryNode;
+	}
+
+
 
 	/** AST generation methods and structures **/
 	var ASTNodeID = 0;
