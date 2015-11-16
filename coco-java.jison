@@ -425,16 +425,22 @@ statement
   | for_statement
     {}
   | log_statement
-    { $$ = yy.createExpressionStatementNode($1, @$.range); }
+    { 
+      $$ = yy.createExpressionStatementNode($1, @$.range); 
+    }
   ;
 
 statement_without_trailing_substatement
   : block
     {}
   | empty_statement
-    {}    
+    { 
+      $$ = $1;
+    }    
   | assignment
-    { $$ = $1 }
+    {
+      $$ = $1; 
+    }
   | expression_statement
     {}
   | switch_statement
@@ -452,7 +458,9 @@ statement_without_trailing_substatement
 
 empty_statement
   : LINE_TERMINATOR
-    {}
+    {
+      $$ = yy.createEmptyStatement(@$.range);
+    }
   ;
 
 expression_statement
@@ -650,20 +658,30 @@ additive_expression
   : multiplicative_expression
     {}
   | additive_expression OPERATOR_ADDITION multiplicative_expression
-    {}
+    {
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
+    }
   | additive_expression OPERATOR_SUBTRACTION multiplicative_expression
-    {}
+    {
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
+    }
   ;
 
 multiplicative_expression
   : unary_expression
     {}
   | multiplicative_expression OPERATOR_MULTIPLICATION unary_expression
-    {}
+    {
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
+    }
   | multiplicative_expression OPERATOR_DIVISON unary_expression
-    {}
+    {
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
+    }
   | multiplicative_expression OPERATOR_MODULO unary_expression
-    {}
+    {
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
+    }
   ;
 
 unary_expression

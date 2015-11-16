@@ -48,6 +48,19 @@ var Cashew = function(){
 		return functions;
 	}
 
+	function getRuntimeOps(range){
+		var functions = new node("MemberExpression");
+		functions.range = range;
+		var runtime = createIdentifierNode("___JavaRuntime", range);
+
+		var runtimeMethod =  createIdentifierNode("ops", range);
+
+		functions.object = runtime;
+		functions.property = runtimeMethod;
+		functions.computed = false;
+		return functions;
+	}
+
 	getVariableType = function(varName){
 		console.log(variablesDictionary);
 		var varType = "unknown";
@@ -88,10 +101,68 @@ var Cashew = function(){
 		varEntryId += 1;
 	}
 
+
+// auxiliary functions
+findUpdateChildren = function(ast, variable) {
+  for (var k in ast) {
+    if (typeof ast[k] == "object" && ast[k] !== null) {
+     	var node = ast[k];
+     	//console.log(ast[k]);
+     	if(node.type !== undefined && node.type === "VariableDeclaration"){
+			if(node.declarations[0].id.name == variable.name){
+				node.declarations[0].id.name = "__" + variable.id;
+			}
+		}
+		if(node.type === "CallExpression"){
+			if(node.name == variable.name){
+				node.name = "__" + variable.id;	
+			}
+			_.each(node.arguments, function(argNode){
+				if(argNode.type == "Identifier" && argNode.name == variable.name){
+					argNode.name = "__" + variable.id;
+				}
+			});
+			if(node.callee.property.name == "validateSet" && node.callee.object.object.name == "___JavaRuntime"){
+				if(node.arguments[1].type == "Identifier" && node.arguments[1].name == "__" + variable.id){
+					node.arguments[1].type = "Literal";
+
+					node.arguments[1].name = undefined;
+
+					node.arguments[1].value = "__" + variable.id;
+				}
+			}
+		}
+		if(node.type !== undefined && node.type === "ExpressionStatement" ){
+			if(node.expression.type == "AssignmentExpression"){
+				if (node.expression.left.name == variable.name){
+					node.expression.left.name = "__" + variable.id;
+				}
+				_.each(node.expression.right.arguments, function(argNode){
+					if(argNode.type == "Identifier" && argNode.name == variable.name){
+						argNode.name = "__" + variable.id;
+					}
+				});
+				/*// Convert variable to variable name in order to identify the variable
+				if(node.expression.right.arguments[1].type == "Identifier" && node.expression.right.arguments[1].name == "__" + variable.id){
+					node.expression.right.arguments[1].type = "Literal";
+
+					node.expression.right.arguments[1].name = undefined;
+
+					node.expression.right.arguments[1].value = "__" + variable.id;
+					node.expression.right.arguments[1].raw = "\"" + node.expression.right.arguments[1].value + "\"";
+				}*/
+			}
+		}
+		ast[k] = node;
+		ast[k] = findUpdateChildren(ast[k], variable);
+    }
+  }
+  return ast;
+}
 	//
 	//This method is going to look for all the references using a variable from this block and bellow it
 	//TODO: make this more clear
-	findUpdateChildren = function(block, variable){
+	/*findUpdateChildren = function(block, variable){
 		if (block.body == undefined){
 			return;
 		}else if(_.isArray(block.body)){
@@ -149,7 +220,7 @@ var Cashew = function(){
 			});
 		}
 	}
-
+*/
 	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
 		if (variablesDictionary.length > 0) {
 
@@ -209,6 +280,56 @@ var Cashew = function(){
 
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
+	}
+
+	parser.yy.createEmptyStatement = function createEmptyStatement(range){
+		var emptyStatement = new node("EmptyStatement");
+		emptyStatement.range = range;
+		return emptyStatement;
+	}
+
+	parser.yy.createMathOperation = function createMathOperation(op, left, right, range){
+		var operation;
+		switch (op){
+			case '+':
+				operation = "add";
+				break;
+			case '-':
+				operation = "sub";
+				break;
+			case '*':
+				operation = "mul";
+				break;
+			case '/':
+				operation = "div";
+				break;
+			case '%':
+				operation = "mod";
+				break;
+			default:
+				throw SyntaxError('Invalid Operation');
+				break;
+		}
+
+		var operationNode = new node("CallExpression");
+		operationNode.range = range;
+		operationNode.arguments = [];
+		operationNode.arguments.push(left);
+		operationNode.arguments.push(right);
+		var callee = new node("MemberExpression");
+		callee.range = range;
+
+		var ops = getRuntimeOps(range);
+
+		var opsProperty = createIdentifierNode(operation, range);
+
+		callee.object = ops;
+		callee.property = opsProperty;
+		callee.computed  = false;
+
+		operationNode.callee = callee;
+
+		return operationNode;
 	}
 
 	/** AST generation methods and structures **/
@@ -392,6 +513,8 @@ var ___JavaRuntime = {
 			console.log(str);
 		},
 		validateSet: function(value, variable, ASTNodeID){
+			if(typeof value === "function")
+				value = value();
 			//Removes the '__' from the variable name
 			var index = parseInt(variable.substring(2));
 			var varType = variablesDictionary[index].type;
