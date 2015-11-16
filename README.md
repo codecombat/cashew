@@ -26,9 +26,9 @@ Cashew also uses [ESCODEGEN](https://github.com/estools/escodegen) in the web in
 ## Testing
 
 
-You can test basic syntax [here](https://rawgit.com/codecombat/cashew/master/cashew-worker.html)!
+You can test basic syntax [here](https://cdn.rawgit.com/codecombat/cashew/master/cashew-worker.html)!
 
-
+You can also run some unit tests [here](https://cdn.rawgit.com/codecombat/cashew/master/test/Runner.html)!
 
 ## Get in touch
 
