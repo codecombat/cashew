@@ -103,124 +103,58 @@ var Cashew = function(){
 
 
 // auxiliary functions
-findUpdateChildren = function(ast, variable) {
-  for (var k in ast) {
-    if (typeof ast[k] == "object" && ast[k] !== null) {
-     	var node = ast[k];
-     	//console.log(ast[k]);
-     	if(node.type !== undefined && node.type === "VariableDeclaration"){
-			if(node.declarations[0].id.name == variable.name){
-				node.declarations[0].id.name = "__" + variable.id;
-			}
-		}
-		if(node.type === "CallExpression"){
-			if(node.name == variable.name){
-				node.name = "__" + variable.id;	
-			}
-			_.each(node.arguments, function(argNode){
-				if(argNode.type == "Identifier" && argNode.name == variable.name){
-					argNode.name = "__" + variable.id;
-				}
-			});
-			if(node.callee.property.name == "validateSet" && node.callee.object.object.name == "___JavaRuntime"){
-				if(node.arguments[1].type == "Identifier" && node.arguments[1].name == "__" + variable.id){
-					node.arguments[1].type = "Literal";
 
-					node.arguments[1].name = undefined;
-
-					node.arguments[1].value = "__" + variable.id;
+//
+	//This method is going to recursively look for all the references using a variable from this block and bellow it
+	//TODO: make this more clear
+	findUpdateChildren = function(ast, variable) {
+	  for (var k in ast) {
+	    if (typeof ast[k] == "object" && ast[k] !== null) {
+	     	var node = ast[k];
+	     	if(node.type !== undefined && node.type === "VariableDeclaration"){
+				if(node.declarations[0].id.name == variable.name){
+					node.declarations[0].id.name = "__" + variable.id;
 				}
 			}
-		}
-		if(node.type !== undefined && node.type === "ExpressionStatement" ){
-			if(node.expression.type == "AssignmentExpression"){
-				if (node.expression.left.name == variable.name){
-					node.expression.left.name = "__" + variable.id;
+			if(node.type === "CallExpression"){
+				if(node.name == variable.name){
+					node.name = "__" + variable.id;	
 				}
-				_.each(node.expression.right.arguments, function(argNode){
+				_.each(node.arguments, function(argNode){
 					if(argNode.type == "Identifier" && argNode.name == variable.name){
 						argNode.name = "__" + variable.id;
 					}
 				});
-				/*// Convert variable to variable name in order to identify the variable
-				if(node.expression.right.arguments[1].type == "Identifier" && node.expression.right.arguments[1].name == "__" + variable.id){
-					node.expression.right.arguments[1].type = "Literal";
+				if(node.callee.property.name == "validateSet" && node.callee.object.object.name == "___JavaRuntime"){
+					if(node.arguments[1].type == "Identifier" && node.arguments[1].name == "__" + variable.id){
+						node.arguments[1].type = "Literal";
 
-					node.expression.right.arguments[1].name = undefined;
+						node.arguments[1].name = undefined;
 
-					node.expression.right.arguments[1].value = "__" + variable.id;
-					node.expression.right.arguments[1].raw = "\"" + node.expression.right.arguments[1].value + "\"";
-				}*/
-			}
-		}
-		ast[k] = node;
-		ast[k] = findUpdateChildren(ast[k], variable);
-    }
-  }
-  return ast;
-}
-	//
-	//This method is going to look for all the references using a variable from this block and bellow it
-	//TODO: make this more clear
-	/*findUpdateChildren = function(block, variable){
-		if (block.body == undefined){
-			return;
-		}else if(_.isArray(block.body)){
-			_.each(block.body, function(node){
-				if(node.type == "VariableDeclaration"){
-					if(node.declarations[0].init == null){
-						if(node.declarations[0].id.name == variable.name){
-							node.declarations[0].id.name = "__" + variable.id;
-						}
-					}else if(node.declarations[0].init.type == "CallExpression"){
-						if(node.declarations[0].id.name == variable.name){
-							node.declarations[0].id.name = "__" + variable.id;	
-						}
-						_.each(node.declarations[0].init.arguments, function(argNode){
-							if(argNode.type == "Identifier" && argNode.name == variable.name){
-								argNode.name = "__" + variable.id;
-							}
-						});
-						if(node.declarations[0].init.arguments[1].type == "Identifier" && node.declarations[0].init.arguments[1].name == "__" + variable.id){
-							node.declarations[0].init.arguments[1].type = "Literal";
-
-							node.declarations[0].init.arguments[1].name = undefined;
-
-							node.declarations[0].init.arguments[1].value = "__" + variable.id;
-						}
-					}
-					
-				}else if(node.type == "ExpressionStatement" ){
-					if(node.expression.type == "AssignmentExpression"){
-						if (node.expression.left.name == variable.name){
-							node.expression.left.name = "__" + variable.id;
-						}
-						_.each(node.expression.right.arguments, function(argNode){
-							if(argNode.type == "Identifier" && argNode.name == variable.name){
-								argNode.name = "__" + variable.id;
-							}
-						});
-						// Convert variable to variable name in order to identify the variable
-						if(node.expression.right.arguments[1].type == "Identifier" && node.expression.right.arguments[1].name == "__" + variable.id){
-							node.expression.right.arguments[1].type = "Literal";
-
-							node.expression.right.arguments[1].name = undefined;
-
-							node.expression.right.arguments[1].value = "__" + variable.id;
-							node.expression.right.arguments[1].raw = "\"" + node.expression.right.arguments[1].value + "\"";
-						}
-					}else if (node.expression.type == "CallExpression"){
-						_.each(node.expression.arguments, function(argNode){
-							if(argNode.type == "Identifier" && argNode.name == variable.name){
-								argNode.name = "__" + variable.id;
-							}
-						});
+						node.arguments[1].value = "__" + variable.id;
 					}
 				}
-			});
-		}
+			}
+			if(node.type !== undefined && node.type === "ExpressionStatement" ){
+				if(node.expression.type == "AssignmentExpression"){
+					if (node.expression.left.name == variable.name){
+						node.expression.left.name = "__" + variable.id;
+					}
+					_.each(node.expression.right.arguments, function(argNode){
+						if(argNode.type == "Identifier" && argNode.name == variable.name){
+							argNode.name = "__" + variable.id;
+						}
+					});
+				}
+			}
+			ast[k] = node;
+			ast[k] = findUpdateChildren(ast[k], variable);
+	    }
+	  }
+	  return ast;
 	}
-*/
+	
+
 	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
 		if (variablesDictionary.length > 0) {
 
