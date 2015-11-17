@@ -344,7 +344,9 @@ formal_parameter
 
 method_body
   : block
-    { $$ = $1 }
+    { 
+      $$ = $1;
+    }
   ;
 
 // Type
@@ -385,7 +387,9 @@ floating_point_type
 
 block
   : EMBRACE UNBRACE
-    { $$ = null }
+    { 
+      $$ = null;
+    }
   | EMBRACE block_statements UNBRACE
     {
       $$ = yy._.flatten($2);
@@ -394,9 +398,13 @@ block
 
 block_statements
   : block_statement
-    { $$ = [$1] }
+    { 
+      $$ = [$1] 
+    }
   | block_statements block_statement
-    { $1.push($2); $$ = $1; }
+    { 
+      $1.push($2); $$ = $1; 
+    }
   ;
 
 block_statement
@@ -415,19 +423,19 @@ local_variable_declaration_statement
 
 statement
   : statement_without_trailing_substatement
-    { $$ = $1 }
+    { 
+      $$ = $1;
+    }
   | if_then_statement
-    {}
+    { 
+      $$ = $1;
+    }
   | if_then_else_statement
     {}
   | while_statement
     {}
   | for_statement
     {}
-  | log_statement
-    { 
-      $$ = yy.createExpressionStatementNode($1, @$.range); 
-    }
   ;
 
 statement_without_trailing_substatement
@@ -449,6 +457,10 @@ statement_without_trailing_substatement
     {}
   | break_statement
     {}
+  | log_statement
+    { 
+      $$ = yy.createExpressionStatementNode($1, @$.range); 
+    }
   //TODO continue_statement
   | return_statement
     {}
@@ -540,7 +552,9 @@ variable_declarator
 
 variable_declarator_id
   : IDENTIFIER
-    {$$ = $1}
+    {
+      $$ = $1;
+    }
   ;
 
 variable_initializer
@@ -818,12 +832,24 @@ statement_expression_list
 
 if_then_statement
   : KEYWORD_IF LEFT_PAREN expression RIGHT_PAREN statement_without_trailing_substatement
-    {}
+    {
+      $$ = yy.createSimpleIfNode($3, $5, @5.range, @$.range);
+    }
+  | KEYWORD_IF LEFT_PAREN expression RIGHT_PAREN if_then_statement
+    {
+      $$ = yy.createSimpleIfNode($3, $5, @5.range, @$.range);
+    }
+  | KEYWORD_IF LEFT_PAREN expression RIGHT_PAREN if_then_else_statement
+    {
+      $$ = yy.createSimpleIfNode($3, $5, @5.range, @$.range);
+    }
   ;
 
 if_then_else_statement
   : KEYWORD_IF LEFT_PAREN expression RIGHT_PAREN statement_without_trailing_substatement KEYWORD_ELSE statement
-    {}
+    {
+      $$ = yy.createSimpleIfElseNode($3, $5, @5.range, $7, @7.range, @$.range);
+    }
   ;
 
 switch_statement

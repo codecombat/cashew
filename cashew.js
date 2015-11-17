@@ -166,6 +166,57 @@ var Cashew = function(){
 	  return ast;
 	}
 	
+	/** AST generation methods and structures **/
+
+	var ASTNodeID = 0;
+	var ast = {
+	    rootNode: {
+	        type : "Program",
+	        ASTNodeID: 0,
+	        range: [],
+	        body : []
+	    },
+	    currentNode: this.rootNode,
+	    createRoot: function(node, range) {
+	     this.rootNode.range = range;
+	     if(node != null){
+	     	this.rootNode.body = this.rootNode.body.concat(node);
+	     }
+	     return this.rootNode;
+	    }
+
+	  };
+	parser.yy.ast = ast;
+
+	this.toNode = function(p){
+		var node = new node();
+		for(var prop in p){
+			node[prop] = p[prop];
+		}
+		return node;
+		function node(){}
+	}
+
+	node = function(type){
+		ASTNodeID += 1;
+		this.type = type;
+		this.ASTNodeID = ASTNodeID;
+	}
+
+	var createLiteralNode = parser.yy.createLiteralNode = function createLiteralNode(value, raw, range){
+		var literalNode = new node("Literal");
+		literalNode.range = range;
+		literalNode.value = value;
+		literalNode.raw = raw;
+		return literalNode;
+	}
+
+	var createIdentifierNode = parser.yy.createIdentifierNode = function createIdentifierNode(name, range){
+		var identifierNode = new node("Identifier");
+		identifierNode.range = range;
+		identifierNode.name = name;
+		return identifierNode;
+	}
 
 	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
 		if (variablesDictionary.length > 0) {
@@ -296,61 +347,6 @@ var Cashew = function(){
 		return unaryNode;
 	}
 
-
-
-	/** AST generation methods and structures **/
-	var ASTNodeID = 0;
-	var ast = {
-	    rootNode: {
-	        type : "Program",
-	        ASTNodeID: 0,
-	        range: [],
-	        body : []
-	    },
-	    currentNode: this.rootNode,
-	    createRoot: function(node, range) {
-	     this.rootNode.range = range;
-	     if(node != null){
-	     	this.rootNode.body = this.rootNode.body.concat(node);
-	     }
-	     return this.rootNode;
-	    }
-
-	  };
-	parser.yy.ast = ast;
-
-	this.toNode = function(p){
-		var node = new node();
-		for(var prop in p){
-			node[prop] = p[prop];
-		}
-		return node;
-		function node(){}
-	}
-
-	node = function(type){
-		ASTNodeID += 1;
-		this.type = type;
-		this.ASTNodeID = ASTNodeID;
-	}
-
-	createLiteralNode = function(value, raw, range){
-		var literalNode = new node("Literal");
-		literalNode.range = range;
-		literalNode.value = value;
-		literalNode.raw = raw;
-		return literalNode;
-	}
-
-	createIdentifierNode = function(name, range){
-		var identifierNode = new node("Identifier");
-		identifierNode.range = range;
-		identifierNode.name = name;
-		return identifierNode;
-	}
-
-	parser.yy.createLiteralNode = createLiteralNode;
-
 	parser.yy.createIdentifierNode = function createIdentifierNode(name , range){
 		var identifierNode = new node("Identifier");
 		identifierNode.range = range;
@@ -438,6 +434,35 @@ var Cashew = function(){
 		expressionStatementNode.range = range
 		expressionStatementNode.expression = expression;
 		return expressionStatementNode;
+	}
+
+	var createSimpleIfNode = parser.yy.createSimpleIfNode = function createSimpleIfNode(testExpression, consequentBlock, consequentRange, ifRange){
+		var simpleIf = new node("IfStatement");
+		simpleIf.range = ifRange;
+		simpleIf.test = testExpression;
+
+		consequentNode = new node("BlockStatement");
+		consequentNode.range = consequentRange;
+		consequentNode.body = [];
+		consequentNode.body = consequentNode.body.concat(consequentBlock);
+
+		simpleIf.consequent = consequentNode;
+		simpleIf.alternate = null;
+
+		return simpleIf;
+	}
+
+	parser.yy.createSimpleIfElseNode = function createSimpleIfElseNode(testExpression, consequentBlock, consequentRange, alternateBlock, alternateRange, ifRange){
+		var ifElseNode = createSimpleIfNode(testExpression, consequentBlock, consequentRange, ifRange);
+
+		alternateNode = new node("BlockStatement");
+		alternateNode.range = alternateRange;
+		alternateNode.body = [];
+		alternateNode.body = alternateNode.body.concat(alternateBlock);
+
+		ifElseNode.alternate = alternateNode;
+
+		return ifElseNode;
 	}
 
 	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
