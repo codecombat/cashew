@@ -465,6 +465,43 @@ var Cashew = function(){
 		return ifElseNode;
 	}
 
+	parser.yy.createSimpleWhileNode = function createSimpleWhileNode(testExpression, whileBlock, blockRange, whileRange){
+		var simpleWhile = new node("WhileStatement");
+		simpleWhile.range = whileRange;
+		simpleWhile.test = testExpression;
+
+		blockNode = new node("BlockStatement");
+		blockNode.range = blockRange;
+		blockNode.body = [];
+		blockNode.body = blockNode.body.concat(whileBlock);
+
+		simpleWhile.body = blockNode;
+
+		return simpleWhile;
+	}
+
+	parser.yy.createDoWhileNode = function createDoWhileNode(testExpression, whileBlock, blockRange, whileRange){
+		var doWhile = new node("DoWhileStatement");
+		doWhile.range = whileRange;
+		doWhile.test = testExpression;
+
+		blockNode = new node("BlockStatement");
+		blockNode.range = blockRange;
+		blockNode.body = [];
+		blockNode.body = blockNode.body.concat(whileBlock);
+
+		doWhile.body = blockNode;
+
+		return doWhile;
+	}
+
+	parser.yy.createBreakStatement = function createBreakStatement(range){
+		var breakNode = new node("BreakStatement");
+		breakNode.range = range;
+
+		return breakNode;
+	}
+
 	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;

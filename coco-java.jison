@@ -221,7 +221,9 @@ class_declarations
 
 class_declaration
   : 'public' KEYWORD_CLASS IDENTIFIER class_body
-    { $$ = $4 }
+    { 
+      $$ = $4;
+    }
   | KEYWORD_CLASS IDENTIFIER class_body
     {}
   ;
@@ -230,46 +232,70 @@ class_declaration
 
 modifiers
   : modifier
-    { $$ = [$1] }
+    {
+      $$ = [$1];
+    }
   | modifiers modifier
-    { $1.push($2); $$ = $1; }
+    {
+     $1.push($2);
+      $$ = $1;
+    }
   ;
 
 modifier
   : 'public'
-    { $$ = $1 }
+    {
+      $$ = $1;
+    }
   | 'private'
-    { $$ = $1 }
+    {
+      $$ = $1;
+    }
   | 'static'
-    { $$ = $1 }
+    {
+      $$ = $1;
+    }
   | 'final'
-    { $$ = $1 }
+    {
+      $$ = $1;
+    }
   ;
 
 // Class
 
 class_body
   : EMBRACE class_body_declarations UNBRACE 
-    { $$ = $2 }
+    {
+      $$ = $2;
+    }
   ;
 
 class_body_declarations
   : class_body_declaration
-    { $$ = [$1] }
+    {
+      $$ = [$1];
+    }
   | class_body_declarations class_body_declaration
-    { $1.push($2); $$ = $1; }
+    {
+      $1.push($2); 
+      $$ = $1;
+    }
   ;
 
 class_body_declaration
   : class_member_declaration
-    {$$ = $1}
+    {
+      $$ = $1;
+    }
   ;
 
 class_member_declaration
   : field_declaration
     {}
   | method_declaration
-    { $$ = $1 }
+    {
+      $$ = $1;
+    }
   ;
 
 // Class Member Declarations
@@ -399,24 +425,31 @@ block
 block_statements
   : block_statement
     { 
-      $$ = [$1] 
+      $$ = [$1];
     }
   | block_statements block_statement
     { 
-      $1.push($2); $$ = $1; 
+      $1.push($2); 
+      $$ = $1; 
     }
   ;
 
 block_statement
   : local_variable_declaration_statement
-    { $$ = $1 }
+    { 
+      $$ = $1;
+    }
   | statement
-    { $$ = $1 }
+    { 
+      $$ = $1;
+    }
   ;
 
 local_variable_declaration_statement
   : local_variable_declaration LINE_TERMINATOR
-    { $$ = $1 }
+    { 
+      $$ = $1;
+    }
   ;
 
 // Statements 
@@ -489,7 +522,9 @@ return_statement
 
 break_statement
   : 'break' LINE_TERMINATOR
-    {}
+    {
+      $$ = yy.createBreakStatement(@$.range);
+    }
   ;
 
 log_statement
@@ -501,9 +536,13 @@ log_statement
 
 statement_expression
   : post_increment_expression
-    {}
+    {
+      $$ = $1;
+    }
   | post_decrement_expression
-    {}
+    {
+      $$ = $1;
+    }
   // TODO method_invocation
   // TODO class_instance_creation_expression
   ;
@@ -533,9 +572,14 @@ local_variable_declaration
 
 variable_declarators
   : variable_declarator
-    {$$ = [$1]}
+    {
+      $$ = [$1];
+    }
   | variable_declarators COMMA variable_declarator
-    {$1.push($3); $$ = $1}
+    {
+      $1.push($3); 
+      $$ = $1;
+    }
   ;
 
 
@@ -795,12 +839,16 @@ cast_expression
 
 while_statement
   : KEYWORD_WHILE LEFT_PAREN expression RIGHT_PAREN statement
-    {}
+    {
+      $$ = yy.createSimpleWhileNode($3, $5, @5.range, @$.range);
+    }
   ;
 
 do_statement
   : KEYWORD_DO statement KEYWORD_WHILE LEFT_PAREN expression RIGHT_PAREN LINE_TERMINATOR
-    {}
+    {
+      $$ = yy.createDoWhileNode($4, $2, @2.range, @$.range);
+    }
   ;
 
 for_statement
