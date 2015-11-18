@@ -346,7 +346,6 @@ describe("Logic operators", function() {
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-     {
   "type": "Program",
   "range": [
     28,
@@ -700,9 +699,9 @@ describe("Logic operators", function() {
       ]
     }
   ]
-}};
+};
   ast = toASTNodes(cashew, ast);
-  xit("Should return Logic operators AST", function() {
+  it("Should return Logic operators AST", function() {
   expect(
       JSON.stringify(cleanAST(parsedAST)) === JSON.stringify(ast)
     ).toBe(true); 
