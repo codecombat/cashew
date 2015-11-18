@@ -27,7 +27,8 @@ BSL               "\\".
 ":"                   return 'COLON';
 ";"                   return 'LINE_TERMINATOR';
 
-"System.out.println"    return "SYSOUT";
+"System.out.println"  return "SYSOUT";
+"sysout"              return "SYSOUT";
 
 
 "public"              return 'public';
@@ -48,6 +49,7 @@ BSL               "\\".
 "do"                  return 'KEYWORD_DO';
 "for"                 return 'KEYWORD_FOR';
 "break"               return 'break';
+"continue"            return 'continue';
 "switch"              return 'switch';
 "case"                return 'case';
 "default"             return 'default';
@@ -237,7 +239,7 @@ modifiers
     }
   | modifiers modifier
     {
-     $1.push($2);
+      $1.push($2);
       $$ = $1;
     }
   ;
@@ -311,10 +313,8 @@ field_declaration
 method_declaration
   : method_header method_body
     {
-      var methodNode = yy.ast.createRoot($2,@$.range);
-      var variables = yy._.where($2, {type : "VariableDeclaration"});
-      yy.createUpdateMethodVariableReference(variables, $1, methodNode);
-      return methodNode;
+      $$ = yy.ast.createRoot($2,@$.range);
+      return $$;
     }
   ;
 
@@ -418,7 +418,11 @@ block
     }
   | EMBRACE block_statements UNBRACE
     {
-      $$ = yy._.flatten($2);
+      var blockStatements = yy._.flatten($2);
+      var variables = yy._.where(blockStatements, {type : "VariableDeclaration"});
+      yy.createUpdateBlockVariableReference(variables, blockStatements);
+      $$ = blockStatements;
+
     }
   ;
 
@@ -464,11 +468,17 @@ statement
       $$ = $1;
     }
   | if_then_else_statement
-    {}
+    {
+      $$ = $1;
+    }
   | while_statement
-    {}
+    {
+      $$ = $1;
+    }
   | for_statement
-    {}
+    {
+      $$ = $1;
+    }
   ;
 
 statement_without_trailing_substatement
@@ -487,14 +497,21 @@ statement_without_trailing_substatement
   | switch_statement
     {}
   | do_statement
-    {}
+    {
+      $$ = $1;
+    }
   | break_statement
-    {}
+    {
+      $$ = $1;
+    }
   | log_statement
     { 
       $$ = yy.createExpressionStatementNode($1, @$.range); 
     }
-  //TODO continue_statement
+  | continue_statement
+    {
+      $$ = $1;
+    }
   | return_statement
     {}
   // TODO throw_statement
@@ -527,6 +544,13 @@ break_statement
     }
   ;
 
+continue_statement
+  : 'continue' LINE_TERMINATOR
+    {
+      $$ = yy.createContinueStatement(@$.range);
+    }
+  ;
+
 log_statement
   : SYSOUT 'LEFT_PAREN' expression 'RIGHT_PAREN' 'LINE_TERMINATOR'
     {
@@ -550,12 +574,20 @@ statement_expression
 
 post_increment_expression
   : postfix_expression OPERATOR_INCREMENT %prec POST_INCREMENT
-    {}
+    {
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
+      var addExpression = yy.createMathOperation('+', $1, incrementOne, @$.range);
+      $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, addExpression);
+    }
   ;
 
 post_decrement_expression
   : postfix_expression OPERATOR_DECREMENT %prec POST_DECREMENT
-    {}
+    {
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
+      var subExpression = yy.createMathOperation('-', $1, decrementOne, @$.range);
+      $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, subExpression);
+    }
   ;
 
 
@@ -564,7 +596,8 @@ post_decrement_expression
 local_variable_declaration
   : type variable_declarators
     {
-      $$ = yy.setVariableTypes($1, $2);
+
+      $$ = yy.createVarDeclarationNode($1, $2, @$.range);
     }
  /* | modifiers type variable_declarators
     {}*/
@@ -586,7 +619,7 @@ variable_declarators
 variable_declarator
   : variable_declarator_id
     {
-      $$ = yy.createVarDeclarationNodeNoInit($1, @$.range);
+      $$ = yy.createVarDeclaratorNodeNoInit($1, @$.range);
     }
   | variable_initializer
     {
@@ -604,7 +637,7 @@ variable_declarator_id
 variable_initializer
   : variable_declarator_id OPERATOR_ASSIGNMENT expression
     {
-      $$ = yy.createVarDeclarationNodeWithInit($1, @1.range, $3, @3.range, @$.range);
+      $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
     }
   ;
 
@@ -826,7 +859,9 @@ postfix_expression
 
 primary
   : literal
-    {}
+    {
+      $$ = $1;
+    }
   | LEFT_PAREN expression RIGHT_PAREN
     {}
   //TODO method_invocation
@@ -852,30 +887,41 @@ do_statement
   ;
 
 for_statement
-  : KEYWORD_FOR LEFT_PAREN for_init LINE_TERMINATOR expression LINE_TERMINATOR name OPERATOR_INCREMENT RIGHT_PAREN statement
-    {}
-  | KEYWORD_FOR LEFT_PAREN for_init LINE_TERMINATOR expression LINE_TERMINATOR name OPERATOR_DECREMENT RIGHT_PAREN statement
-    {}
+  : KEYWORD_FOR LEFT_PAREN for_init LINE_TERMINATOR expression LINE_TERMINATOR for_update RIGHT_PAREN statement
+    {
+      $$ = yy.createForStatement($3, $5, $7.expression, $9, @9.range, @$.range);
+    }
   ;
 
 
 for_init
   : statement_expression_list
-    {}
+    {
+      $$ = $1;
+    }
   | local_variable_declaration
-    {}
+    {
+      $$ = $1;
+    }
   ;
 
 for_update
   : statement_expression_list
-    {}
+    {
+      $$ = $1;
+    }
   ;
 
 statement_expression_list
   : statement_expression
-    {}
+    {
+      $$ = $1;
+    }
   | statement_expression_list COMMA statement_expression
-    {}
+    {
+      /*$1.push($2);
+      $$ = $1;*/
+    }
   ;
 
 if_then_statement

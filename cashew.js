@@ -110,9 +110,9 @@ var Cashew = function(){
 	  for (var k in ast) {
 	    if (typeof ast[k] == "object" && ast[k] !== null) {
 	     	var node = ast[k];
-	     	if(node.type !== undefined && node.type === "VariableDeclaration"){
-				if(node.declarations[0].id.name == variable.name){
-					node.declarations[0].id.name = "__" + variable.id;
+	     	if(node.type !== undefined && node.type === "VariableDeclarator"){
+				if(node.id.name == variable.name){
+					node.id.name = "__" + variable.id;
 				}
 			}
 			if(node.type === "LogicalExpression" || node.type === "BinaryExpression"){
@@ -229,7 +229,20 @@ var Cashew = function(){
 				variablesDictionary.push(newVar);
 			});
 		}
-	} 
+	}
+
+	parser.yy.createUpdateBlockVariableReference = function createUpdateBlockVariableReference(variableNodes, block){
+		_.each(variableNodes, function(variableNode){
+			_.each(variableNode.declarations, function(varNode){
+				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
+					"", "", "", variableNode.ASTNodeID);
+				findUpdateChildren(block, newVar);
+				variablesDictionary.push(newVar);
+			});
+		});
+	}
+
+
 
 	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature){
 		var methodSignatureObject = {
@@ -354,14 +367,19 @@ var Cashew = function(){
 		return identifierNode;
 	}
 
-	parser.yy.createVarDeclarationNodeNoInit = function createVarDeclarationNodeNoInit(varName, declarationRange){
+	parser.yy.createVarDeclarationNode = function createVarDeclarationNode(type, declarators, declarationRange){
 		var varDeclarationNode = new node("VariableDeclaration");
 		varDeclarationNode.range = declarationRange;
 		varDeclarationNode.kind = "var";
-		varDeclarationNode.javaType = null;
+		varDeclarationNode.javaType = type;
 		varDeclarationNode.declarations = [];
 
+		varDeclarationNode.declarations = varDeclarationNode.declarations.concat(declarators);
 
+		return varDeclarationNode;
+	}
+
+	parser.yy.createVarDeclaratorNodeNoInit = function createVarDeclarationNodeNoInit(varName, declarationRange){
 		var varDeclaratorNode = new node("VariableDeclarator");
 		varDeclaratorNode.range = declarationRange;
 
@@ -371,26 +389,16 @@ var Cashew = function(){
 
 		varDeclaratorNode.init = null;
 
-		varDeclarationNode.declarations.push(varDeclaratorNode);
-
-		return varDeclarationNode;
+		return varDeclaratorNode;
 	}
 
-	parser.yy.createVarDeclarationNodeWithInit = function createVarDeclarationNodeWithInit(varName, varRange, assignment, assignmentRange, declarationRange){
-		var varDeclarationNode = new node("VariableDeclaration");
-		varDeclarationNode.range = declarationRange;
-		varDeclarationNode.kind = "var";
-		varDeclarationNode.javaType = null;
-		varDeclarationNode.declarations = [];
-
-
+	parser.yy.createVarDeclaratorNodeWithInit = function createVarDeclarationNodeWithInit(varName, varRange, assignment, assignmentRange, declarationRange){
 		var varDeclaratorNode = new node("VariableDeclarator");
 		varDeclaratorNode.range = declarationRange;
 
 		var idNode = createIdentifierNode(varName, declarationRange);
 
 		varDeclaratorNode.id = idNode;
-
 
 		var initNode = new node("CallExpression");
 		initNode.range = assignmentRange;
@@ -409,24 +417,11 @@ var Cashew = function(){
 		callee.property = initProperty;
 		callee.computed  = false;
 
-
 		initNode.callee = callee;
-
 
 		varDeclaratorNode.init = initNode;
 
-		varDeclarationNode.declarations.push(varDeclaratorNode);
-
-		attrNode = createVariableAttribution(varName, assignmentRange, declarationRange, assignment);
-
-		return varDeclarationNode;
-	}
-
-	parser.yy.setVariableTypes = function setVariableTypes(type, nodes){
-		_.each(nodes, function(node) {
-			node.javaType = type;
-		});
-		return nodes;
+		return varDeclaratorNode;
 	}
 
 	parser.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
@@ -500,6 +495,30 @@ var Cashew = function(){
 		breakNode.range = range;
 
 		return breakNode;
+	}
+
+	parser.yy.createContinueStatement = function createContinueStatement(range){
+		var continueNode = new node("ContinueStatement");
+		continueNode.range = range;
+
+		return continueNode;
+	}
+
+	parser.yy.createForStatement = function createForStatement(forInit, testExpression, updateExpression, forBlock, blockRange, forRange){
+		var forNode = new node("ForStatement");
+		forNode.range = forRange;
+		forNode.init = forInit;
+		forNode.test = testExpression;
+		forNode.update = updateExpression;
+
+		blockNode = new node("BlockStatement");
+		blockNode.range = blockRange;
+		blockNode.body = [];
+		blockNode.body = blockNode.body.concat(forBlock);
+
+		forNode.body = blockNode;
+
+		return forNode;
 	}
 
 	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
