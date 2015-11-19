@@ -647,13 +647,35 @@ assignment
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
   | IDENTIFIER '+=' expression LINE_TERMINATOR
-    {console.log("passou no assignment +=");}
+    {
+      var identifierVar = new yy.createIdentifierNode($1, @1.range);
+      var addExpression = yy.createMathOperation('+', identifierVar, $3, @$.range);
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
+    }
   | IDENTIFIER '-=' expression LINE_TERMINATOR
-    {}
+    {
+      var identifierVar = new yy.createIdentifierNode($1, @1.range);
+      var addExpression = yy.createMathOperation('-', identifierVar, $3, @$.range);
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
+    }
   | IDENTIFIER '*=' expression LINE_TERMINATOR
-    {}
+    {
+      var identifierVar = new yy.createIdentifierNode($1, @1.range);
+      var addExpression = yy.createMathOperation('*', identifierVar, $3, @$.range);
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
+    }
   | IDENTIFIER '/=' expression LINE_TERMINATOR
-    {}
+    {
+      var identifierVar = new yy.createIdentifierNode($1, @1.range);
+      var addExpression = yy.createMathOperation('/', identifierVar, $3, @$.range);
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
+    }
+  | IDENTIFIER '%=' expression LINE_TERMINATOR
+    {
+      var identifierVar = new yy.createIdentifierNode($1, @1.range);
+      var addExpression = yy.createMathOperation('%', identifierVar, $3, @$.range);
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
+    }
   // TODO FieldAccess and ArrayAccess
   ;
 
