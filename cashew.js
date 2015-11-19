@@ -147,18 +147,18 @@ var Cashew = function(){
 					}
 				}
 			}
-			if(node.type !== undefined && node.type === "ExpressionStatement" ){
-				if(node.expression.type == "AssignmentExpression"){
-					if (node.expression.left.name == variable.name){
-						node.expression.left.name = "__" + variable.id;
-					}
-					_.each(node.expression.right.arguments, function(argNode){
-						if(argNode.type == "Identifier" && argNode.name == variable.name){
-							argNode.name = "__" + variable.id;
-						}
-					});
+			if(node.type !== undefined && node.type == "AssignmentExpression"){
+
+				if (node.left.name == variable.name){
+					node.left.name = "__" + variable.id;
 				}
+				_.each(node.right.arguments, function(argNode){
+					if(argNode.type == "Identifier" && argNode.name == variable.name){
+						argNode.name = "__" + variable.id;
+					}
+				});
 			}
+			
 			ast[k] = node;
 			ast[k] = findUpdateChildren(ast[k], variable);
 	    }
@@ -504,12 +504,24 @@ var Cashew = function(){
 		return continueNode;
 	}
 
-	parser.yy.createForStatement = function createForStatement(forInit, testExpression, updateExpression, forBlock, blockRange, forRange){
+	parser.yy.createForStatement = function createForStatement(forInit, testExpression, updateExpressions, updateRange, forBlock, blockRange, forRange){
 		var forNode = new node("ForStatement");
 		forNode.range = forRange;
 		forNode.init = forInit;
 		forNode.test = testExpression;
-		forNode.update = updateExpression;
+
+		if(updateExpressions.length == 1){
+			forNode.update = updateExpressions[0].expression;
+		}else if(updateExpressions.length > 1){
+			var sequenceNode = new node("SequenceExpression");
+			sequenceNode.range = updateRange;
+			sequenceNode.expressions = [];
+			_.each(updateExpressions, function(updateExp){
+				sequenceNode.expressions.push(updateExp.expression);
+			});
+			forNode.update = sequenceNode;
+		}
+		
 
 		blockNode = new node("BlockStatement");
 		blockNode.range = blockRange;

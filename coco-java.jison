@@ -888,8 +888,14 @@ do_statement
 
 for_statement
   : KEYWORD_FOR LEFT_PAREN for_init LINE_TERMINATOR expression LINE_TERMINATOR for_update RIGHT_PAREN statement
-    {
-      $$ = yy.createForStatement($3, $5, $7.expression, $9, @9.range, @$.range);
+    { 
+      var variables = [];
+      variables.push($3);
+      var forBlock = yy.createForStatement($3, $5, $7, @7.range, $9, @9.range, @$.range);
+
+      yy.createUpdateBlockVariableReference(variables, forBlock);
+
+      $$ = forBlock;
     }
   ;
 
@@ -915,12 +921,12 @@ for_update
 statement_expression_list
   : statement_expression
     {
-      $$ = $1;
+      $$ = [$1];
     }
   | statement_expression_list COMMA statement_expression
     {
-      /*$1.push($2);
-      $$ = $1;*/
+      $1.push($3);
+      $$ = $1;
     }
   ;
 
