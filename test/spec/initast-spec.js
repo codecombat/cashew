@@ -34,7 +34,7 @@ describe("Variable declaration", function() {
                 {
                   "type": "VariableDeclaration",
                   "range": [
-                    68,
+                    64,
                     69
                   ],
                   "kind": "var",
@@ -73,266 +73,253 @@ describe("Assignments", function() {
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-        "type": "Program",
-        "range": [
-          29,
-          99
-        ],
-        "body": [
-          {
-            "type": "VariableDeclaration",
+  "type": "Program",
+  "range": [
+    29,
+    99
+  ],
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        70,
+        80
+      ],
+      "kind": "var",
+      "javaType": "int",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            74,
+            76
+          ],
+          "id": {
+            "type": "Identifier",
             "range": [
               74,
               76
             ],
-            "kind": "var",
-            "javaType": "int",
-            "declarations": [
-              {
-                "type": "VariableDeclarator",
-                "range": [
-                  74,
-                  76
-                ],
-                "id": {
-                  "type": "Identifier",
-                  "range": [
-                    74,
-                    76
-                  ],
-                  "name": "__0"
-                },
-                "init": null
-              }
-            ]
+            "name": "__0"
           },
-          {
-            "type": "VariableDeclaration",
+          "init": null
+        },
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            78,
+            80
+          ],
+          "id": {
+            "type": "Identifier",
             "range": [
               78,
               80
             ],
-            "kind": "var",
-            "javaType": "int",
-            "declarations": [
-              {
-                "type": "VariableDeclarator",
-                "range": [
-                  78,
-                  80
-                ],
-                "id": {
-                  "type": "Identifier",
-                  "range": [
-                    78,
-                    80
-                  ],
-                  "name": "__1"
-                },
-                "init": null
-              }
-            ]
+            "name": "__1"
           },
-          {
-            "type": "ExpressionStatement",
-            "range": [
-              82,
-              89
-            ],
-            "expression": {
-              "type": "AssignmentExpression",
+          "init": null
+        }
+      ]
+    },
+    {
+      "type": "ExpressionStatement",
+      "range": [
+        82,
+        89
+      ],
+      "expression": {
+        "type": "AssignmentExpression",
+        "range": [
+          82,
+          89
+        ],
+        "operator": "=",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            82,
+            84
+          ],
+          "name": "__0"
+        },
+        "right": {
+          "type": "CallExpression",
+          "range": [
+            82,
+            89
+          ],
+          "arguments": [
+            {
+              "type": "Literal",
+              "range": [
+                87,
+                88
+              ],
+              "value": 0,
+              "raw": "0"
+            },
+            {
+              "type": "Literal",
+              "range": [
+                82,
+                84
+              ],
+              "value": "__0"
+            },
+            {
+              "type": "Literal",
               "range": [
                 82,
                 89
               ],
-              "operator": "=",
-              "left": {
+              "value": 7,
+              "raw": 7
+            }
+          ],
+          "callee": {
+            "type": "MemberExpression",
+            "range": [
+              82,
+              89
+            ],
+            "object": {
+              "type": "MemberExpression",
+              "range": [
+                82,
+                89
+              ],
+              "object": {
                 "type": "Identifier",
-                "range": [
-                  82,
-                  84
-                ],
-                "name": "__0"
-              },
-              "right": {
-                "type": "CallExpression",
                 "range": [
                   82,
                   89
                 ],
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "range": [
-                      87,
-                      88
-                    ],
-                    "value": 0,
-                    "raw": "0"
-                  },
-                  {
-                    "type": "Literal",
-                    "range": [
-                      82,
-                      84
-                    ],
-                    "value": "__0",
-                    "raw": "\"__0\""
-                  },
-                  {
-                    "type": "Literal",
-                    "range": [
-                      82,
-                      89
-                    ],
-                    "value": 8,
-                    "raw": 8
-                  }
+                "name": "___JavaRuntime"
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  82,
+                  89
                 ],
-                "callee": {
-                  "type": "MemberExpression",
-                  "range": [
-                    82,
-                    89
-                  ],
-                  "object": {
-                    "type": "MemberExpression",
-                    "range": [
-                      82,
-                      89
-                    ],
-                    "object": {
-                      "type": "Identifier",
-                      "range": [
-                        82,
-                        89
-                      ],
-                      "name": "___JavaRuntime"
-                    },
-                    "property": {
-                      "type": "Identifier",
-                      "range": [
-                        82,
-                        89
-                      ],
-                      "name": "functions"
-                    },
-                    "computed": false
-                  },
-                  "property": {
-                    "type": "Identifier",
-                    "range": [
-                      82,
-                      89
-                    ],
-                    "name": "validateSet"
-                  },
-                  "computed": false
-                }
-              }
-            }
-          },
-          {
-            "type": "ExpressionStatement",
-            "range": [
-              90,
-              97
-            ],
-            "expression": {
-              "type": "AssignmentExpression",
+                "name": "functions"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "range": [
+                82,
+                89
+              ],
+              "name": "validateSet"
+            },
+            "computed": false
+          }
+        }
+      }
+    },
+    {
+      "type": "ExpressionStatement",
+      "range": [
+        90,
+        97
+      ],
+      "expression": {
+        "type": "AssignmentExpression",
+        "range": [
+          90,
+          97
+        ],
+        "operator": "=",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            90,
+            92
+          ],
+          "name": "__1"
+        },
+        "right": {
+          "type": "CallExpression",
+          "range": [
+            90,
+            97
+          ],
+          "arguments": [
+            {
+              "type": "Literal",
+              "range": [
+                95,
+                96
+              ],
+              "value": 2,
+              "raw": "2"
+            },
+            {
+              "type": "Literal",
+              "range": [
+                90,
+                92
+              ],
+              "value": "__1"
+            },
+            {
+              "type": "Literal",
               "range": [
                 90,
                 97
               ],
-              "operator": "=",
-              "left": {
+              "value": 19,
+              "raw": 19
+            }
+          ],
+          "callee": {
+            "type": "MemberExpression",
+            "range": [
+              90,
+              97
+            ],
+            "object": {
+              "type": "MemberExpression",
+              "range": [
+                90,
+                97
+              ],
+              "object": {
                 "type": "Identifier",
-                "range": [
-                  90,
-                  92
-                ],
-                "name": "__1"
-              },
-              "right": {
-                "type": "CallExpression",
                 "range": [
                   90,
                   97
                 ],
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "range": [
-                      95,
-                      96
-                    ],
-                    "value": 2,
-                    "raw": "2"
-                  },
-                  {
-                    "type": "Literal",
-                    "range": [
-                      90,
-                      92
-                    ],
-                    "value": "__1",
-                    "raw": "\"__1\""
-                  },
-                  {
-                    "type": "Literal",
-                    "range": [
-                      90,
-                      97
-                    ],
-                    "value": 20,
-                    "raw": 20
-                  }
+                "name": "___JavaRuntime"
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  90,
+                  97
                 ],
-                "callee": {
-                  "type": "MemberExpression",
-                  "range": [
-                    90,
-                    97
-                  ],
-                  "object": {
-                    "type": "MemberExpression",
-                    "range": [
-                      90,
-                      97
-                    ],
-                    "object": {
-                      "type": "Identifier",
-                      "range": [
-                        90,
-                        97
-                      ],
-                      "name": "___JavaRuntime"
-                    },
-                    "property": {
-                      "type": "Identifier",
-                      "range": [
-                        90,
-                        97
-                      ],
-                      "name": "functions"
-                    },
-                    "computed": false
-                  },
-                  "property": {
-                    "type": "Identifier",
-                    "range": [
-                                90,
-                                97
-                              ],
-                              "name": "validateSet"
-                            },
-                            "computed": false
-                          }
-                        }
-                      }
-                    }
-                  ]
-                };
+                "name": "functions"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "range": [
+                90,
+                97
+              ],
+              "name": "validateSet"
+            },
+            "computed": false
+          }
+        }
+      }
+    }
+  ]
+};
   ast = toASTNodes(cashew, ast);
   it("Should return assignment AST", function() {
   expect(
@@ -342,20 +329,20 @@ describe("Assignments", function() {
   });
 
 describe("Logic operators", function() {
-  var code = 'public class LogicalClass { public static void main(String[] args) { boolean a1 = true && false; boolean o2 = false || true; boolean n3 = !true; }}';
+  var code = 'public class LogicalClass { public static void main(String[] args) { boolean a1 = true && false; boolean n3 = !true; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
   "type": "Program",
   "range": [
     28,
-    146
+    118
   ],
   "body": [
     {
       "type": "VariableDeclaration",
       "range": [
-        77,
+        69,
         95
       ],
       "kind": "var",
@@ -473,8 +460,8 @@ describe("Logic operators", function() {
     {
       "type": "VariableDeclaration",
       "range": [
-        105,
-        123
+        97,
+        115
       ],
       "kind": "var",
       "javaType": "boolean",
@@ -483,13 +470,13 @@ describe("Logic operators", function() {
           "type": "VariableDeclarator",
           "range": [
             105,
-            123
+            115
           ],
           "id": {
             "type": "Identifier",
             "range": [
               105,
-              123
+              115
             ],
             "name": "__1"
           },
@@ -497,30 +484,22 @@ describe("Logic operators", function() {
             "type": "CallExpression",
             "range": [
               110,
-              123
+              115
             ],
             "arguments": [
               {
-                "type": "LogicalExpression",
+                "type": "UnaryExpression",
                 "range": [
                   110,
-                  123
+                  115
                 ],
-                "operator": "||",
-                "left": {
+                "operator": "!",
+                "prefix": "true",
+                "argument": {
                   "type": "Literal",
                   "range": [
-                    110,
+                    111,
                     115
-                  ],
-                  "value": false,
-                  "raw": "false"
-                },
-                "right": {
-                  "type": "Literal",
-                  "range": [
-                    119,
-                    123
                   ],
                   "value": true,
                   "raw": "true"
@@ -538,29 +517,29 @@ describe("Logic operators", function() {
                 "type": "Literal",
                 "range": [
                   110,
-                  123
+                  115
                 ],
-                "value": 28,
-                "raw": 28
+                "value": 16,
+                "raw": 16
               }
             ],
             "callee": {
               "type": "MemberExpression",
               "range": [
                 110,
-                123
+                115
               ],
               "object": {
                 "type": "MemberExpression",
                 "range": [
                   110,
-                  123
+                  115
                 ],
                 "object": {
                   "type": "Identifier",
                   "range": [
                     110,
-                    123
+                    115
                   ],
                   "name": "___JavaRuntime"
                 },
@@ -568,7 +547,7 @@ describe("Logic operators", function() {
                   "type": "Identifier",
                   "range": [
                     110,
-                    123
+                    115
                   ],
                   "name": "functions"
                 },
@@ -578,117 +557,7 @@ describe("Logic operators", function() {
                 "type": "Identifier",
                 "range": [
                   110,
-                  123
-                ],
-                "name": "validateSet"
-              },
-              "computed": false
-            }
-          }
-        }
-      ]
-    },
-    {
-      "type": "VariableDeclaration",
-      "range": [
-        133,
-        143
-      ],
-      "kind": "var",
-      "javaType": "boolean",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "range": [
-            133,
-            143
-          ],
-          "id": {
-            "type": "Identifier",
-            "range": [
-              133,
-              143
-            ],
-            "name": "__2"
-          },
-          "init": {
-            "type": "CallExpression",
-            "range": [
-              138,
-              143
-            ],
-            "arguments": [
-              {
-                "type": "UnaryExpression",
-                "range": [
-                  138,
-                  143
-                ],
-                "operator": "!",
-                "prefix": "true",
-                "argument": {
-                  "type": "Literal",
-                  "range": [
-                    139,
-                    143
-                  ],
-                  "value": true,
-                  "raw": "true"
-                }
-              },
-              {
-                "type": "Literal",
-                "range": [
-                  133,
-                  135
-                ],
-                "value": "__2"
-              },
-              {
-                "type": "Literal",
-                "range": [
-                  138,
-                  143
-                ],
-                "value": 52,
-                "raw": 52
-              }
-            ],
-            "callee": {
-              "type": "MemberExpression",
-              "range": [
-                138,
-                143
-              ],
-              "object": {
-                "type": "MemberExpression",
-                "range": [
-                  138,
-                  143
-                ],
-                "object": {
-                  "type": "Identifier",
-                  "range": [
-                    138,
-                    143
-                  ],
-                  "name": "___JavaRuntime"
-                },
-                "property": {
-                  "type": "Identifier",
-                  "range": [
-                    138,
-                    143
-                  ],
-                  "name": "functions"
-                },
-                "computed": false
-              },
-              "property": {
-                "type": "Identifier",
-                "range": [
-                  138,
-                  143
+                  115
                 ],
                 "name": "validateSet"
               },
@@ -709,16 +578,573 @@ describe("Logic operators", function() {
   });
 
 describe("Math operations", function() {
-  var code = '  ';
+  var code = 'public class MyClass { public static void main(String[] args) { int i1 = 10; int i2 = 2; int i3,i4; i3  = i1 + i2; i4 = i1 * i2; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-    "type": "Program",
-    "range": [0, 0],
-    "body": []
-    };
+  "type": "Program",
+  "range": [
+    23,
+    130
+  ],
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        64,
+        75
+      ],
+      "kind": "var",
+      "javaType": "int",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            68,
+            75
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              68,
+              75
+            ],
+            "name": "__0"
+          },
+          "init": {
+            "type": "CallExpression",
+            "range": [
+              73,
+              75
+            ],
+            "arguments": [
+              {
+                "type": "Literal",
+                "range": [
+                  73,
+                  75
+                ],
+                "value": 10,
+                "raw": "10"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  68,
+                  70
+                ],
+                "value": "__0"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  73,
+                  75
+                ],
+                "value": 1,
+                "raw": 1
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "range": [
+                73,
+                75
+              ],
+              "object": {
+                "type": "MemberExpression",
+                "range": [
+                  73,
+                  75
+                ],
+                "object": {
+                  "type": "Identifier",
+                  "range": [
+                    73,
+                    75
+                  ],
+                  "name": "___JavaRuntime"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    73,
+                    75
+                  ],
+                  "name": "functions"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  73,
+                  75
+                ],
+                "name": "validateSet"
+              },
+              "computed": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        77,
+        87
+      ],
+      "kind": "var",
+      "javaType": "int",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            81,
+            87
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              81,
+              87
+            ],
+            "name": "__1"
+          },
+          "init": {
+            "type": "CallExpression",
+            "range": [
+              86,
+              87
+            ],
+            "arguments": [
+              {
+                "type": "Literal",
+                "range": [
+                  86,
+                  87
+                ],
+                "value": 2,
+                "raw": "2"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  81,
+                  83
+                ],
+                "value": "__1"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  86,
+                  87
+                ],
+                "value": 13,
+                "raw": 13
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "range": [
+                86,
+                87
+              ],
+              "object": {
+                "type": "MemberExpression",
+                "range": [
+                  86,
+                  87
+                ],
+                "object": {
+                  "type": "Identifier",
+                  "range": [
+                    86,
+                    87
+                  ],
+                  "name": "___JavaRuntime"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    86,
+                    87
+                  ],
+                  "name": "functions"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  86,
+                  87
+                ],
+                "name": "validateSet"
+              },
+              "computed": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        89,
+        98
+      ],
+      "kind": "var",
+      "javaType": "int",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            93,
+            95
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              93,
+              95
+            ],
+            "name": "__2"
+          },
+          "init": null
+        },
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            96,
+            98
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              96,
+              98
+            ],
+            "name": "__3"
+          },
+          "init": null
+        }
+      ]
+    },
+    {
+      "type": "ExpressionStatement",
+      "range": [
+        100,
+        114
+      ],
+      "expression": {
+        "type": "AssignmentExpression",
+        "range": [
+          100,
+          114
+        ],
+        "operator": "=",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            100,
+            102
+          ],
+          "name": "__2"
+        },
+        "right": {
+          "type": "CallExpression",
+          "range": [
+            100,
+            114
+          ],
+          "arguments": [
+            {
+              "type": "CallExpression",
+              "range": [
+                106,
+                113
+              ],
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "range": [
+                    106,
+                    108
+                  ],
+                  "name": "__0"
+                },
+                {
+                  "type": "Identifier",
+                  "range": [
+                    111,
+                    113
+                  ],
+                  "name": "__1"
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  106,
+                  113
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    106,
+                    113
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      106,
+                      113
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      106,
+                      113
+                    ],
+                    "name": "ops"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    106,
+                    113
+                  ],
+                  "name": "add"
+                },
+                "computed": false
+              }
+            },
+            {
+              "type": "Literal",
+              "range": [
+                100,
+                102
+              ],
+              "value": "__2"
+            },
+            {
+              "type": "Literal",
+              "range": [
+                100,
+                114
+              ],
+              "value": 38,
+              "raw": 38
+            }
+          ],
+          "callee": {
+            "type": "MemberExpression",
+            "range": [
+              100,
+              114
+            ],
+            "object": {
+              "type": "MemberExpression",
+              "range": [
+                100,
+                114
+              ],
+              "object": {
+                "type": "Identifier",
+                "range": [
+                  100,
+                  114
+                ],
+                "name": "___JavaRuntime"
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  100,
+                  114
+                ],
+                "name": "functions"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "range": [
+                100,
+                114
+              ],
+              "name": "validateSet"
+            },
+            "computed": false
+          }
+        }
+      }
+    },
+    {
+      "type": "ExpressionStatement",
+      "range": [
+        115,
+        128
+      ],
+      "expression": {
+        "type": "AssignmentExpression",
+        "range": [
+          115,
+          128
+        ],
+        "operator": "=",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            115,
+            117
+          ],
+          "name": "__3"
+        },
+        "right": {
+          "type": "CallExpression",
+          "range": [
+            115,
+            128
+          ],
+          "arguments": [
+            {
+              "type": "CallExpression",
+              "range": [
+                120,
+                127
+              ],
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "range": [
+                    120,
+                    122
+                  ],
+                  "name": "__0"
+                },
+                {
+                  "type": "Identifier",
+                  "range": [
+                    125,
+                    127
+                  ],
+                  "name": "__1"
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  120,
+                  127
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    120,
+                    127
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      120,
+                      127
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      120,
+                      127
+                    ],
+                    "name": "ops"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    120,
+                    127
+                  ],
+                  "name": "mul"
+                },
+                "computed": false
+              }
+            },
+            {
+              "type": "Literal",
+              "range": [
+                115,
+                117
+              ],
+              "value": "__3"
+            },
+            {
+              "type": "Literal",
+              "range": [
+                115,
+                128
+              ],
+              "value": 57,
+              "raw": 57
+            }
+          ],
+          "callee": {
+            "type": "MemberExpression",
+            "range": [
+              115,
+              128
+            ],
+            "object": {
+              "type": "MemberExpression",
+              "range": [
+                115,
+                128
+              ],
+              "object": {
+                "type": "Identifier",
+                "range": [
+                  115,
+                  128
+                ],
+                "name": "___JavaRuntime"
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  115,
+                  128
+                ],
+                "name": "functions"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "range": [
+                115,
+                128
+              ],
+              "name": "validateSet"
+            },
+            "computed": false
+          }
+        }
+      }
+    }
+  ]
+};
   ast = toASTNodes(cashew, ast);
-  xit("Should return Math operations AST", function() {
+  it("Should return Math operations AST", function() {
   expect(
       JSON.stringify(cleanAST(parsedAST)) === JSON.stringify(ast)
     ).toBe(true); 
@@ -726,33 +1152,681 @@ describe("Math operations", function() {
   });
 
 describe("String concatenation", function() {
-  var code = '  ';
+  var code = 'public class ConcatenationClass { public static void main(String[] args) { String x = "String "; String y = "concatenation"; x = x + y; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-    "type": "Program",
-    "range": [0, 0],
-    "body": []
-    };
+  "type": "Program",
+  "range": [
+    34,
+    137
+  ],
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        75,
+        95
+      ],
+      "kind": "var",
+      "javaType": "String",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            82,
+            95
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              82,
+              95
+            ],
+            "name": "__0"
+          },
+          "init": {
+            "type": "CallExpression",
+            "range": [
+              86,
+              95
+            ],
+            "arguments": [
+              {
+                "type": "Literal",
+                "range": [
+                  86,
+                  95
+                ],
+                "value": "String ",
+                "raw": "\"String \""
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  82,
+                  83
+                ],
+                "value": "__0"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  86,
+                  95
+                ],
+                "value": 1,
+                "raw": 1
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "range": [
+                86,
+                95
+              ],
+              "object": {
+                "type": "MemberExpression",
+                "range": [
+                  86,
+                  95
+                ],
+                "object": {
+                  "type": "Identifier",
+                  "range": [
+                    86,
+                    95
+                  ],
+                  "name": "___JavaRuntime"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    86,
+                    95
+                  ],
+                  "name": "functions"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  86,
+                  95
+                ],
+                "name": "validateSet"
+              },
+              "computed": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        97,
+        123
+      ],
+      "kind": "var",
+      "javaType": "String",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            104,
+            123
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              104,
+              123
+            ],
+            "name": "__1"
+          },
+          "init": {
+            "type": "CallExpression",
+            "range": [
+              108,
+              123
+            ],
+            "arguments": [
+              {
+                "type": "Literal",
+                "range": [
+                  108,
+                  123
+                ],
+                "value": "concatenation",
+                "raw": "\"concatenation\""
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  104,
+                  105
+                ],
+                "value": "__1"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  108,
+                  123
+                ],
+                "value": 13,
+                "raw": 13
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "range": [
+                108,
+                123
+              ],
+              "object": {
+                "type": "MemberExpression",
+                "range": [
+                  108,
+                  123
+                ],
+                "object": {
+                  "type": "Identifier",
+                  "range": [
+                    108,
+                    123
+                  ],
+                  "name": "___JavaRuntime"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    108,
+                    123
+                  ],
+                  "name": "functions"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  108,
+                  123
+                ],
+                "name": "validateSet"
+              },
+              "computed": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "ExpressionStatement",
+      "range": [
+        125,
+        135
+      ],
+      "expression": {
+        "type": "AssignmentExpression",
+
+        "range": [
+          125,
+          135
+        ],
+        "operator": "=",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            125,
+            126
+          ],
+          "name": "__0"
+        },
+        "right": {
+          "type": "CallExpression",
+          "range": [
+            125,
+            135
+          ],
+          "arguments": [
+            {
+              "type": "CallExpression",
+              "range": [
+                129,
+                134
+              ],
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "range": [
+                    129,
+                    130
+                  ],
+                  "name": "__0"
+                },
+                {
+                  "type": "Identifier",
+                  "range": [
+                    133,
+                    134
+                  ],
+                  "name": "__1"
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  129,
+                  134
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    129,
+                    134
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      129,
+                      134
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      129,
+                      134
+                    ],
+                    "name": "ops"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    129,
+                    134
+                  ],
+                  "name": "add"
+                },
+                "computed": false
+              }
+            },
+            {
+              "type": "Literal",
+              "range": [
+                125,
+                126
+              ],
+              "value": "__0"
+            },
+            {
+              "type": "Literal",
+              "range": [
+                125,
+                135
+              ],
+              "value": 33,
+              "raw": 33
+            }
+          ],
+          "callee": {
+            "type": "MemberExpression",
+            "range": [
+              125,
+              135
+            ],
+            "object": {
+              "type": "MemberExpression",
+              "range": [
+                125,
+                135
+              ],
+              "object": {
+                "type": "Identifier",
+                "range": [
+                  125,
+                  135
+                ],
+                "name": "___JavaRuntime"
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  125,
+                  135
+                ],
+                "name": "functions"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "range": [
+                125,
+                135
+              ],
+              "name": "validateSet"
+            },
+            "computed": false
+          }
+        }
+      }
+    }
+  ]
+};
   ast = toASTNodes(cashew, ast);
-  xit("Should return String concatenation AST", function() {
+  it("Should return String concatenation AST", function() {
   expect(
       JSON.stringify(cleanAST(parsedAST)) === JSON.stringify(ast)
     ).toBe(true); 
     });
   });
   
-describe("If Clause", function() {
-  var code = '  ';
+describe("If-else Clause", function() {
+  var code = 'public class IfClass { public static void main(String[] args) { int a = 10; if (a == 10) { System.out.println(\"that\'s correct\"); } else { System.out.println(\"that\'s incorrect\"); }}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-    "type": "Program",
-    "range": [0, 0],
-    "body": []
-    };
+  "type": "Program",
+  "range": [
+    23,
+    180
+  ],
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        64,
+        74
+      ],
+      "kind": "var",
+      "javaType": "int",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            68,
+            74
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              68,
+              74
+            ],
+            "name": "__0"
+          },
+          "init": {
+            "type": "CallExpression",
+            "range": [
+              72,
+              74
+            ],
+            "arguments": [
+              {
+                "type": "Literal",
+                "range": [
+                  72,
+                  74
+                ],
+                "value": 10,
+                "raw": "10"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  68,
+                  69
+                ],
+                "value": "__0"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  72,
+                  74
+                ],
+                "value": 1,
+                "raw": 1
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "range": [
+                72,
+                74
+              ],
+              "object": {
+                "type": "MemberExpression",
+                "range": [
+                  72,
+                  74
+                ],
+                "object": {
+                  "type": "Identifier",
+                  "range": [
+                    72,
+                    74
+                  ],
+                  "name": "___JavaRuntime"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    72,
+                    74
+                  ],
+                  "name": "functions"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  72,
+                  74
+                ],
+                "name": "validateSet"
+              },
+              "computed": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "IfStatement",
+      "range": [
+        76,
+        179
+      ],
+      "test": {
+        "type": "BinaryExpression",
+        "range": [
+          80,
+          87
+        ],
+        "operator": "==",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            80,
+            81
+          ],
+          "name": "__0"
+        },
+        "right": {
+          "type": "Literal",
+          "range": [
+            85,
+            87
+          ],
+          "value": 10,
+          "raw": "10"
+        }
+      },
+      "consequent": {
+        "type": "BlockStatement",
+        "range": [
+          89,
+          130
+        ],
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "range": [
+              91,
+              128
+            ],
+            "expression": {
+              "type": "CallExpression",
+
+              "range": [
+                91,
+                128
+              ],
+              "arguments": [
+                {
+                  "type": "Literal",
+
+                  "range": [
+                    110,
+                    126
+                  ],
+                  "value": "that's correct",
+                  "raw": "\"that's correct\""
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  91,
+                  128
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    91,
+                    128
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      91,
+                      128
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      91,
+                      128
+                    ],
+                    "name": "functions"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    91,
+                    128
+                  ],
+                  "name": "print"
+                },
+                "computed": false
+              }
+            }
+          }
+        ]
+      },
+      "alternate": {
+        "type": "BlockStatement",
+        "range": [
+          136,
+          179
+        ],
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "range": [
+              138,
+              177
+            ],
+            "expression": {
+              "type": "CallExpression",
+              "range": [
+                138,
+                177
+              ],
+              "arguments": [
+                {
+                  "type": "Literal",
+                  "range": [
+                    157,
+                    175
+                  ],
+                  "value": "that's incorrect",
+                  "raw": "\"that's incorrect\""
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  138,
+                  177
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    138,
+                    177
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      138,
+                      177
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      138,
+                      177
+                    ],
+                    "name": "functions"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    138,
+                    177
+                  ],
+                  "name": "print"
+                },
+                "computed": false
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+};
   ast = toASTNodes(cashew, ast);
-  xit("Should return an IF clause AST", function() {
+  it("Should return an IF clause AST", function() {
   expect(
       JSON.stringify(cleanAST(parsedAST)) === JSON.stringify(ast)
     ).toBe(true); 
@@ -760,16 +1834,374 @@ describe("If Clause", function() {
   });
 
 describe("For loop", function() {
-  var code = '  ';
+  var code = 'public class ForClass { public static void main(String[] args) { for (int i = 0 ; i < 10; i++ ){ System.out.println(i); }}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-    "type": "Program",
-    "range": [0, 0],
-    "body": []
-    };
+  "type": "Program",
+  "range": [
+    24,
+    122
+  ],
+  "body": [
+    {
+      "type": "ForStatement",
+      "range": [
+        65,
+        121
+      ],
+      "init": {
+        "type": "VariableDeclaration",
+        "range": [
+          70,
+          79
+        ],
+        "kind": "var",
+        "javaType": "int",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "range": [
+              74,
+              79
+            ],
+            "id": {
+              "type": "Identifier",
+              "range": [
+                74,
+                79
+              ],
+              "name": "__0"
+            },
+            "init": {
+              "type": "CallExpression",
+              "range": [
+                78,
+                79
+              ],
+              "arguments": [
+                {
+                  "type": "Literal",
+                  "range": [
+                    78,
+                    79
+                  ],
+                  "value": 0,
+                  "raw": "0"
+                },
+                {
+                  "type": "Literal",
+                  "range": [
+                    74,
+                    75
+                  ],
+                  "value": "__0"
+                },
+                {
+                  "type": "Literal",
+                  "range": [
+                    78,
+                    79
+                  ],
+                  "value": 1,
+                  "raw": 1
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  78,
+                  79
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    78,
+                    79
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      78,
+                      79
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      78,
+                      79
+                    ],
+                    "name": "functions"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    78,
+                    79
+                  ],
+                  "name": "validateSet"
+                },
+                "computed": false
+              }
+            }
+          }
+        ]
+      },
+      "test": {
+        "type": "BinaryExpression",
+        "range": [
+          82,
+          88
+        ],
+        "operator": "<",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            82,
+            83
+          ],
+          "name": "__0"
+        },
+        "right": {
+          "type": "Literal",
+          "range": [
+            86,
+            88
+          ],
+          "value": 10,
+          "raw": "10"
+        }
+      },
+      "update": {
+        "type": "AssignmentExpression",
+        "range": [
+          90,
+          93
+        ],
+        "operator": "=",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            90,
+            91
+          ],
+          "name": "__0"
+        },
+        "right": {
+          "type": "CallExpression",
+          "range": [
+            90,
+            93
+          ],
+          "arguments": [
+            {
+              "type": "CallExpression",
+              "range": [
+                90,
+                93
+              ],
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "range": [
+                    90,
+                    91
+                  ],
+                  "name": "__0"
+                },
+                {
+                  "type": "Literal",
+                  "range": [
+                    91,
+                    93
+                  ],
+                  "value": 1,
+                  "raw": "1"
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  90,
+                  93
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    90,
+                    93
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      90,
+                      93
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      90,
+                      93
+                    ],
+                    "name": "ops"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    90,
+                    93
+                  ],
+                  "name": "add"
+                },
+                "computed": false
+              }
+            },
+            {
+              "type": "Literal",
+              "range": [
+                90,
+                91
+              ],
+              "value": "__0"
+            },
+            {
+              "type": "Literal",
+              "range": [
+                90,
+                93
+              ],
+              "value": 24,
+              "raw": 24
+            }
+          ],
+          "callee": {
+            "type": "MemberExpression",
+            "range": [
+              90,
+              93
+            ],
+            "object": {
+              "type": "MemberExpression",
+              "range": [
+                90,
+                93
+              ],
+              "object": {
+                "type": "Identifier",
+                "range": [
+                  90,
+                  93
+                ],
+                "name": "___JavaRuntime"
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  90,
+                  93
+                ],
+                "name": "functions"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "range": [
+                90,
+                93
+              ],
+              "name": "validateSet"
+            },
+            "computed": false
+          }
+        }
+      },
+      "body": {
+        "type": "BlockStatement",
+        "range": [
+          95,
+          121
+        ],
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "range": [
+              97,
+              119
+            ],
+            "expression": {
+              "type": "CallExpression",
+              "range": [
+                97,
+                119
+              ],
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "range": [
+                    116,
+                    117
+                  ],
+                  "name": "__0"
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  97,
+                  119
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    97,
+                    119
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      97,
+                      119
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      97,
+                      119
+                    ],
+                    "name": "functions"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    97,
+                    119
+                  ],
+                  "name": "print"
+                },
+                "computed": false
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+};
   ast = toASTNodes(cashew, ast);
-  xit("Should return an For loop AST", function() {
+  it("Should return an For loop AST", function() {
   expect(
       JSON.stringify(cleanAST(parsedAST)) === JSON.stringify(ast)
     ).toBe(true); 
@@ -777,16 +2209,381 @@ describe("For loop", function() {
   });
 
 describe("While loop", function() {
-  var code = '  ';
+  var code = 'public class WhileClass { public static void main(String[] args) { int i = 0; while(i < 10){ System.out.println(i); i = i +1; }}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
   var ast =  {
-    "type": "Program",
-    "range": [0, 0],
-    "body": []
-    };
+  "type": "Program",
+  "range": [
+    26,
+    128
+  ],
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "range": [
+        67,
+        76
+      ],
+      "kind": "var",
+      "javaType": "int",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "range": [
+            71,
+            76
+          ],
+          "id": {
+            "type": "Identifier",
+            "range": [
+              71,
+              76
+            ],
+            "name": "__0"
+          },
+          "init": {
+            "type": "CallExpression",
+            "range": [
+              75,
+              76
+            ],
+            "arguments": [
+              {
+                "type": "Literal",
+                "range": [
+                  75,
+                  76
+                ],
+                "value": 0,
+                "raw": "0"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  71,
+                  72
+                ],
+                "value": "__0"
+              },
+              {
+                "type": "Literal",
+                "range": [
+                  75,
+                  76
+                ],
+                "value": 1,
+                "raw": 1
+              }
+            ],
+            "callee": {
+              "type": "MemberExpression",
+              "range": [
+                75,
+                76
+              ],
+              "object": {
+                "type": "MemberExpression",
+                "range": [
+                  75,
+                  76
+                ],
+                "object": {
+                  "type": "Identifier",
+                  "range": [
+                    75,
+                    76
+                  ],
+                  "name": "___JavaRuntime"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    75,
+                    76
+                  ],
+                  "name": "functions"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "range": [
+                  75,
+                  76
+                ],
+                "name": "validateSet"
+              },
+              "computed": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "WhileStatement",
+      "range": [
+        78,
+        127
+      ],
+      "test": {
+        "type": "BinaryExpression",
+        "range": [
+          84,
+          90
+        ],
+        "operator": "<",
+        "left": {
+          "type": "Identifier",
+          "range": [
+            84,
+            85
+          ],
+          "name": "__0"
+        },
+        "right": {
+          "type": "Literal",
+          "range": [
+            88,
+            90
+          ],
+          "value": 10,
+          "raw": "10"
+        }
+      },
+      "body": {
+        "type": "BlockStatement",
+        "range": [
+          91,
+          127
+        ],
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "range": [
+              93,
+              115
+            ],
+            "expression": {
+              "type": "CallExpression",
+              "range": [
+                93,
+                115
+              ],
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "range": [
+                    112,
+                    113
+                  ],
+                  "name": "__0"
+                }
+              ],
+              "callee": {
+                "type": "MemberExpression",
+                "range": [
+                  93,
+                  115
+                ],
+                "object": {
+                  "type": "MemberExpression",
+                  "range": [
+                    93,
+                    115
+                  ],
+                  "object": {
+                    "type": "Identifier",
+                    "range": [
+                      93,
+                      115
+                    ],
+                    "name": "___JavaRuntime"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      93,
+                      115
+                    ],
+                    "name": "functions"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "range": [
+                    93,
+                    115
+                  ],
+                  "name": "print"
+                },
+                "computed": false
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "range": [
+              116,
+              125
+            ],
+            "expression": {
+              "type": "AssignmentExpression",
+              "range": [
+                116,
+                125
+              ],
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "range": [
+                  116,
+                  117
+                ],
+                "name": "__0"
+              },
+              "right": {
+                "type": "CallExpression",
+                "range": [
+                  116,
+                  125
+                ],
+                "arguments": [
+                  {
+                    "type": "CallExpression",
+                    "range": [
+                      120,
+                      124
+                    ],
+                    "arguments": [
+                      {
+                        "type": "Identifier",
+                        "range": [
+                          120,
+                          121
+                        ],
+                        "name": "__0"
+                      },
+                      {
+                        "type": "Literal",
+                        "range": [
+                          123,
+                          124
+                        ],
+                        "value": 1,
+                        "raw": "1"
+                      }
+                    ],
+                    "callee": {
+                      "type": "MemberExpression",
+                      "range": [
+                        120,
+                        124
+                      ],
+                      "object": {
+                        "type": "MemberExpression",
+                        "range": [
+                          120,
+                          124
+                        ],
+                        "object": {
+                          "type": "Identifier",
+                          "range": [
+                            120,
+                            124
+                          ],
+                          "name": "___JavaRuntime"
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "range": [
+                            120,
+                            124
+                          ],
+                          "name": "ops"
+                        },
+                        "computed": false
+                      },
+                      "property": {
+                        "type": "Identifier",
+                        "range": [
+                          120,
+                          124
+                        ],
+                        "name": "add"
+                      },
+                      "computed": false
+                    }
+                  },
+                  {
+                    "type": "Literal",
+                    "range": [
+                      116,
+                      117
+                    ],
+                    "value": "__0"
+                  },
+                  {
+                    "type": "Literal",
+                    "range": [
+                      116,
+                      125
+                    ],
+                    "value": 32,
+                    "raw": 32
+                  }
+                ],
+                "callee": {
+                  "type": "MemberExpression",
+                  "range": [
+                    116,
+                    125
+                  ],
+                  "object": {
+                    "type": "MemberExpression",
+                    "range": [
+                      116,
+                      125
+                    ],
+                    "object": {
+                      "type": "Identifier",
+                      "range": [
+                        116,
+                        125
+                      ],
+                      "name": "___JavaRuntime"
+                    },
+                    "property": {
+                      "type": "Identifier",
+                      "range": [
+                        116,
+                        125
+                      ],
+                      "name": "functions"
+                    },
+                    "computed": false
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "range": [
+                      116,
+                      125
+                    ],
+                    "name": "validateSet"
+                  },
+                  "computed": false
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+};
   ast = toASTNodes(cashew, ast);
-  xit("Should return a While loop AST", function() {
+  it("Should return a While loop AST", function() {
   expect(
       JSON.stringify(cleanAST(parsedAST)) === JSON.stringify(ast)
     ).toBe(true); 
@@ -874,15 +2671,11 @@ describe("System.out.println", function() {
       }
     ]
   };
-
   ast = toASTNodes(cashew, ast);
 	it("Should return a System.out.println AST", function() {
       expect( JSON.stringify(cleanAST(parsedAST)) == JSON.stringify(ast)).toBe(true);
 	});
-
 });
-
-
 
 // auxiliary functions
 function cleanAST(ast) {
