@@ -1,6 +1,6 @@
 
 // Empty Program
-describe("Empty program", function() {
+describe("AST: Empty program", function() {
 	var code = '';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -20,7 +20,7 @@ describe("Empty program", function() {
 
 //Milestone 3 
 
-describe("Variable declaration", function() {
+describe("AST: Variable declaration", function() {
   var code = 'public class MyClass { public static void main(String[] args) { int x; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -68,7 +68,7 @@ describe("Variable declaration", function() {
     });
   });
 
-describe("Assignments", function() {
+describe("AST: Assignments", function() {
   var code = 'public class VariableClass { public static void main(String[] args) { int i1, i2; i1 = 0; i2 = 2; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -328,7 +328,7 @@ describe("Assignments", function() {
     });
   });
 
-describe("Logic operators", function() {
+describe("AST: Logic operators", function() {
   var code = 'public class LogicalClass { public static void main(String[] args) { boolean a1 = true && false; boolean n3 = !true; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -577,7 +577,7 @@ describe("Logic operators", function() {
     });
   });
 
-describe("Math operations", function() {
+describe("AST: Math operations", function() {
   var code = 'public class MyClass { public static void main(String[] args) { int i1 = 10; int i2 = 2; int i3,i4; i3  = i1 + i2; i4 = i1 * i2; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -1151,7 +1151,7 @@ describe("Math operations", function() {
     });
   });
 
-describe("String concatenation", function() {
+describe("AST: String concatenation", function() {
   var code = 'public class ConcatenationClass { public static void main(String[] args) { String x = "String "; String y = "concatenation"; x = x + y; }}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -1529,7 +1529,7 @@ describe("String concatenation", function() {
     });
   });
   
-describe("If-else Clause", function() {
+describe("AST: If-else Clause", function() {
   var code = 'public class IfClass { public static void main(String[] args) { int a = 10; if (a == 10) { System.out.println(\"that\'s correct\"); } else { System.out.println(\"that\'s incorrect\"); }}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -1833,7 +1833,7 @@ describe("If-else Clause", function() {
     });
   });
 
-describe("For loop", function() {
+describe("AST: For loop", function() {
   var code = 'public class ForClass { public static void main(String[] args) { for (int i = 0 ; i < 10; i++ ){ System.out.println(i); }}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -2208,7 +2208,7 @@ describe("For loop", function() {
     });
   });
 
-describe("While loop", function() {
+describe("AST: While loop", function() {
   var code = 'public class WhileClass { public static void main(String[] args) { int i = 0; while(i < 10){ System.out.println(i); i = i +1; }}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
@@ -2593,7 +2593,7 @@ describe("While loop", function() {
 
 // done
 
-describe("System.out.println", function() {
+describe("AST: System.out.println", function() {
   var code= 'public class MyClass{/** main method */public static void main(String[]args){System.out.println(\"Type your code here\");}}';
   var cashew = new Cashew();
   var parsedAST = cashew.parse(code);
