@@ -9,10 +9,9 @@
       height: 100%;
     }
   </style>
-  <script src="underscore.js"></script>
 	<script src="jison.js"> </script>
   <script src="escodegen.browser.js"></script>
-   <script src="cashew.js"></script>
+   <script src="cashew.pre.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script>
     (function () {
@@ -23,17 +22,18 @@
       };
     })();
 
+    var Cashew = cashew.Cashew;
+
     function submitCode () {
       outputText.value = "";
       var code =document.getElementById('codeArea').value;
       try{
-        var cashew = new Cashew();
-        var ast = cashew.parse(code);
+        var ast = Cashew(code);
         //Display the AST text
         astText.value = JSON.stringify(ast, null, 2);
          //Generate and display the JS code
         var js = escodegen.generate(ast);
-        js = "(function(___JavaRuntime){" + js + "})(___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
         jsText.value = js;
 
         //Execute the transpiled code

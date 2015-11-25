@@ -59,7 +59,7 @@ BSL               "\\".
 
 "class"               return 'KEYWORD_CLASS';
 
-"return"              return 'return';
+"return"              return  'KEYWORD_RETURN';
 
 "boolean"             return 'PRIMITIVE_BOOLEAN';
 "int"                 return 'PRIMITIVE_INTEGER';
@@ -124,6 +124,8 @@ BSL               "\\".
 %left OPERATOR_MULTIPLICATION OPERATOR_DIVISION OPERATOR_MODULO
 %right OPERATOR_BITWISE_NEGATION OPERATOR_NEGATION
 %right POST_INCREMENT POST_DECREMENT
+
+%options ranges
 
 // Start to read the file
 %start compilation_unit
@@ -419,7 +421,12 @@ block
   | EMBRACE block_statements UNBRACE
     {
       var blockStatements = yy._.flatten($2);
-      var variables = yy._.where(blockStatements, {type : "VariableDeclaration"});
+      var variables = [];
+        yy._.each(blockStatements, function(statements){
+          if(statements.type == "VariableDeclaration"){
+            variables.push(statements);
+          }
+        });
       yy.createUpdateBlockVariableReference(variables, blockStatements);
       $$ = blockStatements;
 
@@ -513,7 +520,9 @@ statement_without_trailing_substatement
       $$ = $1;
     }
   | return_statement
-    {}
+    {
+      $$ = $1;
+    }
   // TODO throw_statement
   // TODO try_statement
   ;
@@ -530,11 +539,16 @@ expression_statement
     {}
   ;
 
+//FIXME: Return without any validation so we can integrate with Aether
 return_statement
-  : 'return' expression LINE_TERMINATOR
-    {}
-  | 'return' LINE_TERMINATOR
-    {}
+  : KEYWORD_RETURN expression LINE_TERMINATOR
+    {
+      $$ = yy.createReturnStatementNode($2, @$.range);
+    }
+  | KEYWORD_RETURN LINE_TERMINATOR
+    {
+      $$ = yy.createReturnStatementNode(null, @$.range);
+    }
   ;
 
 break_statement
