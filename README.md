@@ -16,11 +16,11 @@ This is a work in progress please do not rely on this for production usage
 Cashew is right now an embryo  in the "cashew.js" file used by the "cashew-worker.html". To run it simply serve the html and js files. Please notice that the parser right now only takes code from the "main method".
 
 ### How cashew works?
-Cashew uses [jison](http://zaach.github.io/jison/)  to transpile Java code into JavaScript, right now in order to simplify the changes to the grammar we're generating the parserusing the 'jison.js' at runtime. The grammar used by cashew is "coco-java.jison" (read more about jison grammars [here](http://zaach.github.io/jison/docs/#specifying-a-language) ).
+Cashew uses [jison](http://zaach.github.io/jison/)  to transpile Java code into JavaScript, right now in order to simplify the changes to the grammar we're generating the parser using the 'jison.js' at runtime for the web test (in the cashew.pre.js file), to use cashew prefer using cashew.js with the compiled parser.  The grammar used by cashew is "coco-java.jison" (read more about jison grammars [here](http://zaach.github.io/jison/docs/#specifying-a-language) ).
+You can also find the compiled parser in the coco-java.js file and more details about it.
 
-Right now cashew is completely embedded in the html version but in the near future "cashew.js" will contain the parser and the JavaRuntime for the functions it needs.
 
-Cashew also uses [ESCODEGEN](https://github.com/estools/escodegen) in the web interface to generate the JavaScript code from the AST produced by the parser.
+Cashew web uses [ESCODEGEN](https://github.com/estools/escodegen) in the web interface to generate the JavaScript code from the AST produced by the parser.
 
 
 ## Testing
