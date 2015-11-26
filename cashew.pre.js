@@ -191,15 +191,6 @@ exports.Cashew = function(javaCode){
 	  };
 	parser.yy.ast = ast;
 
-	this.toNode = function(p){
-		var node = new node();
-		for(var prop in p){
-			node[prop] = p[prop];
-		}
-		return node;
-		function node(){}
-	}
-
 	node = function(type){
 		ASTNodeID += 1;
 		this.type = type;
@@ -701,6 +692,14 @@ exports.wrapFunction = function(ast){
 
 	return ast;
 }
+exports.toNode = function(p){
+      var node = new node();
+      for(var prop in p){
+            node[prop] = p[prop];
+      }
+      return node;
+      function node(){}
+   }
 
 exports.___JavaRuntime = { 
 	functions : {
