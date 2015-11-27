@@ -1,4 +1,4 @@
-
+var cashew = require('../../cashew.js');
 // Empty Program
 describe("AST: Empty program", function() {
 	var code = '';
