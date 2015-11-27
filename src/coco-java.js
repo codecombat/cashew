@@ -197,7 +197,12 @@ break;
 case 49:
 
       var blockStatements = yy._.flatten($$[$0-1]);
-      var variables = yy._.where(blockStatements, {type : "VariableDeclaration"});
+      var variables = [];
+        yy._.each(blockStatements, function(statements){
+          if(statements.type == "VariableDeclaration"){
+            variables.push(statements);
+          }
+        });
       yy.createUpdateBlockVariableReference(variables, blockStatements);
       this.$ = blockStatements;
 

@@ -24,19 +24,9 @@ var variablesDictionary;
 
 exports.Cashew = function(javaCode){
 	variablesDictionary = [];
-//A little trick so we don't need to generate a static parser and can use a runtime generated parse
-      var javaGrammar;
-      jQuery.ajaxSetup({async:false});
-      var jsFileLocation = $('script[src*=cashew]').attr('src'); //used to find the correct path to the coco-jison file
-      jsFileLocation = jsFileLocation.substring(0, jsFileLocation.lastIndexOf('/')+1); 
-      $.get(jsFileLocation+"coco-java.jison",function(data){ javaGrammar = data});
-
-      var Parser= require("jison").Parser;
-      var options = {};
-      var parser = new Parser(javaGrammar, options);
-
+	
 	//parser helpers
-	parser.yy._ = _ = new minUnderscore();
+	parser.yy._ = _;
 
 	function getRuntimeFunctions(range){
 		var functions = new node("MemberExpression");
