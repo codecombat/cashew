@@ -1,5 +1,14 @@
-node_modules/*
+# Don't include GitHub stuff or local scripts
+Gruntfile.js
+.gitignore
+.tern-project
+cashew-worker.html
 
+# Don't include test files
+test
+
+
+### Stuff from .gitignore ###
 
 # OS X
 .DS_Store
@@ -40,4 +49,3 @@ Thumbs.db
 .tmproj
 .idea
 nbproject
-
