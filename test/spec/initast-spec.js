@@ -2,8 +2,8 @@
 // Empty Program
 describe("AST: Empty program", function() {
 	var code = '';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
 	var ast =  {
 	  "type": "Program",
     "range": [0, 0],
@@ -22,8 +22,8 @@ describe("AST: Empty program", function() {
 
 describe("AST: Variable declaration", function() {
   var code = 'public class MyClass { public static void main(String[] args) { int x; }}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
               "type": "Program",
               "range": [
@@ -70,8 +70,8 @@ describe("AST: Variable declaration", function() {
 
 describe("AST: Assignments", function() {
   var code = 'public class VariableClass { public static void main(String[] args) { int i1, i2; i1 = 0; i2 = 2; }}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -174,7 +174,7 @@ describe("AST: Assignments", function() {
                 89
               ],
               "value": 7,
-              "raw": 7
+              "raw": "7"
             }
           ],
           "callee": {
@@ -272,7 +272,7 @@ describe("AST: Assignments", function() {
                 97
               ],
               "value": 19,
-              "raw": 19
+              "raw": "19"
             }
           ],
           "callee": {
@@ -330,8 +330,8 @@ describe("AST: Assignments", function() {
 
 describe("AST: Logic operators", function() {
   var code = 'public class LogicalClass { public static void main(String[] args) { boolean a1 = true && false; boolean n3 = !true; }}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -410,7 +410,7 @@ describe("AST: Logic operators", function() {
                   95
                 ],
                 "value": 3,
-                "raw": 3
+                "raw": "3"
               }
             ],
             "callee": {
@@ -520,7 +520,7 @@ describe("AST: Logic operators", function() {
                   115
                 ],
                 "value": 16,
-                "raw": 16
+                "raw": "16"
               }
             ],
             "callee": {
@@ -579,8 +579,8 @@ describe("AST: Logic operators", function() {
 
 describe("AST: Math operations", function() {
   var code = 'public class MyClass { public static void main(String[] args) { int i1 = 10; int i2 = 2; int i3,i4; i3  = i1 + i2; i4 = i1 * i2; }}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -642,7 +642,7 @@ describe("AST: Math operations", function() {
                   75
                 ],
                 "value": 1,
-                "raw": 1
+                "raw": "1"
               }
             ],
             "callee": {
@@ -743,7 +743,7 @@ describe("AST: Math operations", function() {
                   87
                 ],
                 "value": 13,
-                "raw": 13
+                "raw": "13"
               }
             ],
             "callee": {
@@ -941,7 +941,7 @@ describe("AST: Math operations", function() {
                 114
               ],
               "value": 38,
-              "raw": 38
+              "raw": "38"
             }
           ],
           "callee": {
@@ -1095,7 +1095,7 @@ describe("AST: Math operations", function() {
                 128
               ],
               "value": 57,
-              "raw": 57
+              "raw": "57"
             }
           ],
           "callee": {
@@ -1153,8 +1153,8 @@ describe("AST: Math operations", function() {
 
 describe("AST: String concatenation", function() {
   var code = 'public class ConcatenationClass { public static void main(String[] args) { String x = "String "; String y = "concatenation"; x = x + y; }}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -1216,7 +1216,7 @@ describe("AST: String concatenation", function() {
                   95
                 ],
                 "value": 1,
-                "raw": 1
+                "raw": "1"
               }
             ],
             "callee": {
@@ -1317,7 +1317,7 @@ describe("AST: String concatenation", function() {
                   123
                 ],
                 "value": 13,
-                "raw": 13
+                "raw": "13"
               }
             ],
             "callee": {
@@ -1473,7 +1473,7 @@ describe("AST: String concatenation", function() {
                 135
               ],
               "value": 33,
-              "raw": 33
+              "raw": "33"
             }
           ],
           "callee": {
@@ -1531,8 +1531,8 @@ describe("AST: String concatenation", function() {
   
 describe("AST: If-else Clause", function() {
   var code = 'public class IfClass { public static void main(String[] args) { int a = 10; if (a == 10) { System.out.println(\"that\'s correct\"); } else { System.out.println(\"that\'s incorrect\"); }}}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -1594,7 +1594,7 @@ describe("AST: If-else Clause", function() {
                   74
                 ],
                 "value": 1,
-                "raw": 1
+                "raw": "1"
               }
             ],
             "callee": {
@@ -1835,8 +1835,8 @@ describe("AST: If-else Clause", function() {
 
 describe("AST: For loop", function() {
   var code = 'public class ForClass { public static void main(String[] args) { for (int i = 0 ; i < 10; i++ ){ System.out.println(i); }}}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -1904,7 +1904,7 @@ describe("AST: For loop", function() {
                     79
                   ],
                   "value": 1,
-                  "raw": 1
+                  "raw": "1"
                 }
               ],
               "callee": {
@@ -2079,7 +2079,7 @@ describe("AST: For loop", function() {
                 93
               ],
               "value": 24,
-              "raw": 24
+              "raw": "24"
             }
           ],
           "callee": {
@@ -2210,8 +2210,8 @@ describe("AST: For loop", function() {
 
 describe("AST: While loop", function() {
   var code = 'public class WhileClass { public static void main(String[] args) { int i = 0; while(i < 10){ System.out.println(i); i = i +1; }}}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
   var ast =  {
   "type": "Program",
   "range": [
@@ -2273,7 +2273,7 @@ describe("AST: While loop", function() {
                   76
                 ],
                 "value": 1,
-                "raw": 1
+                "raw": "1"
               }
             ],
             "callee": {
@@ -2531,7 +2531,7 @@ describe("AST: While loop", function() {
                       125
                     ],
                     "value": 32,
-                    "raw": 32
+                    "raw": "32"
                   }
                 ],
                 "callee": {
@@ -2595,8 +2595,8 @@ describe("AST: While loop", function() {
 
 describe("AST: System.out.println", function() {
   var code= 'public class MyClass{/** main method */public static void main(String[]args){System.out.println(\"Type your code here\");}}';
-  var cashew = new Cashew();
-  var parsedAST = cashew.parse(code);
+  var Cashew = cashew.Cashew;
+  var parsedAST = Cashew(code);
 	var ast ={
    "type": "Program",
     "range": [
@@ -2690,16 +2690,16 @@ function cleanAST(ast) {
   }
   return ast;
 }
-
-function toASTNodes(parser, ast) {
+//var parser = cashew.Cashew;
+function toASTNodes(cashew, ast) {
   for (var k in ast) {
     if (typeof ast[k] == "object" && ast[k] !== null && ast[k] !== "Program") {
      // console.log("---"+ast[k]);
       //console.log("TESTE");
       if(!Array.isArray(ast[k]))
-        ast[k] = toASTNodes(parser, parser.toNode(ast[k]));
+        ast[k] = toASTNodes(cashew, cashew.toNode(ast[k]));
       else 
-        ast[k] = toASTNodes(parser, ast[k]);
+        ast[k] = toASTNodes(cashew, ast[k]);
     }
   }
   return ast;
