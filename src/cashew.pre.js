@@ -58,6 +58,7 @@ exports.Cashew = function(javaCode){
 		var varType = "unknown";
 		_.each(variablesDictionary, function(variableEntry){
 			if(variableEntry.name == varName){
+				console.log(variableEntry);
 				varType = variableEntry.type;
 			}
 		});
@@ -344,6 +345,15 @@ exports.Cashew = function(javaCode){
 		return unaryNode;
 	}
 
+	parser.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
+		var ternaryNode = new node("ConditionalExpression");
+		ternaryNode.range = expressionRange;
+		ternaryNode.test = testExpression;
+		ternaryNode.consequent = consequentExpression;
+		ternaryNode.alternate = alternateExpression;
+		return ternaryNode;
+	}
+
 	parser.yy.createIdentifierNode = function createIdentifierNode(name , range){
 		var identifierNode = new node("Identifier");
 		identifierNode.range = range;
@@ -512,7 +522,6 @@ exports.Cashew = function(javaCode){
 			});
 			forNode.update = sequenceNode;
 		}
-		
 
 		blockNode = new node("BlockStatement");
 		blockNode.range = blockRange;

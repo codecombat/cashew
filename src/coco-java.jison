@@ -1,5 +1,7 @@
 // lexical grammar
+
 %lex
+%options ranges
 
 D                 [0-9]
 NZ                [1-9]
@@ -9,6 +11,8 @@ BSL               "\\".
 %s                comment
 
 %%
+
+
 
 "//".*                /* skip comments */
 "/*"                  this.begin('comment');
@@ -124,8 +128,6 @@ BSL               "\\".
 %left OPERATOR_MULTIPLICATION OPERATOR_DIVISION OPERATOR_MODULO
 %right OPERATOR_BITWISE_NEGATION OPERATOR_NEGATION
 %right POST_INCREMENT POST_DECREMENT
-
-%options ranges
 
 // Start to read the file
 %start compilation_unit
@@ -500,7 +502,9 @@ statement_without_trailing_substatement
       $$ = $1; 
     }
   | expression_statement
-    {}
+    {
+      $$ = $1;
+    }
   | switch_statement
     {}
   | do_statement
@@ -536,7 +540,9 @@ empty_statement
 
 expression_statement
   : statement_expression LINE_TERMINATOR
-    {}
+    {
+      $$ = $1;
+    }
   ;
 
 //FIXME: Return without any validation so we can integrate with Aether
@@ -690,7 +696,7 @@ assignment
       var addExpression = yy.createMathOperation('%', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  // TODO FieldAccess and ArrayAccess
+  // TODO FieldAccess and ArrayAccess  
   ;
 
 // Names
@@ -705,9 +711,20 @@ name
 // Expressions 
 
 expression
-  : conditional_expression
+  : assignment_expression
     { 
-      $$ = $1; 
+      $$ = $1;
+    }
+  ;
+
+  assignment_expression
+  : conditional_expression
+    {
+      $$ = $1;
+    } 
+  | assignment
+    {
+      $$ = $1;
     }
   ;
 
@@ -716,7 +733,10 @@ conditional_expression
     { 
       $$ = $1; 
     }
-  //TODO TERNARY
+  | conditional_or_expression QUESTION_MARK expression COLON conditional_expression %prec TERNARY
+    {
+      $$ = yy.createTernaryNode($1, $3, $5, @$.range);
+    }
   ;
 
 conditional_or_expression
@@ -899,7 +919,9 @@ primary
       $$ = $1;
     }
   | LEFT_PAREN expression RIGHT_PAREN
-    {}
+    {
+      $$ = $2;
+    }
   //TODO method_invocation
   ;
 
