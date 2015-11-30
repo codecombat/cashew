@@ -58,7 +58,6 @@ exports.Cashew = function(javaCode){
 		var varType = "unknown";
 		_.each(variablesDictionary, function(variableEntry){
 			if(variableEntry.name == varName){
-				console.log(variableEntry);
 				varType = variableEntry.type;
 			}
 		});
