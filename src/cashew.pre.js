@@ -116,6 +116,11 @@ exports.Cashew = function(javaCode){
 					node.right.name = "__" + variable.id;
 				}
 			}
+			if( node.type === "SwitchStatement"){
+				if(node.discriminant.type === "Identifier" && node.discriminant.name == variable.name){
+					node.discriminant.name = "__" + variable.id;
+				}
+			}
 			if(node.type === "UnaryExpression" || node.type === "ReturnStatement"){
 				if(node.argument.type === "Identifier" && node.argument.name == variable.name){
 					node.argument.name = "__" + variable.id;
@@ -458,6 +463,32 @@ exports.Cashew = function(javaCode){
 		ifElseNode.alternate = alternateNode;
 
 		return ifElseNode;
+	}
+
+	parser.yy.createSwitchNode = function createSwitchNode(discriminant, cases, range){
+		var switchNode = new node("SwitchStatement");
+		switchNode.range = range;
+		switchNode.discriminant = discriminant;
+		switchNode.cases = [];
+		switchNode.cases = switchNode.cases.concat(cases);
+		return switchNode;
+	}
+
+	parser.yy.createDefaultSwitchNode = function createDefaultSwitchNode(range){
+		return createCaseSwitchNode(null, range);
+	}
+
+	parser.yy.addSwitchCaseStatements = function addSwitchCaseStatements(cases, block){
+		cases[cases.length -1].consequent = block;
+		return cases;
+	}
+
+	var createCaseSwitchNode = parser.yy.createCaseSwitchNode = function createCaseSwitchNode(testExpression, range){
+		var caseNode = new node("SwitchCase");
+		caseNode.range = range;
+		caseNode.test = testExpression;
+		caseNode.consequent = [];
+		return caseNode;
 	}
 
 	parser.yy.createSimpleWhileNode = function createSimpleWhileNode(testExpression, whileBlock, blockRange, whileRange){

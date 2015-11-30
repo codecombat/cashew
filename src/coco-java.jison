@@ -1012,49 +1012,80 @@ if_then_else_statement
 
 switch_statement
   : 'switch' LEFT_PAREN expression RIGHT_PAREN switch_block
-    {}
+    {
+      $$ = yy.createSwitchNode($3, $5, @$.range);
+;    }
   ;
 
 switch_block
   : EMBRACE UNBRACE
-    {}
+    {
+      $$ = [];
+    }
   | EMBRACE switch_block_statement_groups switch_labels UNBRACE
-    {}
+    {
+      var blockStatements = yy._.flatten($2);
+      blockStatements = blockStatements.concat($3);
+      $$ = blockStatements;
+    }
   | EMBRACE switch_labels UNBRACE
-    {}
+    {
+      $$ = $2;
+    }
   | EMBRACE switch_block_statement_groups UNBRACE
-    {}
+    {
+      var blockStatements = yy._.flatten($2);
+      $$ = blockStatements;
+    }
   ;
 
 
 
 switch_block_statement_groups
   : switch_block_statement_group
-    {}
+    {
+      $$ = [$1];
+    }
   | switch_block_statement_groups switch_block_statement_group
-    {}
+    {
+      $1.push($2);
+      $$ = $1;
+    }
   ;
 
 switch_block_statement_group
   : switch_labels block_statements
-    {}
+    {
+      $$ = yy.addSwitchCaseStatements($1, $2);
+    }
   ;
 
 switch_labels
   : switch_label
-    {}
+    {
+      $$ = [$1];
+    }
   | switch_labels switch_label
-    {}
+    {
+      $1.push($2);
+      $$ = $1;
+    }
   ;
 
 switch_label
   : 'case' constant_expression COLON
-    {}
+    {
+      $$ = yy.createCaseSwitchNode($2, @$.range);
+    }
   | 'default' COLON
-    {}
+    {
+      $$ = yy.createDefaultSwitchNode(@$.range);
+    }
   ;
 
 constant_expression
   : expression
-    {}
+    {
+      $$ = $1;
+    }
   ;

@@ -94,7 +94,7 @@ case 2:
      //yy.ast.insert($$[$0-1]);
     
 break;
-case 3: case 4: case 5: case 6: case 7: case 20: case 21: case 22: case 23: case 27: case 29: case 57: case 58: case 59: case 63: case 65: case 66: case 68: case 69: case 77: case 78: case 85: case 86: case 96: case 97: case 100: case 125: case 135: case 141: case 142: case 143:
+case 3: case 4: case 5: case 6: case 7: case 20: case 21: case 22: case 23: case 27: case 29: case 57: case 58: case 59: case 63: case 65: case 66: case 68: case 69: case 77: case 78: case 85: case 86: case 96: case 97: case 100: case 125: case 135: case 141: case 142: case 143: case 162:
 
       this.$ = $$[$0];
     
@@ -140,18 +140,18 @@ case 16: case 39: case 52: case 53: case 55: case 56: case 61: case 95: case 134
       this.$ = $$[$0];
     
 break;
-case 18: case 25: case 82: case 144:
+case 18: case 25: case 82: case 144: case 155: case 158:
 
       this.$ = [$$[$0]];
     
 break;
-case 19:
+case 19: case 156: case 159:
 
       $$[$0-1].push($$[$0]);
       this.$ = $$[$0-1];
     
 break;
-case 24: case 71: case 136:
+case 24: case 71: case 136: case 153:
 
       this.$ = $$[$0-1];
     
@@ -405,6 +405,44 @@ break;
 case 149:
 
       this.$ = yy.createSimpleIfElseNode($$[$0-4], $$[$0-2], _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
+    
+break;
+case 150:
+
+      this.$ = yy.createSwitchNode($$[$0-2], $$[$0], this._$.range);
+;    
+break;
+case 151:
+
+      this.$ = [];
+    
+break;
+case 152:
+
+      var blockStatements = yy._.flatten($$[$0-2]);
+      blockStatements = blockStatements.concat($$[$0-1]);
+      this.$ = blockStatements;
+    
+break;
+case 154:
+
+      var blockStatements = yy._.flatten($$[$0-1]);
+      this.$ = blockStatements;
+    
+break;
+case 157:
+
+      this.$ = yy.addSwitchCaseStatements($$[$0-1], $$[$0]);
+    
+break;
+case 160:
+
+      this.$ = yy.createCaseSwitchNode($$[$0-1], this._$.range);
+    
+break;
+case 161:
+
+      this.$ = yy.createDefaultSwitchNode(this._$.range);
     
 break;
 }
