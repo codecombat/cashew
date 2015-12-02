@@ -590,92 +590,6 @@ exports.Cashew = function(javaCode){
 	return ast;
 }
 
-var minUnderscore = function() {
-  this.nativeIsArray = Array.isArray;
-
-  this.property = property = function(key) {
-    return function(obj) {
-      return obj == null ? void 0 : obj[key];
-    };
-  };
-  // Helper for collection methods to determine whether a collection
-  // should be iterated as an array or as an object.
-  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
-  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
-  MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
-  getLength = property('length');
-  this.isArrayLike = isArrayLike = function(collection) {
-    var length = getLength(collection);
-    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
-  };
-
-	// Internal implementation of a recursive `flatten` function.
-  innerFlatten = function(input, shallow, strict, output) {
-    output = output || [];
-    var idx = output.length;
-    for (var i = 0, length = getLength(input); i < length; i++) {
-      var value = input[i];
-      if (isArrayLike(value) && (isArray(value) || isArguments(value))) {
-        // Flatten current level of array or arguments object
-        if (shallow) {
-          var j = 0, len = value.length;
-          while (j < len) output[idx++] = value[j++];
-        } else {
-          innerFlatten(value, shallow, strict, output);
-          idx = output.length;
-        }
-      } else if (!strict) {
-        output[idx++] = value;
-      }
-    }
-    return output;
-  };
-
-  // Flatten out an array, either recursively (by default), or just one level.
-  this.flatten = function(array, shallow) {
-    return innerFlatten(array, shallow, false);
-  };
-
-  this.each = each = function(obj, iteratee, context) {
-    iteratee = optimizeCb(iteratee, context);
-    var i, length;
-    if (isArrayLike(obj)) {
-      for (i = 0, length = obj.length; i < length; i++) {
-        iteratee(obj[i], i, obj);
-      }
-    } else {
-      var keys = _.keys(obj);
-      for (i = 0, length = keys.length; i < length; i++) {
-        iteratee(obj[keys[i]], keys[i], obj);
-      }
-    }
-    return obj;
-  };
-
-  // Internal function that returns an efficient (for current engines) version
-  // of the passed-in callback, to be repeatedly applied in other Underscore
-  // functions.
-  this.optimizeCb = optimizeCb = function(func, context, argCount) {
-    if (context === void 0) return func;
-    switch (argCount == null ? 3 : argCount) {
-      case 1: return function(value) {
-        return func.call(context, value);
-      };
-      // The 2-parameter case has been omitted only because no current consumers
-      // made use of it.
-      case 3: return function(value, index, collection) {
-        return func.call(context, value, index, collection);
-      };
-      case 4: return function(accumulator, value, index, collection) {
-        return func.call(context, accumulator, value, index, collection);
-      };
-    }
-    return function() {
-      return func.apply(context, arguments);
-    };
-  };
-}
-
 exports.wrapFunction = function(ast){
 	node = function(type){
 		this.type = type;
@@ -730,7 +644,59 @@ exports.toNode = function(p){
       function node(){}
    }
 
+
+
+_Object = (function() {
+
+	var id = 0;
+
+	function generateId() { 
+		return id++; 
+	};
+
+	_Object.prototype.id = function() {
+		var newId = generateId();
+
+		this.id = function() { return newId; };
+
+		return newId;
+	};
+
+	function _Object() {
+		this.id = generateId();
+	};
+
+	_Object.prototype.equals = function(other) {
+		return this === other;
+	};
+
+	_Object.prototype.toString= function() {
+		return this.constructor.name + "@" + this.id;
+	};
+
+	return _Object;
+
+})();
+
+
 exports.___JavaRuntime = { 
+	extend : function(child, parent) { 
+		hasProp = {}.hasOwnProperty;
+		for (var key in parent) { 
+			if (hasProp.call(parent, key)) child[key] = parent[key]; 
+		} 
+		function ctor() { 
+			this.constructor = child; 
+		} 
+		ctor.prototype = parent.prototype; 
+		child.prototype = new ctor(); 
+		child.__super__ = parent.prototype; 
+		
+		return child; 
+	},
+
+ 	_Object : _Object,
+
 	functions : {
 		print: function(str){
 			console.log(str);
