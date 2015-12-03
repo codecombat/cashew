@@ -618,6 +618,10 @@ local_variable_declaration
     {
       $$ = yy.createVarDeclarationNode($1, $2, @$.range);
     }
+  | type LEFT_BRACKET RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET array_declarators
+    {
+      $$ = yy.createVarDeclarationNode($1, $6, @$.range);
+    }
   | type LEFT_BRACKET RIGHT_BRACKET array_declarators
     {
       $$ = yy.createVarDeclarationNode($1, $4, @$.range);
@@ -703,7 +707,11 @@ array_initializer
   ;
 
 array_expression
-  : KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET 
+  : KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET
+    {
+      $$ = yy.createTwoDimensionalArray([$4, $7]);
+    }
+  | KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET 
     {
       $$ = yy.createArrayWithNullInitialization($4);
     }

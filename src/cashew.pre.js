@@ -380,9 +380,7 @@ exports.Cashew = function(javaCode){
 		varDeclaratorNode.range = declarationRange;
 
 		var idNode = createIdentifierNode(varName, declarationRange);
-
 		varDeclaratorNode.id = idNode;
-
 		varDeclaratorNode.init = null;
 
 		return varDeclaratorNode;
@@ -477,7 +475,7 @@ exports.Cashew = function(javaCode){
 		return simpleArray;
 	}
 
-	var createArrayWithInitNode = parser.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
+	parser.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
 		var nullArray = createSimpleArrayNode(varName, varRange,range);
 		nullArray.init = initNode;
 		return nullArray;
@@ -493,6 +491,16 @@ exports.Cashew = function(javaCode){
 			var literal = new node("Literal");
 			literal.value = null;
 			literal.raw = "null";
+			nodeArray.elements.push(literal);
+		});
+		return nodeArray;
+	}
+
+	parser.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp){
+		var nodeArray = new node("ArrayExpression");
+		nodeArray.elements = [];
+		_.each(nodesExp, function(n, i){
+			var literal = createArrayWithNullInitialization(n);
 			nodeArray.elements.push(literal);
 		});
 		return nodeArray;
