@@ -231,8 +231,6 @@ exports.Cashew = function(javaCode){
 		});
 	}
 
-
-
 	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature){
 		var methodSignatureObject = {
 			'methodName' : methodIdentifier,
@@ -465,6 +463,41 @@ exports.Cashew = function(javaCode){
 		return ifElseNode;
 	}
 
+	var createSimpleArrayNode = parser.yy.createSimpleArrayNode = function createSimpleArrayInit(varName, varRange, range){
+		var simpleArray = new node("VariableDeclarator");
+		simpleArray.range = range;
+
+		var idNode = createIdentifierNode(varName, varRange);
+		simpleArray.id = idNode;
+
+		var nodeArray = new node("ArrayExpression")
+		nodeArray.elements = [];
+		simpleArray.init = nodeArray;
+
+		return simpleArray;
+	}
+
+	var createArrayWithInitNode = parser.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
+		var nullArray = createSimpleArrayNode(varName, varRange,range);
+		nullArray.init = initNode;
+		return nullArray;
+	}
+
+	var createArrayWithNullInitialization = parser.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp){
+		var nodeArray = new node("ArrayExpression")
+			, size = nodeExp.value || 0;
+		nodeArray.elements = [];
+
+		// TODO: Validar a expressão que declara o tamanho do array.
+		_(parseInt(size)).times(function(){
+			var literal = new node("Literal");
+			literal.value = null;
+			literal.raw = "null";
+			nodeArray.elements.push(literal);
+		});
+		return nodeArray;
+	}
+
 	parser.yy.createSwitchNode = function createSwitchNode(discriminant, cases, range){
 		var switchNode = new node("SwitchStatement");
 		switchNode.range = range;
@@ -635,16 +668,15 @@ exports.wrapFunction = function(ast){
 
 	return ast;
 }
+
 exports.toNode = function(p){
-      var node = new node();
-      for(var prop in p){
-            node[prop] = p[prop];
-      }
-      return node;
-      function node(){}
-   }
-
-
+  var node = new node();
+  for(var prop in p){
+    node[prop] = p[prop];
+  }
+  return node;
+  function node(){}
+}
 
 _Object = (function() {
 

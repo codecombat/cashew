@@ -26,7 +26,7 @@ module.exports = function(grunt) {
           sourceMapName : 'sourceMap.map'
         },
         files : {
-          'cashew.js' : ['src/coco-java.js','src/cashew.pre.js','src/underscore.modified.js']
+          'cashew.js' : ['src/coco-java.js','src/cashew.pre.js','src/underscore.js']
         }      }
     }
   });

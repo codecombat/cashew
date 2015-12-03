@@ -62,8 +62,8 @@ BSL               "\\".
 "false"               return 'FALSE_LITERAL';
 
 "class"               return 'KEYWORD_CLASS';
-
-"return"              return  'KEYWORD_RETURN';
+"new"                 return 'KEYWORD_NEW';
+"return"              return 'KEYWORD_RETURN';
 
 "boolean"             return 'PRIMITIVE_BOOLEAN';
 "int"                 return 'PRIMITIVE_INTEGER';
@@ -616,11 +616,13 @@ post_decrement_expression
 local_variable_declaration
   : type variable_declarators
     {
-
       $$ = yy.createVarDeclarationNode($1, $2, @$.range);
     }
- /* | modifiers type variable_declarators
-    {}*/
+  | type LEFT_BRACKET RIGHT_BRACKET array_declarators
+    {
+      $$ = yy.createVarDeclarationNode($1, $4, @$.range);
+    }
+    /* | modifiers type variable_declarators {}*/
   ;
 
 variable_declarators
@@ -660,6 +662,68 @@ variable_initializer
       $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
     }
   ;
+
+
+array_declarators
+  : array_declarator
+    {
+      $$ = [$1];
+    }
+  | array_declarators COMMA array_declarator
+    {
+      $1.push($3); 
+      $$ = $1;
+    }
+  ;
+
+
+array_declarator
+  : array_declarator_id
+    {
+      $$ = yy.createSimpleArrayNode($1, @$.range);
+    }
+  | array_initializer
+    {
+      $$ = $1;
+    }
+  ;
+
+array_declarator_id
+  : IDENTIFIER
+    {
+      $$ = $1;
+    }
+  ;
+
+array_initializer
+  : array_declarator_id OPERATOR_ASSIGNMENT array_expression
+    {
+      $$ = yy.createArrayWithInitNode($1, @1.range, $3, @$.range);
+    }
+  ;
+
+array_expression
+  : KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET 
+    {
+      $$ = yy.createArrayWithNullInitialization($4);
+    }
+  | EMBRACE primary_list UNBRACE
+    {
+
+    }
+  ;
+
+primary_list
+  : primary 
+    {
+
+    }
+  | primary_list COMMA primary
+    {
+
+    }
+  ;
+
 
 assignment
   : IDENTIFIER OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
@@ -1014,7 +1078,7 @@ switch_statement
   : 'switch' LEFT_PAREN expression RIGHT_PAREN switch_block
     {
       $$ = yy.createSwitchNode($3, $5, @$.range);
-;    }
+    }
   ;
 
 switch_block
@@ -1038,8 +1102,6 @@ switch_block
       $$ = blockStatements;
     }
   ;
-
-
 
 switch_block_statement_groups
   : switch_block_statement_group
