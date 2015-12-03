@@ -141,8 +141,7 @@ compilation_unit
     }
   | class_declarations EOF
     {
-     
-     //yy.ast.insert($1);
+     return yy.ast.createRoot($1,@$.range);
     }
   ;
 
@@ -218,7 +217,7 @@ null_literal
 class_declarations
   : class_declaration
     { 
-      $$ = [$1];
+      $$ = $1;
     }
   | class_declarations class_declaration
     {
@@ -228,7 +227,7 @@ class_declarations
 class_declaration
   : 'public' KEYWORD_CLASS IDENTIFIER class_body
     { 
-      $$ = $4;
+      $$ = yy.createSimpleClassDeclarationNode($3, @3.range, $4, @4.range, @$.range);
     }
   | KEYWORD_CLASS IDENTIFIER class_body
     {}
@@ -313,12 +312,10 @@ field_declaration
     {}
   ;
 
-//So far only using main method, so this is the root prgram...
 method_declaration
   : method_header method_body
     {
-      $$ = yy.ast.createRoot($2,@$.range);
-      return $$;
+      $$ = yy.createMethodDeclarationNode($1, @1.range, $2, @2.range, @$.range);
     }
   ;
 
@@ -344,32 +341,48 @@ method_header
   ;
 
 method_declarator
-//FIXME make sure this is public and static
   : 'main' LEFT_PAREN STRING_TYPE LEFT_BRACKET RIGHT_BRACKET IDENTIFIER  RIGHT_PAREN
     { 
       var signature = $1 +  $2 + $3 + $4 + $5 + " " + $6 + $7;
-      $$ = yy.createMethodSignatureObject($1, signature);
+      $$ = yy.createMethodSignatureObject($1, signature, null);
     } 
-    //not using this yet
- /* | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
-    {}
+  | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
+    {
+      var paramList = "";
+      yy._.each($3, function(param){
+        paramList = param.type + " " + param.paramName + " ";
+      });
+      paramList = paramList.trim();
+      var signature = $1 + $2 + paramList + $4;
+      $$ = yy.createMethodSignatureObject($1, signature, $3);
+    }
   | IDENTIFIER LEFT_PAREN RIGHT_PAREN
-    {}
-
+    {
+      var signature = $1 +  $2 + $3;
+      $$ = yy.createMethodSignatureObject($1, signature, null);
+    }
+/*
   | IDENTIFIER LEFT_PAREN type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER RIGHT_PAREN
     {}*/
   ;
 
 formal_parameter_list
   : formal_parameter
-    {}
+    {
+      $$ = [$1];
+    }
   | formal_parameter_list COMMA formal_parameter
-    {}
+    {
+      $1.push($2); 
+      $$ = $1; 
+    }
   ;
 
 formal_parameter
   : type variable_declarator_id
-    {}
+    {
+      $$ = {'type' : $1, 'paramName' : $2};
+    }
   ;
 
 method_body
@@ -418,7 +431,7 @@ floating_point_type
 block
   : EMBRACE UNBRACE
     { 
-      $$ = null;
+      $$ = [];
     }
   | EMBRACE block_statements UNBRACE
     {

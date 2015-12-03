@@ -179,7 +179,10 @@ exports.Cashew = function(javaCode){
 	     this.rootNode.range = range;
 	     if(node != null){
 	     	this.rootNode.body = this.rootNode.body.concat(node);
+	     	//TODO add "First Main Class" to params
+	     	this.rootNode.body.push(mainClassInvoker(range));
 	     }
+
 	     return this.rootNode;
 	    }
 
@@ -190,6 +193,24 @@ exports.Cashew = function(javaCode){
 		ASTNodeID += 1;
 		this.type = type;
 		this.ASTNodeID = ASTNodeID;
+	}
+
+	var mainClassInvoker = function mainClassInvoker(range){
+		//TODO  change this to the first class with main
+	     var expressionNode = new node("ExpressionStatement");
+	     expressionNode.range = range;
+
+	     var expressionNodeExpression = new node("CallExpression");
+	     expressionNodeExpression.range = range;
+
+	     var myClassIndentifier = createIdentifierNode("MyClass", range);
+	     var mainIdentifierProperty = createIdentifierNode("main", range);
+	     expressionNodeExpression.callee = createMemberExpressionNode(myClassIndentifier, mainIdentifierProperty, range);
+
+	     expressionNodeExpression.arguments = [];
+
+	     expressionNode.expression = expressionNodeExpression;
+	     return expressionNode;
 	}
 
 	var createLiteralNode = parser.yy.createLiteralNode = function createLiteralNode(value, raw, range){
@@ -205,6 +226,14 @@ exports.Cashew = function(javaCode){
 		identifierNode.range = range;
 		identifierNode.name = name;
 		return identifierNode;
+	}
+
+	var createMemberExpressionNode = function createMemberExpression(objectNode, propertyNode, range){
+		var memberExpressionNode = new node("MemberExpression");
+		memberExpressionNode.range = range;
+		memberExpressionNode.object = objectNode;
+		memberExpressionNode.property = propertyNode;
+		return memberExpressionNode;
 	}
 
 	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
@@ -231,16 +260,211 @@ exports.Cashew = function(javaCode){
 		});
 	}
 
-
-
-	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature){
+	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature, params){
 		var methodSignatureObject = {
 			'methodName' : methodIdentifier,
 			'methodSignature' : methodSignature,
 			'returnType' : null,
-			'modifiers' : null
+			'modifiers' : null,
+			'params' : params,
 		}
 		return methodSignatureObject;
+	}
+
+	parser.yy.createMethodDeclarationNode = function createMethodDeclarationNode(methodSignatureObject, headerRange, methodBodyNodes, methodBodyRange, range){
+		if(methodSignatureObject.returnType == 'void'){
+			_.each(methodBodyNodes , function(bodyNode){
+				if(bodyNode.type === "ReturnStatement"){
+					throw SyntaxError("Cannot return a value from method whose return type is void");
+				}
+			});
+		}
+		var isPrototype = true;
+		_.each(methodSignatureObject.modifiers, function(modifier){
+			if (modifier == "static"){
+				isPrototype = false;
+			}
+		});
+
+		var functionDeclarationNode = new node("ExpressionStatement");
+		functionDeclarationNode.range = range;
+
+		var functionDeclarationNodeAssignment = new node("AssignmentExpression");
+		functionDeclarationNodeAssignment.range = range;
+		functionDeclarationNodeAssignment.operator = '=';
+
+		var functionDeclarationNodeAssignmentLeft = new node("MemberExpression");
+		functionDeclarationNodeAssignmentLeft.range = headerRange;
+		functionDeclarationNodeAssignmentLeft.computed = false;
+
+		var functionDeclarationNodeAssignmentLeftObject;
+		if(isPrototype){
+			functionDeclarationNodeAssignmentLeftObject = new node("MemberExpression");
+			functionDeclarationNodeAssignmentLeftObject.range = headerRange;
+			functionDeclarationNodeAssignmentLeftObject.computed = false;
+			functionDeclarationNodeAssignmentLeftObject.object = createIdentifierNode("TemporaryClassName", [0,0]);
+			functionDeclarationNodeAssignmentLeftObject.property = createIdentifierNode("prototype", headerRange);
+		}else{
+			functionDeclarationNodeAssignmentLeftObject = createIdentifierNode("TemporaryClassName", [0,0]);
+		}
+		functionDeclarationNodeAssignmentLeft.object = functionDeclarationNodeAssignmentLeftObject;
+		functionDeclarationNodeAssignmentLeft.property = createIdentifierNode(methodSignatureObject.methodName, headerRange);
+
+		functionDeclarationNodeAssignment.left = functionDeclarationNodeAssignmentLeft;
+
+		var functionDeclarationNodeAssignmentRight = new node("FunctionExpression");
+		functionDeclarationNodeAssignmentRight.range = methodBodyRange;
+		functionDeclarationNodeAssignmentRight.id = null;
+		if(methodSignatureObject.params == null){
+			functionDeclarationNodeAssignmentRight.params = [];
+		}else{
+			//TODO create and update params variables
+			functionDeclarationNodeAssignmentRight.params = [];
+		}
+		functionDeclarationNodeAssignmentRight.defaults = [];
+		functionDeclarationNodeAssignmentRightBody = new node("BlockStatement");
+		functionDeclarationNodeAssignmentRightBody.range = methodBodyRange;
+		functionDeclarationNodeAssignmentRightBody.body = [];
+		functionDeclarationNodeAssignmentRightBody.body = functionDeclarationNodeAssignmentRightBody.body.concat(methodBodyNodes);
+		functionDeclarationNodeAssignmentRight.body = functionDeclarationNodeAssignmentRightBody;
+		functionDeclarationNodeAssignmentRight.generator = false;
+		functionDeclarationNodeAssignmentRight.expression = false;
+
+		functionDeclarationNodeAssignment.right = functionDeclarationNodeAssignmentRight;
+
+		functionDeclarationNode.expression = functionDeclarationNodeAssignment;
+
+		return functionDeclarationNode;
+	}
+
+	parser.yy.createSimpleClassDeclarationNode = function createClassDeclarationNode(className, classNameRange, classBody, classBodyRange, range){
+		var classNode = new node("ExpressionStatement");
+		classNode.range = range;
+
+		var classNodeExpression = new node("AssignmentExpression");
+		classNodeExpression.range = range;
+		classNodeExpression.operator = '=';
+		classNodeExpression.left = createIdentifierNode(className, classNameRange);
+
+		var classNodeExpressionRight = new node("CallExpression");
+		classNodeExpressionRight.range = range;
+
+		var classNodeExpressionRightCallee = new node("FunctionExpression");
+		classNodeExpressionRightCallee.range = range;
+		classNodeExpressionRightCallee.id = null;
+		classNodeExpressionRightCallee.params = [];
+		classNodeExpressionRightCallee.params.push(createIdentifierNode("superClass",range));
+		classNodeExpressionRightCallee.defaults = [];
+
+		var classNodeExpressionRightCalleeBody = new node("BlockStatement");
+		classNodeExpressionRightCalleeBody.range = classBodyRange;
+		classNodeExpressionRightCalleeBody.body = [];
+
+		//Does the extension
+		var extensionNode = new node("ExpressionStatement");
+		extensionNode.range = range;
+
+		var extensionNodeExpression = new node("CallExpression");
+		extensionNodeExpression.range = range;
+
+		var extensionNodeExpressionCallee = new node("MemberExpression");
+		extensionNodeExpressionCallee.range = range;
+		extensionNodeExpressionCallee.computed = false;
+		extensionNodeExpressionCallee.object = createIdentifierNode("___JavaRuntime", classNameRange);
+		extensionNodeExpressionCallee.property = createIdentifierNode("extend", classNameRange);
+
+		extensionNodeExpression.callee = extensionNodeExpressionCallee;
+
+		extensionNodeExpression.arguments = [];
+		extensionNodeExpression.arguments.push(createIdentifierNode(className, classNameRange));
+		extensionNodeExpression.arguments.push(createIdentifierNode("superClass", classNameRange));
+
+		extensionNode.expression = extensionNodeExpression;
+  
+        classNodeExpressionRightCalleeBody.body.push(extensionNode);
+		//TODO when the class declares the constructor
+		classNodeExpressionRightCalleeBody.body.push(createDefaultConstructorNode(className, classNameRange));
+
+		//Add Methods to the class
+		replaceTemporaryClassWithClassName(classBody, className);
+		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(classBody);
+
+		//Return the class
+		classNodeExpressionRightCalleeBody.body.push(createReturnStatementNode(createIdentifierNode(className, classNameRange), classNameRange));
+
+		classNodeExpressionRightCallee.body = classNodeExpressionRightCalleeBody;
+		classNodeExpressionRightCallee.generator = false;
+		classNodeExpressionRightCallee.expression = false;
+
+		classNodeExpressionRight.callee = classNodeExpressionRightCallee;
+
+		classNodeExpressionRight.arguments = [];
+		classNodeExpressionRight.arguments.push(createIdentifierNode("_Object", classNameRange));
+
+		classNodeExpression.right = classNodeExpressionRight;
+
+		classNode.expression = classNodeExpression;
+		return classNode;
+	}
+
+	var replaceTemporaryClassWithClassName = function replaceTemporaryClassWithClassName(ast, className){
+		for (var k in ast) {
+		    if (typeof ast[k] == "object" && ast[k] !== null) {
+				var node = ast[k];
+				if(node.type !== undefined && node.type == 'Identifier' && node.name == 'TemporaryClassName'){
+					node.name = className;
+				}
+				ast[k] = node;
+				ast[k] = replaceTemporaryClassWithClassName(ast[k], className);
+			}
+		}
+		return ast;
+	}
+
+	var createDefaultConstructorNode = function createDefaultConstructorNode(className, range){
+		var constructorNode = new node("FunctionDeclaration");
+		constructorNode.range = range;
+		constructorNode.id = createIdentifierNode(className, range);
+		constructorNode.params = [];
+		constructorNode.defaults = [];
+
+		var constructorNodeBody = new node("BlockStatement");
+		constructorNodeBody.range = range;
+		constructorNodeBody.body = [];
+
+		var constructorCallNode = new node("CallExpression");
+		constructorCallNode.range = range;
+
+		//creates the Myclass.__super__.constructor.apply(this, arguments)
+		var classNameObjectNode = createIdentifierNode(className, range);
+		var superPropertyNode = createIdentifierNode("__super__", range);
+
+		var superMemberExpression = createMemberExpressionNode(classNameObjectNode, superPropertyNode, range);
+		var constructorPropertyNode = createIdentifierNode("constructor", range);
+
+		var constructorMemberExpression = createMemberExpressionNode(superMemberExpression, constructorPropertyNode, range);
+		var applyPropertyNode = createIdentifierNode("apply", range);
+
+		var constructorCallNodeCallee = createMemberExpressionNode(constructorMemberExpression, applyPropertyNode, range);
+
+		constructorCallNode.callee = constructorCallNodeCallee;
+
+		constructorCallNode.arguments = [];
+
+		var thisExpressionNode = new node("ThisExpression");
+		thisExpressionNode.range = range;
+		constructorCallNode.arguments.push(thisExpressionNode);
+
+		var argumentsNode = createIdentifierNode("arguments", range);
+		constructorCallNode.arguments.push(argumentsNode);
+
+		//Returns the class
+		constructorNodeBody.body.push(createReturnStatementNode(constructorCallNode, range));
+
+		constructorNode.body = constructorNodeBody;
+		constructorNode.generator = false;
+		constructorNode.expression = false;
+		return constructorNode;
 	}
 
 	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode){
@@ -429,7 +653,7 @@ exports.Cashew = function(javaCode){
 		return expressionStatementNode;
 	}
 
-	parser.yy.createReturnStatementNode =  function createReturnStatementNode(expression, range){
+	var createReturnStatementNode = parser.yy.createReturnStatementNode =  function createReturnStatementNode(expression, range){
 		var returnStatementNode = new node("ReturnStatement");
 		returnStatementNode.range = range
 		returnStatementNode.argument = expression;
