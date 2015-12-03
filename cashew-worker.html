@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html>
 <head>
 	<title>Cashew Web Parser</title>
+  <meta charset="utf-8">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      font-size: 18px;
     }
   </style>
   <script src="cashew.js"></script>
   <script src="escodegen.browser.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script>
     (function () {
       var oldLog = console.log;
-      console.log = function (message) {
+      console.log = function(message){
         outputText.value += message + "\n";
         oldLog.apply(console, arguments);
       };
@@ -23,7 +24,7 @@
 
     var Cashew = cashew.Cashew;
 
-    function submitCode () {
+    function submitCode(){
       outputText.value = "";
       var code =document.getElementById('codeArea').value;
       try{
@@ -45,18 +46,20 @@
 
 </head>
 <body>
-	<div><span>Cashew Web Parser </span><button onclick='submitCode()'>Parse it!</button>
-    </div>
-    <textarea id="codeArea" style="border: 1px solid black; width:49%; height:30%;">public class MyClass
-{
-   /** main method */
-   public static void main(String[] args)
-   {
-      System.out.println("Type your code here");
-   }
-}</textarea>
-    <textarea id="jsText" style="border: 1px solid blue; width: 49%; height: 30%; " readonly="true"></textarea>
-    <textarea id="astText" style="border: 1px solid purple; width: 49%; height: 69%; " readonly="true"></textarea>
-    <textarea id="outputText" style="border: 1px solid green; width: 49%; height: 69%; " readonly="true"></textarea>
+	<div>
+    <span>Cashew Web Parser </span><button onclick='submitCode()'>Parse it!</button>
+  </div>
+  <textarea id="codeArea" style="border: 1px solid black; width:49%; height:30%;">public class MyClass
+    {
+       /** main method */
+       public static void main(String[] args)
+       {
+          System.out.println("Type your code here");
+       }
+    }
+  </textarea>
+  <textarea id="jsText" style="border: 1px solid blue; width: 49%; height: 30%; " readonly="true"></textarea>
+  <textarea id="astText" style="border: 1px solid purple; width: 49%; height: 69%; " readonly="true"></textarea>
+  <textarea id="outputText" style="border: 1px solid green; width: 49%; height: 69%; " readonly="true"></textarea>
 </body>
 </html>
