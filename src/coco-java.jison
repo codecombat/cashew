@@ -102,6 +102,7 @@ BSL               "\\".
 
 "null"                return 'NULL_LITERAL';
 
+[A-Z][a-zA-Z0-9_]*   return 'CLASS_IDENTIFIER';
 [a-zA-Z][a-zA-Z0-9_]*   return 'IDENTIFIER'; /* Varying form */
 ({Ds}"."{Ds}?{EXPO}?[fFdD]?|"."{Ds}{EXPO}?[fFdD]?|{Ds}{EXPO}[fFdD]?|{Ds}{EXPO}?[fFdD])/([^\w]|$)   return 'FLOATING_POINT_LITERAL';
 {Ds}[lL]?\b           return 'DECIMAL_INTEGER_LITERAL';
@@ -141,7 +142,7 @@ compilation_unit
     }
   | class_declarations EOF
     {
-     return yy.ast.createRoot($1,@$.range);
+      return yy.ast.createRoot($1,@$.range);
     }
   ;
 
@@ -217,20 +218,32 @@ null_literal
 class_declarations
   : class_declaration
     { 
-      $$ = $1;
+      $$ = [$1];
     }
   | class_declarations class_declaration
     {
+      $1.push($2);
+      $$ = $1;
     }
   ;
 
 class_declaration
-  : 'public' KEYWORD_CLASS IDENTIFIER class_body
+  : 'public' KEYWORD_CLASS CLASS_IDENTIFIER class_body
     { 
+      var bodyNodes = $4;
+      var variables = [];
+      yy._.each(bodyNodes, function(bodyNode){
+        if(bodyNode.type == "VariableDeclaration"){
+          variables.push(bodyNode);
+        }
+      });
+      yy.createUpdateClassVariableReference(variables, $3, bodyNodes);
+      $$ = yy.createSimpleClassDeclarationNode($3, @3.range, bodyNodes, @4.range, @$.range);
+    }
+  | KEYWORD_CLASS class_body CLASS_IDENTIFIER
+    {
       $$ = yy.createSimpleClassDeclarationNode($3, @3.range, $4, @4.range, @$.range);
     }
-  | KEYWORD_CLASS IDENTIFIER class_body
-    {}
   ;
 
 // Modifiers
@@ -296,7 +309,9 @@ class_body_declaration
 
 class_member_declaration
   : field_declaration
-    {}
+    {
+      $$ = $1;
+    }
   | method_declaration
     {
       $$ = $1;
@@ -306,10 +321,14 @@ class_member_declaration
 // Class Member Declarations
 
 field_declaration
-  : type variable_declarators LINE_TERMINATOR
-    {}
-  | modifiers type variable_declarators LINE_TERMINATOR
-    {}
+  : variable_declaration LINE_TERMINATOR
+    {
+      $$ = yy.createFieldVariableNode(null, $1, @$.range);
+    }
+  | modifiers variable_declaration LINE_TERMINATOR
+    {
+      $$ = yy.createFieldVariableNode($1, $2, @$.range);
+    }
   ;
 
 method_declaration
@@ -323,7 +342,19 @@ method_declaration
 
 method_header
   : modifiers type method_declarator
-    {} 
+    {
+      var modifiersText = "";
+      var modifiers = [];
+      _.each($1, function(modifier){
+          modifiersText += (modifier + ' ');
+          modifiers.push(modifier);
+      });
+      var updatedSignature = modifiersText + $2 + " " + $3.methodSignature;
+      $3.methodSignature = updatedSignature;
+      $3.returnType = $2;
+      $3.modifiers = modifiers;
+      $$ = $3;
+    } 
   | modifiers 'void' method_declarator
     { 
       var modifiersText = "";
@@ -361,9 +392,6 @@ method_declarator
       var signature = $1 +  $2 + $3;
       $$ = yy.createMethodSignatureObject($1, signature, null);
     }
-/*
-  | IDENTIFIER LEFT_PAREN type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER RIGHT_PAREN
-    {}*/
   ;
 
 formal_parameter_list
@@ -383,6 +411,15 @@ formal_parameter
     {
       $$ = {'type' : $1, 'paramName' : $2};
     }
+  | type LEFT_BRACKET RIGHT_BRACKET variable_declarator_id
+    {
+      $$ = {'type' : $1 + $2 + $3, 'paramName' : $4};
+    }
+  | type LEFT_BRACKET RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET variable_declarator_id
+    {
+      $$ = {'type' : $1 + $2 + $3 + $4 + $5, 'paramName' : $6};
+    }
+
   ;
 
 method_body
@@ -398,8 +435,9 @@ type
   : primitive_type
     {}
   | STRING_TYPE
+    {} 
+  | CLASS_IDENTIFIER
     {}
-  //TODO User defined type
   ;
 
 primitive_type
@@ -417,7 +455,7 @@ numeric_type
   ;
 
 integral_type
-  : PRIMITIVE_INTEGER
+  : PRIMITIVE_INTEGER 
     {}
   ;
 
@@ -461,7 +499,7 @@ block_statements
   ;
 
 block_statement
-  : local_variable_declaration_statement
+  : variable_declaration_statement
     { 
       $$ = $1;
     }
@@ -471,8 +509,8 @@ block_statement
     }
   ;
 
-local_variable_declaration_statement
-  : local_variable_declaration LINE_TERMINATOR
+variable_declaration_statement
+  : variable_declaration LINE_TERMINATOR
     { 
       $$ = $1;
     }
@@ -626,18 +664,18 @@ post_decrement_expression
 
 // Variable Declarators
 
-local_variable_declaration
+variable_declaration
   : type variable_declarators
     {
       $$ = yy.createVarDeclarationNode($1, $2, @$.range);
     }
   | type LEFT_BRACKET RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET array_declarators
     {
-      $$ = yy.createVarDeclarationNode($1, $6, @$.range);
+      $$ = yy.createVarDeclarationNode($1 + $2 + $3 + $4 + $5, $6, @$.range);
     }
   | type LEFT_BRACKET RIGHT_BRACKET array_declarators
     {
-      $$ = yy.createVarDeclarationNode($1, $4, @$.range);
+      $$ = yy.createVarDeclarationNode($1 + $2 + $3, $4, @$.range);
     }
     /* | modifiers type variable_declarators {}*/
   ;
@@ -1048,7 +1086,7 @@ for_init
     {
       $$ = $1;
     }
-  | local_variable_declaration
+  | variable_declaration
     {
       $$ = $1;
     }

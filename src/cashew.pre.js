@@ -228,12 +228,23 @@ exports.Cashew = function(javaCode){
 		return identifierNode;
 	}
 
-	var createMemberExpressionNode = function createMemberExpression(objectNode, propertyNode, range){
+	var createMemberExpressionNode = function createMemberExpressionNode(objectNode, propertyNode, range){
 		var memberExpressionNode = new node("MemberExpression");
 		memberExpressionNode.range = range;
 		memberExpressionNode.object = objectNode;
 		memberExpressionNode.property = propertyNode;
 		return memberExpressionNode;
+	}
+
+	parser.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
+		_.each(variableNodes, function(variableNode){
+			_.each(variableNode.declarations, function(varNode){
+				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
+					"class", className, "", variableNode.ASTNodeID);
+				findUpdateChildren(block, newVar);
+				variablesDictionary.push(newVar);
+			});
+		});
 	}
 
 	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
@@ -405,6 +416,36 @@ exports.Cashew = function(javaCode){
 
 		classNode.expression = classNodeExpression;
 		return classNode;
+	}
+
+	parser.yy.createFieldVariableNode = function createFieldVariableNode(modifiers, variableDeclarationNode, range){
+		var isPrototype = true;
+		_.each(modifiers, function(modifier){
+			if (modifier == "static"){
+				isPrototype = false;
+			}
+		});
+		_.each(variableDeclarationNode.declarations, function(varNode){
+			if(isPrototype){
+				prototypeClassObject = createMemberExpressionNode(createIdentifierNode("TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
+			}else{
+				prototypeClassObject = createIdentifierNode("TemporaryClassName", [0,0]);
+			}
+			var memberExpressionVar = createMemberExpressionNode(prototypeClassObject, varNode.id, range);
+			if(varNode.init == null){
+				varNode.init = memberExpressionVar;
+			}else{
+				var declarationNodeAssignment = new node("AssignmentExpression");
+				declarationNodeAssignment.range = range;
+				declarationNodeAssignment.operator = '=';
+				declarationNodeAssignment.left = memberExpressionVar;
+				var oldInit = varNode.init;
+				declarationNodeAssignment.right = oldInit;
+				varNode.init = declarationNodeAssignment;
+			}
+		});
+		return variableDeclarationNode;
+
 	}
 
 	var replaceTemporaryClassWithClassName = function replaceTemporaryClassWithClassName(ast, className){
