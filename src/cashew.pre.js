@@ -508,6 +508,17 @@ exports.Cashew = function(javaCode){
 		return constructorNode;
 	}
 
+	parser.yy.createSimpleStaticMethodInvokeNode = function createSimpleStaticMethodInvokeNode(className, classRange, methodName, methodRange, range){
+		var classObjectNode = createIdentifierNode(className, classRange);
+		var propertyNode = createIdentifierNode(methodName, methodRange);
+		var memberExpressionNode = createMemberExpressionNode(classObjectNode, propertyNode, range);
+		var methodInvokeNodeExpression = new node("CallExpression");
+		methodInvokeNodeExpression.range = range;
+		methodInvokeNodeExpression.callee = memberExpressionNode;
+		methodInvokeNodeExpression.arguments = [];
+		return methodInvokeNodeExpression;
+	}
+
 	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode){
 		var assignmentNode = new node("ExpressionStatement");
 		assignmentNode.range = assignmentRange;

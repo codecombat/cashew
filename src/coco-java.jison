@@ -99,6 +99,7 @@ BSL               "\\".
 "*"                   return 'OPERATOR_MULTIPLICATION';
 "/"                   return 'OPERATOR_DIVISON';
 "%"                   return 'OPERATOR_MODULO';
+"."                   return 'OPERATOR_CALL';
 
 "null"                return 'NULL_LITERAL';
 
@@ -638,7 +639,10 @@ statement_expression
     {
       $$ = $1;
     }
-  // TODO method_invocation
+  | property_invocation
+    {
+      $$ = yy.createExpressionStatementNode($1, @$.range);
+    }
   // TODO class_instance_creation_expression
   ;
 
@@ -836,6 +840,10 @@ name
 expression
   : assignment_expression
     { 
+      $$ = $1;
+    }
+  | property_invocation
+    {
       $$ = $1;
     }
   ;
@@ -1045,7 +1053,20 @@ primary
     {
       $$ = $2;
     }
-  //TODO method_invocation
+  ;
+
+property_invocation
+  : static_method_invocation
+    {
+      $$ = $1;
+    }
+  ;
+
+static_method_invocation
+  : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN RIGHT_PAREN 
+    {
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, @$.range);
+    }
   ;
 
 cast_expression
