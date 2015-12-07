@@ -186,7 +186,6 @@ exports.Cashew = function(javaCode){
 			if (typeof ast[k] == "object" && ast[k] !== null) {
 	     		var node = ast[k];
 
-
 				ast[k] = node;
 				ast[k] = findUpdateChildren(ast[k], variable);
 			}
@@ -795,7 +794,7 @@ exports.Cashew = function(javaCode){
 		nodeArray.elements = [];
 
 		// TODO: Validar a expressão que declara o tamanho do array.
-		_(parseInt(size)).times(function(){
+		_.times(parseInt(size),function(){
 			var literal = new node("Literal");
 			literal.value = null;
 			literal.raw = "null";
