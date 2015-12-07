@@ -823,6 +823,14 @@ assignment
       var addExpression = yy.createMathOperation('%', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+    {
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $9, $3, $6);
+    }
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+    {
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
+    }
   // TODO FieldAccess and ArrayAccess  
   ;
 

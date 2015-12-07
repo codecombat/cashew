@@ -257,8 +257,9 @@ exports.Cashew = function(javaCode){
 		return identifierNode;
 	}
 
-	var createMemberExpressionNode = function createMemberExpressionNode(objectNode, propertyNode, range){
+	var createMemberExpressionNode = function createMemberExpressionNode(objectNode, propertyNode, range, computed){
 		var memberExpressionNode = new node("MemberExpression");
+		memberExpressionNode.computed = computed || false;
 		memberExpressionNode.range = range;
 		memberExpressionNode.object = objectNode;
 		memberExpressionNode.property = propertyNode;
@@ -548,7 +549,7 @@ exports.Cashew = function(javaCode){
 		return methodInvokeNodeExpression;
 	}
 
-	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode){
+	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode, index1, index2){
 		var assignmentNode = new node("ExpressionStatement");
 		assignmentNode.range = assignmentRange;
 
@@ -557,8 +558,18 @@ exports.Cashew = function(javaCode){
 		assignmentExpressionNode.operator = '=';
 
 		var varIdentifier = createIdentifierNode(varName, varRange); 
+		var assignmentNodeLeft;
 
-		assignmentExpressionNode.left = varIdentifier;
+		if(index1){
+			assignmentNodeLeft = createMemberExpressionNode(varIdentifier, index1, varRange, true);
+			if(index2){
+				assignmentNodeLeft = createMemberExpressionNode(assignmentNodeLeft, index2, varRange, true);
+			}
+		}else{
+			assignmentNodeLeft = varIdentifier;
+		}
+
+		assignmentExpressionNode.left = assignmentNodeLeft;
 
 		var setNode = new node("CallExpression");
 		setNode.range = assignmentRange;
@@ -566,6 +577,11 @@ exports.Cashew = function(javaCode){
 		setNode.arguments.push(expressionNode);
 		setNode.arguments.push(getArgumentForVariable(varName, varRange));
 		setNode.arguments.push(getArgumentForNumber(assignmentNode.ASTNodeID, assignmentRange));
+		if(index1)
+			setNode.arguments.push(index1);
+		if(index2)
+			setNode.arguments.push(index2);
+		
 		var callee = new node("MemberExpression");
 		callee.range = assignmentRange;
 
@@ -661,13 +677,6 @@ exports.Cashew = function(javaCode){
 		ternaryNode.consequent = consequentExpression;
 		ternaryNode.alternate = alternateExpression;
 		return ternaryNode;
-	}
-
-	parser.yy.createIdentifierNode = function createIdentifierNode(name , range){
-		var identifierNode = new node("Identifier");
-		identifierNode.range = range;
-		identifierNode.name = name;
-		return identifierNode;
 	}
 
 	parser.yy.createVarDeclarationNode = function createVarDeclarationNode(type, declarators, declarationRange){
@@ -1048,12 +1057,12 @@ exports.___JavaRuntime = {
 		print: function(str){
 			console.log(str);
 		},
-		validateSet: function(value, variable, ASTNodeID){
+		validateSet: function(value, variable, ASTNodeID, arrayIndex1, arrayIndex2){
 			if(typeof value === "function")
 				value = value();
 			//Removes the '__' from the variable name
 			var index = parseInt(variable.substring(2));
-			var varType = variablesDictionary[index].type;
+			var varType = (variablesDictionary[index].type.indexOf('[') > 0) ? variablesDictionary[index].type.substring(0,variablesDictionary[index].type.indexOf('[')) : variablesDictionary[index].type;
 			
 			switch (varType){
 				case 'int':
@@ -1063,29 +1072,27 @@ exports.___JavaRuntime = {
 						}
 					}
 					throw new SyntaxError("This is not an int maybe a cast is missing");
-				
 					break;
 				case 'double':
 					if (typeof value === 'number'){
-							return value;
+						return value;
 					}
 					throw new SyntaxError("This is not a double maybe a cast is missing");
 					break;
 				case 'boolean':
 					if (typeof value === 'boolean'){
-							return value;
+						return value;
 					}
 					throw new SyntaxError("This is not a boolean maybe a cast is missing");
 					break;
 				case 'String':
 					if (typeof value === 'string'){
-							return value;
+						return value;
 					}
 					throw new SyntaxError("This is not a String maybe a cast is missing");
 					break;
 				default:
 					break;
-
 			}
 		}
 	},
