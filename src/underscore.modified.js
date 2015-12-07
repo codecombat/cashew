@@ -1231,11 +1231,11 @@
 
   // Define a fallback version of the method in browsers (ahem, IE < 9), where
   // there isn't any inspectable "Arguments" type.
-  if (!_.isArguments(arguments)) {
+  /*if (!_.isArguments(arguments)) {
     _.isArguments = function(obj) {
       return _.has(obj, 'callee');
     };
-  }
+  }*/
 
   // Optimize `isFunction` if appropriate. Work around some typeof bugs in old v8,
   // IE 11 (#1621), and in Safari 8 (#1929).
