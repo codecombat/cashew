@@ -628,6 +628,7 @@ exports.Cashew = function(javaCode){
 		setNode.arguments = [];
 		setNode.arguments.push(expressionNode);
 		setNode.arguments.push(getArgumentForVariable(varName, varRange));
+		setNode.arguments.push(getArgumentForVariable(varName, varRange));
 		setNode.arguments.push(getArgumentForNumber(assignmentNode.ASTNodeID, assignmentRange));
 		if(index1)
 			setNode.arguments.push(index1);
@@ -988,7 +989,6 @@ exports.Cashew = function(javaCode){
 		callee.property = printProperty;
 		callee.computed  = false;
 
-
 		consoleLogNode.callee = callee;
 
 		return consoleLogNode;
@@ -1115,7 +1115,7 @@ exports.___JavaRuntime = {
 			//Removes the '__' from the variable name
 			var index = parseInt(variable.substring(2));
 			var varType = (variablesDictionary[index].type.indexOf('[') > 0) ? variablesDictionary[index].type.substring(0,variablesDictionary[index].type.indexOf('[')) : variablesDictionary[index].type;
-			
+
 			switch (varType){
 				case 'int':
 					if (typeof value === 'number'){

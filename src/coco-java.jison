@@ -844,6 +844,14 @@ name
     { 
       $$ = yy.createIdentifierNode($1, @$.range); 
     }
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET
+    {
+      
+    }
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET
+    {
+
+    }
   ;
 
 // Expressions 
