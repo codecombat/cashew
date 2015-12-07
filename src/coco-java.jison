@@ -377,6 +377,7 @@ method_declarator
     { 
       var signature = $1 +  $2 + $3 + $4 + $5 + " " + $6 + $7;
       $$ = yy.createMethodSignatureObject($1, signature, null);
+      $$.params = [];
     } 
   | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
     {
@@ -387,11 +388,13 @@ method_declarator
       paramList = paramList.trim();
       var signature = $1 + $2 + paramList + $4;
       $$ = yy.createMethodSignatureObject($1, signature, $3);
+      $$.params = $3;
     }
   | IDENTIFIER LEFT_PAREN RIGHT_PAREN
     {
       var signature = $1 +  $2 + $3;
       $$ = yy.createMethodSignatureObject($1, signature, null);
+      $$.params = [];
     }
   ;
 
@@ -402,7 +405,7 @@ formal_parameter_list
     }
   | formal_parameter_list COMMA formal_parameter
     {
-      $1.push($2); 
+      $1.push($3); 
       $$ = $1; 
     }
   ;
@@ -410,15 +413,15 @@ formal_parameter_list
 formal_parameter
   : type variable_declarator_id
     {
-      $$ = {'type' : $1, 'paramName' : $2};
+      $$ = {'type' : $1, 'paramName' : $2, 'range' : @$.range};
     }
   | type LEFT_BRACKET RIGHT_BRACKET variable_declarator_id
     {
-      $$ = {'type' : $1 + $2 + $3, 'paramName' : $4};
+      $$ = {'type' : $1 + $2 + $3, 'paramName' : $4, 'range' : @$.range};
     }
   | type LEFT_BRACKET RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET variable_declarator_id
     {
-      $$ = {'type' : $1 + $2 + $3 + $4 + $5, 'paramName' : $6};
+      $$ = {'type' : $1 + $2 + $3 + $4 + $5, 'paramName' : $6, 'range' : @$.range};
     }
 
   ;
@@ -1066,6 +1069,29 @@ static_method_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN RIGHT_PAREN 
     {
       $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, @$.range);
+    }
+  | CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
+    {
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, $5, @$.range);
+    }
+  ;
+
+parameter_list
+  : parameter
+    {
+      $$ = [$1];
+    }
+  | parameter_list COMMA parameter
+    {
+      $1.push($3); 
+      $$ = $1;
+    }
+  ;
+
+parameter
+  : expression
+    {
+      $$ = $1;
     }
   ;
 
