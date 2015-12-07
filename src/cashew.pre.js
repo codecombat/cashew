@@ -105,33 +105,40 @@ exports.Cashew = function(javaCode){
 	     	var node = ast[k];
 	     	if(node.type !== undefined && node.type === "VariableDeclarator"){
 				if(node.id.name == variable.name){
+					node.javaType = variable.type;
 					node.id.name = "__" + variable.id;
 				}
 			}
 			if(node.type === "LogicalExpression" || node.type === "BinaryExpression"){
 				if(node.left.name == variable.name){
+					node.javaType = variable.type;
 					node.left.name = "__" + variable.id;
 				}
 				if(node.right.name == variable.name){
+					node.javaType = variable.type;
 					node.right.name = "__" + variable.id;
 				}
 			}
 			if( node.type === "SwitchStatement"){
 				if(node.discriminant.type === "Identifier" && node.discriminant.name == variable.name){
+					node.discriminant.javaType = variable.type;
 					node.discriminant.name = "__" + variable.id;
 				}
 			}
 			if(node.type === "UnaryExpression" || node.type === "ReturnStatement"){
 				if(node.argument.type === "Identifier" && node.argument.name == variable.name){
+					node.argument.javaType = variable.type;
 					node.argument.name = "__" + variable.id;
 				}
 			}
 			if(node.type === "CallExpression"){
 				if(node.name == variable.name){
+					node.javaType = variable.type;
 					node.name = "__" + variable.id;	
 				}
 				_.each(node.arguments, function(argNode){
 					if(argNode.type == "Identifier" && argNode.name == variable.name){
+						node.javaType = variable.type;
 						argNode.name = "__" + variable.id;
 					}
 				});
@@ -142,17 +149,26 @@ exports.Cashew = function(javaCode){
 						node.arguments[1].name = undefined;
 
 						node.arguments[1].value = "__" + variable.id;
+						node.arguments[1].javaType = variable.type;
 					}
+				}
+			}
+			if(node.type === "Identifier"){
+				if(node.name == variable.name){
+					node.name = "__" + variable.id;
+					node.javaType = variable.type;
 				}
 			}
 			if(node.type !== undefined && node.type == "AssignmentExpression"){
 
 				if (node.left.name == variable.name){
 					node.left.name = "__" + variable.id;
+					node.left.javaType = variable.type;
 				}
 				_.each(node.right.arguments, function(argNode){
 					if(argNode.type == "Identifier" && argNode.name == variable.name){
 						argNode.name = "__" + variable.id;
+						argNode.javaType = variable.type;
 					}
 				});
 			}
@@ -162,6 +178,20 @@ exports.Cashew = function(javaCode){
 	    }
 	  }
 	  return ast;
+	}
+
+	//This method is going to recursively look for all the references using method calls from this block and bellow it
+	findUpdateMethodCalls = function(ast, returnType) {
+		for (var k in ast) {
+			if (typeof ast[k] == "object" && ast[k] !== null) {
+	     		var node = ast[k];
+
+
+				ast[k] = node;
+				ast[k] = findUpdateChildren(ast[k], variable);
+			}
+		}
+		return ast;
 	}
 	
 	/** AST generation methods and structures **/
