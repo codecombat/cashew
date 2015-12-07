@@ -5,20 +5,18 @@ describe("Runtime: variable declaration and assigment", function() {
     function submitCode () {
         var code ='public class MyClass'
                   + '{' 
-                  +  'public static void main(String[]args)'
-                  +  '{'
-                  +    'int x;' 
-                  +    'x=10;' 
-                  +    'return x;'
-                  +  '}'
+                  +   'public static String output()'
+                  +    '{'
+                  +      'int x = 10;'
+                  +      'return x;' 
+                  +    '}'
                   + '}';
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return MyClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
-     
   it("x should have 10", function() {
     expect(eval(submitCode())).toEqual(10);
   });
@@ -28,7 +26,7 @@ describe("Runtime: Logical operators and if/else", function() {
     function submitCode () {
         var code ='public class LogicalClass'
                   +   '{'
-                  +   'public static void main(String[] args)'
+                  +   'public static String output()'
                   +     '{'
                   +      'boolean testTrue = true;'
                   +      'boolean testFalse = false;'
@@ -42,7 +40,7 @@ describe("Runtime: Logical operators and if/else", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return LogicalClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
      
@@ -57,7 +55,7 @@ describe("Runtime: Math operations", function() {
 
         var code ='public class MathClass'
                    + '{'
-                   +  'public static void main(String[] args)'
+                   +  'public static String output()'
                    + '{'
                    +     'int i1 = 10;'
                    +     'int i2 = 2;'
@@ -72,7 +70,7 @@ describe("Runtime: Math operations", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return MathClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
 
@@ -87,7 +85,7 @@ describe("Runtime: String concatenation", function() {
 
         var code ='public class ConcatenationClass' 
                   + '{' 
-                  +  'public static void main(String[] args)'
+                  +  'public static String output()'
                   +  '{' 
                   +    'String x = "String ";' 
                   +    'String y = "concatenation";' 
@@ -98,7 +96,7 @@ describe("Runtime: String concatenation", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return ConcatenationClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
   it("should print \"correct\"" , function() {
@@ -112,7 +110,7 @@ describe("Runtime: If-else clause", function() {
 
         var code ='public class IfClass' 
                   + '{'
-                  +  'public static void main(String[] args)'
+                  +  'public static String output()'
                   +  '{' 
                   +   'int a = 10;' 
                   +   'if (a == 10)' 
@@ -128,7 +126,7 @@ describe("Runtime: If-else clause", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return IfClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
   it("should print \"correct\"" , function() {
@@ -142,7 +140,7 @@ describe("Runtime: For loop", function() {
 
         var code ="public class ForClass"
                   +"{"
-                  +"   public static void main(String[] args)"
+                  +"   public static String output()"
                   +   "{"
                   +       "int x = 0;"
                   +       "for (int i = 0 ; i < 10; i++ ){"
@@ -154,7 +152,7 @@ describe("Runtime: For loop", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return ForClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
 
@@ -170,7 +168,7 @@ describe("Runtime: While Loop", function() {
 
         var code ='public class WhileClass'
                   + '{'
-                  +   'public static void main(String[] args)'
+                  +   'public static String output()'
                   +   '{'
                   +       'int i = 0;'
                   +       'while(i < 10){'
@@ -182,7 +180,7 @@ describe("Runtime: While Loop", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return WhileClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
 
@@ -197,7 +195,7 @@ describe("Runtime: Two dimensions array", function() {
 
         var code ='public class ArrayClass'
                   + '{'
-                  +   'public static void main(String[] args)'
+                  +   'public static String output()'
                   +   '{'
                   +      'int[][] i = new int[3][2];'
                   +      'i[0][0] = 1;'
@@ -206,17 +204,17 @@ describe("Runtime: Two dimensions array", function() {
                   +      'i[1][1] = 2;'
                   +      'i[2][0] = 3;'
                   +      'i[2][1] = 3;'
-                  +     'System.out.println(i[2][1]);'
+                  +     'return i[2][1];'
                   +   '}'
                   + '}';
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return Array.output();})(cashew.___JavaRuntime);";
         return js;
         }
 
-  xit("i[2][1] should equal 3" , function() {
+  it("i[2][1] should equal 3" , function() {
     expect(eval(submitCode())).toEqual(3);
   });
 });
@@ -227,7 +225,7 @@ describe("Runtime: Ternary If", function() {
 
         var code ='public class TernaryClass'
                   + '{'
-                  +   'public static void main(String[] args)'
+                  +   'public static String output()'
                   +   '{'
                   +        'int i = 100;'
                   +        'i >= 100 ? System.out.println(“Correct”) : System.out.println(“Incorrect”);' 
@@ -236,11 +234,11 @@ describe("Runtime: Ternary If", function() {
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return TernaryClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
 
-  xit("Should print \"Correct\"" , function() {
+  it("Should print \"Correct\"" , function() {
     expect(eval(submitCode())).toEqual("Correct");
   });
 });
@@ -251,23 +249,23 @@ describe("Runtime: Switch", function() {
 
         var code ='public class SwitchClass'
                   + '{'
-                  +   'public static void main(String[] args)'
+                  +   'public static String output()'
                   +   '{'
-                  +      'int i1 = 10;'
+                  +      'int i = 10;'
                   +      'switch(i){'
-                  +         'case 0: System.out.println(\"That is zero\");'
-                  +         'case 1: System.out.println(\"That is one\"); break;'
-                  +         'case default: System.out.println(\"That is not zero nor one\");'
-                  +   '}'
+                  +         'case 0: return "That is zero";'
+                  +         'case 1: return "That is one"; break;'
+                  +         'default: return "That is not zero nor one";'
+                  +   '}}'
                   + '}';
         var Cashew = cashew.Cashew;
         var parsedAST = Cashew(code);
         var js = escodegen.generate(parsedAST);
-        js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
+        js = "(function(___JavaRuntime){" + js + "return SwitchClass.output();})(cashew.___JavaRuntime);";
         return js;
         }
 
-  xit("Should print \"That is not zero nor one\"" , function() {
+  it("Should print \"That is not zero nor one\"" , function() {
     expect(eval(submitCode())).toEqual("That is not zero nor one");
   });
 });
