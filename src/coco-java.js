@@ -218,7 +218,7 @@ break;
 case 35:
  
       var signature = $$[$0-6] +  $$[$0-5] + $$[$0-4] + $$[$0-3] + $$[$0-2] + " " + $$[$0-1] + $$[$0];
-      this.$ = yy.createMethodSignatureObject($$[$0-6], signature, null);
+      this.$ = yy.createMethodSignatureObject($$[$0-6], signature, null, this._$.range);
       this.$.params = [];
     
 break;
@@ -230,14 +230,14 @@ case 36:
       });
       paramList = paramList.trim();
       var signature = $$[$0-3] + $$[$0-2] + paramList + $$[$0];
-      this.$ = yy.createMethodSignatureObject($$[$0-3], signature, $$[$0-1]);
+      this.$ = yy.createMethodSignatureObject($$[$0-3], signature, $$[$0-1], this._$.range);
       this.$.params = $$[$0-1];
     
 break;
 case 37:
 
       var signature = $$[$0-2] +  $$[$0-1] + $$[$0];
-      this.$ = yy.createMethodSignatureObject($$[$0-2], signature, null);
+      this.$ = yy.createMethodSignatureObject($$[$0-2], signature, null, this._$.range);
       this.$.params = [];
     
 break;

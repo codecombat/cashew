@@ -21,9 +21,13 @@
 })(this, function(exports){
 
 var variablesDictionary;
+var methodsDictionary;
+var mainMethodCall;
 
 exports.Cashew = function(javaCode){
 	variablesDictionary = [];
+	methodsDictionary = [];
+	mainMethodCall = undefined;
 	
 	//parser helpers
 	parser.yy._ = _;
@@ -80,17 +84,29 @@ exports.Cashew = function(javaCode){
 	/** AST Variable declaration and validation **/
 
 	var varEntryId = 0;
-	variableEntry = function(varName, varAccess, varType, varScope, varClazz, varMethod, varASTNodeID){
+	variableEntry = function(varName, varAccess, varType, varScope, varClass, varMethod, varASTNodeID){
 		this.id = varEntryId;
     	this.name = varName;
     	this.access = varAccess;
     	this.type = varType;
     	this.scope = varScope;
-    	this.clazz = varClazz;
+    	this.clazz = varClass;
     	this.method = varMethod;
     	this.ASTNodeID = varASTNodeID;
-		this.clazz = varClazz
 		varEntryId += 1;
+	}
+
+	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature, params, range){
+		var methodSignatureObject = {
+			'methodName' : methodIdentifier,
+			'methodSignature' : methodSignature,
+			'range' : range,
+			'returnType' : null,
+			'modifiers' : null,
+			'clazz' : "__TemporaryClassName",
+			'params' : params,
+		}
+		return methodSignatureObject;
 	}
 
 
@@ -213,8 +229,10 @@ exports.Cashew = function(javaCode){
 	     this.rootNode.range = range;
 	     if(node != null){
 	     	this.rootNode.body = this.rootNode.body.concat(node);
-	     	//TODO add "First Main Class" to params
-	     	this.rootNode.body.push(mainClassInvoker(range));
+	     	checkForMainMethod();
+	     	if(mainMethodCall){
+	     		this.rootNode.body.push(mainMethodCall);
+	     	}
 	     }
 
 	     return this.rootNode;
@@ -229,22 +247,25 @@ exports.Cashew = function(javaCode){
 		this.ASTNodeID = ASTNodeID;
 	}
 
-	var mainClassInvoker = function mainClassInvoker(range){
-		//TODO  change this to the first class with main
-	     var expressionNode = new node("ExpressionStatement");
-	     expressionNode.range = range;
+	var checkForMainMethod = function checkForMainMethod(){
+		_.each(methodsDictionary, function(methodsEntry){
+			if(methodsEntry.methodName == "main"){
+				var expressionNode = new node("ExpressionStatement");
+			     expressionNode.range = methodsEntry.range;
 
-	     var expressionNodeExpression = new node("CallExpression");
-	     expressionNodeExpression.range = range;
+			     var expressionNodeExpression = new node("CallExpression");
+			     expressionNodeExpression.range = methodsEntry.range;
 
-	     var myClassIndentifier = createIdentifierNode("MyClass", range);
-	     var mainIdentifierProperty = createIdentifierNode("main", range);
-	     expressionNodeExpression.callee = createMemberExpressionNode(myClassIndentifier, mainIdentifierProperty, range);
+			     var myClassIndentifier = createIdentifierNode(methodsEntry.clazz, methodsEntry.range);
+			     var mainIdentifierProperty = createIdentifierNode("main", methodsEntry.range);
+			     expressionNodeExpression.callee = createMemberExpressionNode(myClassIndentifier, mainIdentifierProperty, methodsEntry.range);
 
-	     expressionNodeExpression.arguments = [];
+			     expressionNodeExpression.arguments = [];
 
-	     expressionNode.expression = expressionNodeExpression;
-	     return expressionNode;
+			     expressionNode.expression = expressionNodeExpression;
+			     mainMethodCall = expressionNode;
+			}
+		});
 	}
 
 	var createLiteralNode = parser.yy.createLiteralNode = function createLiteralNode(value, raw, range){
@@ -311,17 +332,6 @@ exports.Cashew = function(javaCode){
 		});
 	}
 
-	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature, params){
-		var methodSignatureObject = {
-			'methodName' : methodIdentifier,
-			'methodSignature' : methodSignature,
-			'returnType' : null,
-			'modifiers' : null,
-			'params' : params,
-		}
-		return methodSignatureObject;
-	}
-
 	parser.yy.createMethodDeclarationNode = function createMethodDeclarationNode(methodSignatureObject, headerRange, methodBodyNodes, methodBodyRange, range){
 		if(methodSignatureObject.returnType == 'void'){
 			_.each(methodBodyNodes , function(bodyNode){
@@ -344,6 +354,7 @@ exports.Cashew = function(javaCode){
 			}
 		});
 
+		methodsDictionary.push(methodSignatureObject);
 		var functionDeclarationNode = new node("ExpressionStatement");
 		functionDeclarationNode.range = range;
 
@@ -353,9 +364,9 @@ exports.Cashew = function(javaCode){
 
 		var functionDeclarationNodeAssignmentLeftObject;
 		if(isStatic){
-			functionDeclarationNodeAssignmentLeftObject = createMemberExpressionNode(createIdentifierNode("TemporaryClassName", [0,0]), createIdentifierNode("prototype", headerRange), headerRange);
+			functionDeclarationNodeAssignmentLeftObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", headerRange), headerRange);
 		}else{
-			functionDeclarationNodeAssignmentLeftObject = createIdentifierNode("TemporaryClassName", [0,0]);
+			functionDeclarationNodeAssignmentLeftObject = createIdentifierNode("__TemporaryClassName", [0,0]);
 		}
 
 		var functionDeclarationNodeAssignmentLeft;
@@ -448,6 +459,11 @@ exports.Cashew = function(javaCode){
 
 		//Add Methods to the class
 		replaceTemporaryClassWithClassName(classBody, className);
+		_.each(methodsDictionary, function(methodSignature){
+			if(methodSignature.clazz == "__TemporaryClassName"){
+				methodSignature.clazz = className;
+			}
+		});
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(classBody);
 
 		//Return the class
@@ -485,9 +501,9 @@ exports.Cashew = function(javaCode){
 		_.each(variableDeclarationNode.declarations, function(varNode){
 			var prototypeClassObject;
 			if(isStatic){
-				prototypeClassObject = createMemberExpressionNode(createIdentifierNode("TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
+				prototypeClassObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
 			}else{
-				prototypeClassObject = createIdentifierNode("TemporaryClassName", [0,0]);
+				prototypeClassObject = createIdentifierNode("__TemporaryClassName", [0,0]);
 			}
 			var memberExpressionVar;
 			if(isPrivate){
@@ -516,7 +532,7 @@ exports.Cashew = function(javaCode){
 		for (var k in ast) {
 		    if (typeof ast[k] == "object" && ast[k] !== null) {
 				var node = ast[k];
-				if(node.type !== undefined && node.type == 'Identifier' && node.name == 'TemporaryClassName'){
+				if(node.type !== undefined && node.type == 'Identifier' && node.name == '__TemporaryClassName'){
 					node.name = className;
 				}
 				ast[k] = node;

@@ -376,7 +376,7 @@ method_declarator
   : 'main' LEFT_PAREN STRING_TYPE LEFT_BRACKET RIGHT_BRACKET IDENTIFIER  RIGHT_PAREN
     { 
       var signature = $1 +  $2 + $3 + $4 + $5 + " " + $6 + $7;
-      $$ = yy.createMethodSignatureObject($1, signature, null);
+      $$ = yy.createMethodSignatureObject($1, signature, null, @$.range);
       $$.params = [];
     } 
   | IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN
@@ -387,13 +387,13 @@ method_declarator
       });
       paramList = paramList.trim();
       var signature = $1 + $2 + paramList + $4;
-      $$ = yy.createMethodSignatureObject($1, signature, $3);
+      $$ = yy.createMethodSignatureObject($1, signature, $3, @$.range);
       $$.params = $3;
     }
   | IDENTIFIER LEFT_PAREN RIGHT_PAREN
     {
       var signature = $1 +  $2 + $3;
-      $$ = yy.createMethodSignatureObject($1, signature, null);
+      $$ = yy.createMethodSignatureObject($1, signature, null, @$.range);
       $$.params = [];
     }
   ;
