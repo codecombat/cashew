@@ -868,8 +868,8 @@ exports.Cashew = function(javaCode){
 	parser.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp){
 		var nodeArray = new node("ArrayExpression");
 		nodeArray.elements = [];
-		_.each(nodesExp, function(n, i){
-			var literal = createArrayWithNullInitialization(n);
+		_.times(nodesExp[0].value, function(){
+			var literal = createArrayWithNullInitialization(nodesExp[1]);
 			nodeArray.elements.push(literal);
 		});
 		return nodeArray;
