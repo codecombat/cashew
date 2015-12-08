@@ -286,6 +286,13 @@ exports.Cashew = function(javaCode){
 		identifierNode.name = name;
 		return identifierNode;
 	}
+	var createArrayIdentifierNode = parser.yy.createArrayIdentifierNode = function createArrayIdentifierNode(varName, varRange, index1Node, index1Range, index2Node, index2Range, range){
+		var identifierNode = createMemberExpressionNode(createIdentifierNode(varName, varRange), index1Node, index1Range, true);
+		if(index2Node){
+			identifierNode = createMemberExpressionNode(identifierNode, index2Node, index2Range, true);
+		}
+		return identifierNode;
+	}
 
 	var createMemberExpressionNode = function createMemberExpressionNode(objectNode, propertyNode, range, computed){
 		var memberExpressionNode = new node("MemberExpression");
@@ -1104,7 +1111,7 @@ exports.___JavaRuntime = {
 			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = variablesDictionary[index].type.replace('[','').replace(']', '');
+			var varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\[/g,'');
 			if(arrayIndex1){
 				if(typeof arrayIndex1 === "function")
 					arrayIndex1 = arrayIndex1();

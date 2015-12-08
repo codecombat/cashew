@@ -850,11 +850,11 @@ name
     }
   | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET
     {
-
+      $$ = yy.createArrayIdentifierNode($1, @1.range, $3, @3.range, $6, @6.range, @$.range);
     }
   | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET
     {
-
+      $$ = yy.createArrayIdentifierNode($1, @1.range, $3, @3.range, null, null, @$.range);
     }
   ;
 
@@ -1092,7 +1092,7 @@ property_invocation
 static_method_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN RIGHT_PAREN 
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, @$.range);
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, [], @$.range);
     }
   | CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
     {

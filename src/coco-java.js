@@ -407,7 +407,7 @@ case 103:
       this.$ = yy.createArrayWithNullInitialization($$[$0-1]);
     
 break;
-case 104: case 105: case 106: case 116: case 117:
+case 104: case 105: case 106:
 
 
     
@@ -467,6 +467,16 @@ case 115:
       this.$ = yy.createIdentifierNode($$[$0], this._$.range); 
     
 break;
+case 116:
+
+      this.$ = yy.createArrayIdentifierNode($$[$0-6], _$[$0-6].range, $$[$0-4], _$[$0-4].range, $$[$0-1], _$[$0-1].range, this._$.range);
+    
+break;
+case 117:
+
+      this.$ = yy.createArrayIdentifierNode($$[$0-3], _$[$0-3].range, $$[$0-1], _$[$0-1].range, null, null, this._$.range);
+    
+break;
 case 122: case 126: case 128: case 130: case 132: case 134: case 137: case 142: case 146: case 153: case 158:
  
       this.$ = $$[$0]; 
@@ -499,7 +509,7 @@ case 154: case 155: case 156:
 break;
 case 163:
 
-      this.$ = yy.createSimpleStaticMethodInvokeNode($$[$0-4], _$[$0-4].range, $$[$0-2], _$[$0-2].range, this._$.range);
+      this.$ = yy.createSimpleStaticMethodInvokeNode($$[$0-4], _$[$0-4].range, $$[$0-2], _$[$0-2].range, [], this._$.range);
     
 break;
 case 164:
