@@ -106,7 +106,7 @@ BSL               "\\".
 [A-Z][a-zA-Z0-9_]*   return 'CLASS_IDENTIFIER';
 [a-zA-Z][a-zA-Z0-9_]*   return 'IDENTIFIER'; /* Varying form */
 ({Ds}"."{Ds}?{EXPO}?[fFdD]?|"."{Ds}{EXPO}?[fFdD]?|{Ds}{EXPO}[fFdD]?|{Ds}{EXPO}?[fFdD])/([^\w]|$)   return 'FLOATING_POINT_LITERAL';
-{Ds}[lL]?\b           return 'DECIMAL_INTEGER_LITERAL';
+{Ds}          return 'DECIMAL_INTEGER_LITERAL';
 "\"\""                return 'STRING_LITERAL';
 "\""([^"]|{BSL})*"\"" return 'STRING_LITERAL';
 "."                   return 'SEPARATOR_DOT';
@@ -547,7 +547,9 @@ statement
 
 statement_without_trailing_substatement
   : block
-    {}
+    {
+      $$ = $1;
+    }
   | empty_statement
     { 
       $$ = $1;
@@ -561,7 +563,9 @@ statement_without_trailing_substatement
       $$ = $1;
     }
   | switch_statement
-    {}
+    {
+      $$ = $1;
+    }
   | do_statement
     {
       $$ = $1;
@@ -846,11 +850,11 @@ name
     }
   | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET
     {
-      
+      $$ = yy.createArrayIdentifierNode($1, @1.range, $3, @3.range, $6, @6.range, @$.range);
     }
   | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET
     {
-
+      $$ = yy.createArrayIdentifierNode($1, @1.range, $3, @3.range, null, null, @$.range);
     }
   ;
 
@@ -1040,6 +1044,10 @@ unary_expression
     { 
       $$ = $1; 
     }
+  | OPERATOR_SUBTRACTION unary_expression
+    {
+      $$ = yy.createUnaryExpression($1, $2, @$.range);
+    }
   | OPERATOR_BITWISE_NEGATION unary_expression
     {
       $$ = yy.createUnaryExpression($1, $2, @$.range);
@@ -1084,7 +1092,7 @@ property_invocation
 static_method_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN RIGHT_PAREN 
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, @$.range);
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, [], @$.range);
     }
   | CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
     {

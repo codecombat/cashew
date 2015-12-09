@@ -13,11 +13,17 @@ This is a work in progress please do not rely on this for production usage
 
 ## Using Cashew
 
-Cashew ("cashew.js" file) is the Java transpiller. To run it simply serve the html and js files or install it using "npm install cashew-js". Cashew provides a runtime "___JavaRuntime" used by the transpilled code to run. The parser is right now only able to run code from the "main method" inside a public "MyClass" please refer to the live demo to examples.
+Cashew ("cashew.js" file) is the Java transpiller. To run it simply serve the html and js files or install it using "npm install cashew-js". 
+then call function "Cashew" with the code as parameter.
+
+    var cashew  = require('cashew-js');
+    var ast = cashew.Cashew(stringCode);
+
+Cashew provides a runtime "___JavaRuntime" with functions used by the transpilled code to run. The parser will automatically include the call of the "main method" from the first class of the code. 
 
 ### How cashew works?
 Cashew uses [jison](http://zaach.github.io/jison/)  to transpile Java code into JavaScript. The grammar used by cashew is "coco-java.jison" (read more about jison grammars [here](http://zaach.github.io/jison/docs/#specifying-a-language) ).
-You can also find the compiled parser in the coco-java.js file and more details about it.
+You can also find the compiled parser in the coco-java.js file and more details about it. Cashew use a embeded version of [UNDERSCORE](http://underscorejs.org/)  to do some tricks with the ast nodes.
 
 
 Cashew web uses [ESCODEGEN](https://github.com/estools/escodegen) in the web interface to generate the JavaScript code from the AST produced by the parser.
