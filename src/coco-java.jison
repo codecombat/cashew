@@ -287,6 +287,10 @@ class_body
     {
       $$ = $2;
     }
+  | EMBRACE UNBRACE
+    {
+      $$ = [];
+    }
   ;
 
 class_body_declarations

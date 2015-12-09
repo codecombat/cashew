@@ -994,11 +994,40 @@ exports.Cashew = function(javaCode){
 	return ast;
 }
 
-exports.wrapFunction = function(ast){
+exports.wrapFunction = wrapFunction = function(ast, className, staticCall){
 	node = function(type){
 		this.type = type;
 	}
 	astBody = ast.body;
+
+	//check if there's a different static call other than the main
+	if(className && staticCall){
+		var staticCallNode = new node("ReturnStatement");
+
+	    var staticCallNodeExpression = new node("CallExpression");
+
+	    var myClassIndentifier = new node("Identifier");
+			myClassIndentifier.name = className;
+	    var staticCallProperty = new node("Identifier");
+			staticCallProperty.name = staticCall;
+
+		var staticCallCalee = new node("MemberExpression");
+			staticCallCalee.computed = false;
+			staticCallCalee.object = myClassIndentifier;
+			staticCallCalee.property = staticCallProperty;
+
+	    staticCallNodeExpression.callee = staticCallCalee;
+
+	    staticCallNodeExpression.arguments = [];
+
+	    staticCallNode.argument = staticCallNodeExpression;
+	    astBody.push(staticCallNode);
+	}else if(astBody[astBody.length-1].expression.type === "CallExpression"){
+		// transform the static call into return that same static call
+		var staticCallNode = new node("ReturnStatement");
+		staticCallNode.argument = astBody[astBody.length-1].expression;
+		astBody[astBody.length-1] = staticCallNode
+	}
 
 	fooFunctNode = new node("FunctionDeclaration")
 	fooId = new node("Identifier");
