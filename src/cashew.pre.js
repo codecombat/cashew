@@ -76,6 +76,10 @@ exports.Cashew = function(javaCode){
 		return createIdentifierNode(name, range);
 	}
 
+	getNullArgument = function(){
+		return createLiteralNode(null, "null", [0,0]);
+	}
+
 	getArgumentForNumber = function(number, range){
 		return createLiteralNode(number, number, range);
 
@@ -280,6 +284,13 @@ exports.Cashew = function(javaCode){
 		var identifierNode = new node("Identifier");
 		identifierNode.range = range;
 		identifierNode.name = name;
+		return identifierNode;
+	}
+	var createArrayIdentifierNode = parser.yy.createArrayIdentifierNode = function createArrayIdentifierNode(varName, varRange, index1Node, index1Range, index2Node, index2Range, range){
+		var identifierNode = createMemberExpressionNode(createIdentifierNode(varName, varRange), index1Node, index1Range, true);
+		if(index2Node){
+			identifierNode = createMemberExpressionNode(identifierNode, index2Node, index2Range, true);
+		}
 		return identifierNode;
 	}
 
@@ -623,30 +634,7 @@ exports.Cashew = function(javaCode){
 
 		assignmentExpressionNode.left = assignmentNodeLeft;
 
-		var setNode = new node("CallExpression");
-		setNode.range = assignmentRange;
-		setNode.arguments = [];
-		setNode.arguments.push(expressionNode);
-		setNode.arguments.push(getArgumentForVariable(varName, varRange));
-		setNode.arguments.push(getArgumentForNumber(assignmentNode.ASTNodeID, assignmentRange));
-		if(index1)
-			setNode.arguments.push(index1);
-		if(index2)
-			setNode.arguments.push(index2);
-		
-		var callee = new node("MemberExpression");
-		callee.range = assignmentRange;
-
-		var functions = getRuntimeFunctions(assignmentRange);
-
-		var setProperty = createIdentifierNode("validateSet", assignmentRange);
-
-		callee.object = functions;
-		callee.property = setProperty;
-		callee.computed  = false;
-
-
-		setNode.callee = callee;
+		var setNode = createRuntimeValidateSet(varName, varRange, expressionNode, index1, index2, assignmentRange);
 
 		assignmentExpressionNode.right = setNode;
 
@@ -762,28 +750,36 @@ exports.Cashew = function(javaCode){
 
 		varDeclaratorNode.id = idNode;
 
-		var initNode = new node("CallExpression");
-		initNode.range = assignmentRange;
-		initNode.arguments = [];
-		initNode.arguments.push(assignment);
-		initNode.arguments.push(getArgumentForVariable(varName, varRange));
-		initNode.arguments.push(getArgumentForNumber(assignment.ASTNodeID, assignmentRange));
-		var callee = new node("MemberExpression");
-		callee.range = assignmentRange;
-
-		var functions = getRuntimeFunctions(assignmentRange);
-
-		var initProperty = createIdentifierNode("validateSet", assignmentRange);
-
-		callee.object = functions;
-		callee.property = initProperty;
-		callee.computed  = false;
-
-		initNode.callee = callee;
+		var initNode = createRuntimeValidateSet(varName, varRange, assignment, null, null, assignmentRange);
 
 		varDeclaratorNode.init = initNode;
 
 		return varDeclaratorNode;
+	}
+
+	var createRuntimeValidateSet = function createRuntimeValidateSet(varName, varRange, assignment, index1, index2, range){
+		var initNode = new node("CallExpression");
+		initNode.range = range;
+		initNode.arguments = [];
+		initNode.arguments.push(assignment);
+		initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		if(index1){
+			initNode.arguments.push(index1);
+		}else{
+			initNode.arguments.push(getNullArgument());
+		}
+		if(index2){
+			initNode.arguments.push(index2);
+		}else{
+			initNode.arguments.push(getNullArgument());
+		}
+		initNode.arguments.push(getArgumentForNumber(assignment.ASTNodeID, range));
+		
+		var callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("validateSet", range), range, false);
+
+		initNode.callee = callee;
+		return initNode;
 	}
 
 	parser.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
@@ -867,8 +863,8 @@ exports.Cashew = function(javaCode){
 	parser.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp){
 		var nodeArray = new node("ArrayExpression");
 		nodeArray.elements = [];
-		_.each(nodesExp, function(n, i){
-			var literal = createArrayWithNullInitialization(n);
+		_.times(nodesExp[0].value, function(){
+			var literal = createArrayWithNullInitialization(nodesExp[1]);
 			nodeArray.elements.push(literal);
 		});
 		return nodeArray;
@@ -987,7 +983,6 @@ exports.Cashew = function(javaCode){
 		callee.object = functions;
 		callee.property = printProperty;
 		callee.computed  = false;
-
 
 		consoleLogNode.callee = callee;
 
@@ -1109,14 +1104,38 @@ exports.___JavaRuntime = {
 		print: function(str){
 			console.log(str);
 		},
-		validateSet: function(value, variable, ASTNodeID, arrayIndex1, arrayIndex2){
+		validateSet: function(value, variableName, variable, arrayIndex1, arrayIndex2, ASTNodeID){
 			if(typeof value === "function")
 				value = value();
-			//Removes the '__' from the variable name
-			var index = parseInt(variable.substring(2));
-			var varType = (variablesDictionary[index].type.indexOf('[') > 0) ? variablesDictionary[index].type.substring(0,variablesDictionary[index].type.indexOf('[')) : variablesDictionary[index].type;
 			
-			switch (varType){
+			
+			//Removes the '__' from the variable name
+			var index = parseInt(variableName.substring(2));
+			var varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\[/g,'');
+			if(arrayIndex1){
+				if(typeof arrayIndex1 === "function")
+					arrayIndex1 = arrayIndex1();
+				if(typeof arrayIndex1 != 'number' || arrayIndex1 % 1 !== 0){
+					throw new SyntaxError("Array index must be an integer");
+				}else if(variable.constructor !== Array){
+					throw new SyntaxError("Incompatible types");
+				}else if(arrayIndex1 < 0 || arrayIndex1 >= variable.length){
+					throw new SyntaxError("Array index out of bounds");
+				}
+			}
+			if(arrayIndex2){
+				if(typeof arrayIndex2 === "function")
+					arrayIndex2 = arrayIndex2();
+				if(typeof arrayIndex2 != 'number' || arrayIndex2 % 1 !== 0){
+					throw new SyntaxError("Array index must be an integer");
+				}else if(variable.constructor !== Array){
+					throw new SyntaxError("Incompatible types");
+				}else if(arrayIndex2 < 0 || arrayIndex2 >= variable[arrayIndex1].length){
+					throw new SyntaxError("Array index out of bounds");
+				}
+			}
+
+			switch (varRawType){
 				case 'int':
 					if (typeof value === 'number'){
 						if (value % 1 === 0){

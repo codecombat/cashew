@@ -10,14 +10,35 @@
       height: 100%;
     }
     textarea { font-size: 18px; }
+    #codeArea, #jsText, #astText, #outputText { 
+      width: 45%;
+      height: 45%;
+      padding: 10px 15px; 
+      font-size: 16px;
+      margin: 13px;
+      border: 1px solid silver;
+      display: inline-block;
+      overflow: scroll;
+    }
+    .btn-parser {
+      padding: 10px 25px;
+      background-color: #E6DB74;
+      font-size: 16px;
+      border: none;
+      position: absolute;
+      left: 40%;
+      top: 44%;
+      z-index: 9;
+    }
   </style>
+
   <script src="cashew.js"></script>
   <script src="escodegen.browser.js"></script>
 	<script>
-    (function () {
+    (function() {
       var oldLog = console.log;
       console.log = function(message){
-        outputText.value += message + "\n";
+        outputText.innerHTML = message;
         oldLog.apply(console, arguments);
       };
     })();
@@ -25,41 +46,70 @@
     var Cashew = cashew.Cashew;
 
     function submitCode(){
-      outputText.value = "";
-      var code =document.getElementById('codeArea').value;
-      try{
+      var code = editor.getValue();
+
+      try {
         var ast = Cashew(code);
-        //Display the AST text
-        astText.value = JSON.stringify(ast, null, 2);
-         //Generate and display the JS code
+        // Display the AST text
+        astHigh.setValue(JSON.stringify(ast, null, 2));
+        astHigh.gotoLine(1);
+
+        // Generate and display the JS code
         var js = escodegen.generate(ast);
         js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
-        jsText.value = js;
+        jseditor.setValue(js);
+        jseditor.gotoLine(1);
 
-        //Execute the transpiled code
+        // Execute the transpiled code
         eval(js);
-      }catch(err){
-        astText.value = err;
+      } catch(err){
+        console.log(err);
+        jseditor.setValue('');
+        astHigh.setValue('');
       }
     }     
 	</script>
 
 </head>
 <body>
-	<div>
-    <span>Cashew Web Parser </span><button onclick='submitCode()'>Parse it!</button>
-  </div>
-  <textarea id="codeArea" style="border: 1px solid black; width:49%; height:30%;">public class MyClass
+  <button class="btn-parser" onclick='submitCode()'>Parse it!</button>
+  <div id="codeArea">
+  public class MyClass {
+    /** main method */
+    public static void main(String[] args)
     {
-       /** main method */
-       public static void main(String[] args)
-       {
-          System.out.println("Type your code here");
-       }
+      System.out.println("Type your code here");
     }
-  </textarea>
-  <textarea id="jsText" style="border: 1px solid blue; width: 49%; height: 30%; " readonly="true"></textarea>
-  <textarea id="astText" style="border: 1px solid purple; width: 49%; height: 69%; " readonly="true"></textarea>
-  <textarea id="outputText" style="border: 1px solid green; width: 49%; height: 69%; " readonly="true"></textarea>
+  }
+  </div>
+  <pre id="jsText"></pre>
+  <pre id="astText"></pre>
+  <pre id="outputText"></pre>
+
+  <script type="text/javascript" src="vendor/ace.js"></script>
+  <script type="text/javascript">
+    var editor = ace.edit("codeArea");
+    editor.setTheme("ace/theme/github");
+    editor.getSession().setTabSize(2);
+    editor.getSession().setMode("ace/mode/java");
+
+    var jseditor = ace.edit("jsText");
+    jseditor.setTheme("ace/theme/textmate");
+    jseditor.getSession().setTabSize(2);
+    jseditor.getSession().setMode("ace/mode/javascript");
+    jseditor.setHighlightActiveLine(false);
+    jseditor.setOption('showGutter', false);
+    jseditor.setReadOnly(true);
+    jseditor.$blockScrolling = Infinity;
+
+    var astHigh = ace.edit("astText");
+    astHigh.setTheme("ace/theme/github");
+    astHigh.getSession().setTabSize(2);
+    astHigh.getSession().setMode("ace/mode/json");
+    astHigh.setHighlightActiveLine(false);
+    astHigh.setOption('showGutter', false);
+    astHigh.setReadOnly(true);
+    astHigh.$blockScrolling = Infinity;
+  </script>
 </body>
 </html>
