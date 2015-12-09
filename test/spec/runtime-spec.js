@@ -228,7 +228,7 @@ describe("Runtime: Ternary If", function() {
                   +   'public static String output()'
                   +   '{'
                   +        'int i = 100;'
-                  +        'i >= 100 ? return Correct" : return "Incorrect";' 
+                  +        'i >= 100 ? return "Correct" : return "Incorrect";' 
                   +   '}'
                   + '}';
         var Cashew = cashew.Cashew;
