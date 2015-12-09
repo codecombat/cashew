@@ -47,25 +47,25 @@
 
     function submitCode(){
       var code = editor.getValue();
-      //document.getElementById('codeArea').value;
+
       try {
         var ast = Cashew(code);
-        //Display the AST text
+        // Display the AST text
         astHigh.setValue(JSON.stringify(ast, null, 2));
         astHigh.gotoLine(1);
 
-         //Generate and display the JS code
+        // Generate and display the JS code
         var js = escodegen.generate(ast);
         js = "(function(___JavaRuntime){" + js + "})(cashew.___JavaRuntime);";
-        
-        // jsText.innerHTML = js;
         jseditor.setValue(js);
         jseditor.gotoLine(1);
 
-        //Execute the transpiled code
+        // Execute the transpiled code
         eval(js);
       } catch(err){
-        astText.innerHTML = err;
+        console.log(err);
+        jseditor.setValue('');
+        astHigh.setValue('');
       }
     }     
 	</script>
@@ -100,6 +100,7 @@
     jseditor.setHighlightActiveLine(false);
     jseditor.setOption('showGutter', false);
     jseditor.setReadOnly(true);
+    jseditor.$blockScrolling = Infinity;
 
     var astHigh = ace.edit("astText");
     astHigh.setTheme("ace/theme/github");
@@ -108,6 +109,7 @@
     astHigh.setHighlightActiveLine(false);
     astHigh.setOption('showGutter', false);
     astHigh.setReadOnly(true);
+    astHigh.$blockScrolling = Infinity;
   </script>
 </body>
 </html>
