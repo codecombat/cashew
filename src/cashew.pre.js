@@ -855,31 +855,78 @@ exports.Cashew = function(javaCode){
 		return nullArray;
 	}
 
-	var createArrayWithNullInitialization = parser.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp){
+	var createArrayWithNullInitialization = parser.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
 		var nodeArray = new node("ArrayExpression")
 			, size = nodeExp.value || 0;
+		nodeArray.range = range;	
 		nodeArray.elements = [];
 
 		// TODO: Validar a expressão que declara o tamanho do array.
 		_.times(parseInt(size),function(){
-			var literal = new node("Literal");
-			literal.value = null;
-			literal.raw = "null";
+			var literal = getNullArgument();
 			nodeArray.elements.push(literal);
 		});
 		return nodeArray;
 	}
 
-	parser.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp){
+	parser.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp, range){
 		var nodeArray = new node("ArrayExpression");
+		nodeArray.range = range;
 		nodeArray.elements = [];
 		_.times(nodesExp[0].value, function(){
 			if(nodesExp[1]){
-				var literal = createArrayWithNullInitialization(nodesExp[1]);
+				var literal = createArrayWithNullInitialization(nodesExp[1],range);
 			}
 			nodeArray.elements.push(literal);
 		});
 		return nodeArray;
+	}
+
+	var createArrayWithInitialization = parser.yy.createArrayWithInitialization = function createArrayWithInitialization(values, range){
+		var nodeArray = new node("ArrayExpression")
+			, size = values.length;
+		nodeArray.range = range;	
+		nodeArray.elements = [];
+
+		for (var i = 0; i < values.length; i++) {
+			if(values[i].constructor == Array){
+				nodeArray.elements.push(createArrayWithInitialization(values[i],range));
+			}else{
+				nodeArray.elements.push(values[i]);
+			}
+		};
+		return nodeArray;
+	}
+
+	parser.yy.validateDeclaratorsDimension = function validateDeclaratorsDimension(declaratorNodes, type){
+		_.each(declaratorNodes, function(declaratorNode){
+			if(declaratorNode.init.elements.length > 0 && declaratorNode.init.elements[0].type == "ArrayExpression"){
+				throw TypeError("Invalid type for " + type);
+			}
+		});
+	}
+
+	parser.yy.createArrayFromInitialArray = function createArrayFromInitialArray(arrays, range){
+		//determine if it's 1 or 2 dimension and validates if it's more than 2 dimension
+		var dimensions = 1;
+		for (var i = 0; i < arrays.length; i++) {
+			if(arrays[i].constructor == Array){
+				dimensions = 2;
+			}
+		}
+		if(dimensions == 2){
+			for (var i = 0; i < arrays.length; i++) {
+				if(arrays[i].constructor != Array){
+					throw SyntaxError("Incompatible types on array");
+				}
+				for(var j = 0; j < arrays[i].length; j++){
+					if(arrays[i][j].constructor == Array){
+						throw SyntaxError("More than 2-dimension arrays are not supported");
+					}
+				}
+			}
+		}
+		return createArrayWithInitialization(arrays, range);
 	}
 
 	parser.yy.createSwitchNode = function createSwitchNode(discriminant, cases, range){

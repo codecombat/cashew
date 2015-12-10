@@ -32,6 +32,7 @@ BSL               "\\".
 ";"                   return 'LINE_TERMINATOR';
 
 "System.out.println"  return "SYSOUT";
+"System.out.print"  return "SYSOUT";
 "sysout"              return "SYSOUT";
 
 
@@ -717,9 +718,9 @@ variable_declaration
     }
   | type LEFT_BRACKET RIGHT_BRACKET array_declarators
     {
+      yy.validateDeclaratorsDimension($4, $1);
       $$ = yy.createVarDeclarationNode($1 + $2 + $3, $4, @$.range);
     }
-    /* | modifiers type variable_declarators {}*/
   ;
 
 variable_declarators
@@ -802,30 +803,38 @@ array_initializer
 array_expression
   : KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET
     {
-      $$ = yy.createTwoDimensionalArray([$4, $7]);
-    }
-  | KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET
-    {
-      $$ = yy.createTwoDimensionalArray([$4, null]);
+      $$ = yy.createTwoDimensionalArray([$4, $7], @$.range);
     }
   | KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET 
     {
-      $$ = yy.createArrayWithNullInitialization($4);
+      $$ = yy.createArrayWithNullInitialization($4, @$.range);
     }
-  | EMBRACE primary_list UNBRACE
+  | EMBRACE primary_expression_list UNBRACE
     {
-
+      $$ = yy.createArrayFromInitialArray($2, @$.range);
     }
   ;
 
-primary_list
-  : primary 
+primary_expression_list
+  : primary_expression_value
     {
-
+      $$ = [$1];
     }
-  | primary_list COMMA primary
+  | primary_expression_list COMMA primary_expression_value
     {
+      $1.push($3); 
+      $$ = $1;
+    }
+  ;
 
+primary_expression_value
+  : expression 
+    {
+      $$ = $1;
+    }
+  | EMBRACE primary_expression_list UNBRACE
+    {
+      $$ = $2;
     }
   ;
 
@@ -873,7 +882,15 @@ assignment
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
     }
-  // TODO FieldAccess and ArrayAccess  
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT array_expression LINE_TERMINATOR
+    {
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
+    }
+  | IDENTIFIER OPERATOR_ASSIGNMENT array_expression LINE_TERMINATOR
+    {
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
+    }
+  // TODO FieldAccess 
   ;
 
 // Names
