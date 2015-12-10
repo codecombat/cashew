@@ -1199,7 +1199,7 @@ exports.___JavaRuntime = {
 			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\[/g,'');
+			var varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
 			if(arrayIndex1){
 				if(typeof arrayIndex1 === "function")
 					arrayIndex1 = arrayIndex1();
@@ -1222,7 +1222,6 @@ exports.___JavaRuntime = {
 					throw new SyntaxError("Array index out of bounds");
 				}
 			}
-
 			switch (varRawType){
 				case 'int':
 					if (typeof value === 'number'){
