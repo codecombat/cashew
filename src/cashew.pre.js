@@ -152,7 +152,7 @@ exports.Cashew = function(javaCode){
 				}
 			}
 			if(node.type === "CallExpression"){
-				if(node.name == variable.name){
+				if(node.name && node.name == variable.name){
 					node.javaType = variable.type;
 					node.name = "__" + variable.id;	
 				}
@@ -162,7 +162,7 @@ exports.Cashew = function(javaCode){
 						argNode.name = "__" + variable.id;
 					}
 				});
-				if(node.callee.property.name == "validateSet" && node.callee.object.object.name == "___JavaRuntime"){
+				if(node.callee.property && node.callee.property.name == "validateSet" && node.callee.object.object.name == "___JavaRuntime"){
 					if(node.arguments[1].type == "Identifier" && node.arguments[1].name == "__" + variable.id){
 						node.arguments[1].type = "Literal";
 
@@ -180,13 +180,13 @@ exports.Cashew = function(javaCode){
 				}
 			}
 			if(node.type === "ReturnStatement"){
-				if(node.argument.name == variable.name){
+				if(node.argument.name && node.argument.name == variable.name){
 					node.argument.name = "__" + variable.id;
 					node.javaType = variable.type;
 				}
 			}
 			if(node.type !== undefined && node.type == "AssignmentExpression"){
-				if (node.left.name == variable.name){
+				if (node.left.name && node.left.name == variable.name){
 					node.left.name = "__" + variable.id;
 					node.left.javaType = variable.type;
 				}
@@ -414,7 +414,13 @@ exports.Cashew = function(javaCode){
 		functionDeclarationNodeAssignmentRight.generator = false;
 		functionDeclarationNodeAssignmentRight.expression = false;
 
-		functionDeclarationNodeAssignment.right = functionDeclarationNodeAssignmentRight;
+		var functionDeclarationNodeAssignmentMethod = new node("AssignmentExpression");
+		functionDeclarationNodeAssignmentMethod.range = range;
+		functionDeclarationNodeAssignmentMethod.operator = '='; 
+		functionDeclarationNodeAssignmentMethod.left = createIdentifierNode(methodSignatureObject.methodName, headerRange);
+		functionDeclarationNodeAssignmentMethod.right = functionDeclarationNodeAssignmentRight
+
+		functionDeclarationNodeAssignment.right = functionDeclarationNodeAssignmentMethod;
 
 		functionDeclarationNode.expression = functionDeclarationNodeAssignment;
 
@@ -488,7 +494,7 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRight.callee = classNodeExpressionRightCallee;
 
 		classNodeExpressionRight.arguments = [];
-		classNodeExpressionRight.arguments.push(createIdentifierNode("_Object", classNameRange));
+		classNodeExpressionRight.arguments.push(createMemberExpressionNode(createIdentifierNode("___JavaRuntime", classNameRange),createIdentifierNode("_Object", classNameRange),classNameRange));
 
 		classNodeExpression.right = classNodeExpressionRight;
 
@@ -600,13 +606,19 @@ exports.Cashew = function(javaCode){
 		return constructorNode;
 	}
 
-	parser.yy.createSimpleStaticMethodInvokeNode = function createSimpleStaticMethodInvokeNode(className, classRange, methodName, methodRange, argumentsNodes, range){
+	parser.yy.createSimpleStaticMethodInvokeNode = function createSimpleStaticMethodInvokeNode(className, classRange, methodInvokeNode, range){
 		var classObjectNode = createIdentifierNode(className, classRange);
-		var propertyNode = createIdentifierNode(methodName, methodRange);
+		var propertyNode = methodInvokeNode.callee;
 		var memberExpressionNode = createMemberExpressionNode(classObjectNode, propertyNode, range);
+		methodInvokeNode.callee = memberExpressionNode;
+		return methodInvokeNode;
+	}
+
+	parser.yy.createSimpleMethodInvokeNode = function createSimpleMethodInvokeNode(methodName, methodRange, argumentsNodes, range){
+		var methodNode = createIdentifierNode(methodName, methodRange);
 		var methodInvokeNodeExpression = new node("CallExpression");
 		methodInvokeNodeExpression.range = range;
-		methodInvokeNodeExpression.callee = memberExpressionNode;
+		methodInvokeNodeExpression.callee = methodNode;
 		//TODO: Validate argument types
 		methodInvokeNodeExpression.arguments = argumentsNodes;
 		return methodInvokeNodeExpression;
@@ -631,13 +643,11 @@ exports.Cashew = function(javaCode){
 		}else{
 			assignmentNodeLeft = varIdentifier;
 		}
-
 		assignmentExpressionNode.left = assignmentNodeLeft;
 
 		var setNode = createRuntimeValidateSet(varName, varRange, expressionNode, index1, index2, assignmentRange);
 
 		assignmentExpressionNode.right = setNode;
-
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
 	}
@@ -864,7 +874,9 @@ exports.Cashew = function(javaCode){
 		var nodeArray = new node("ArrayExpression");
 		nodeArray.elements = [];
 		_.times(nodesExp[0].value, function(){
-			var literal = createArrayWithNullInitialization(nodesExp[1]);
+			if(nodesExp[1]){
+				var literal = createArrayWithNullInitialization(nodesExp[1]);
+			}
 			nodeArray.elements.push(literal);
 		});
 		return nodeArray;
@@ -1169,6 +1181,8 @@ exports.___JavaRuntime = {
 					if (typeof value === 'number'){
 						if (value % 1 === 0){
 							return value;
+						}else{
+							return Math.floor(value);
 						}
 					}
 					throw new SyntaxError("This is not an int maybe a cast is missing");

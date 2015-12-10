@@ -642,7 +642,15 @@ log_statement
   ;
 
 statement_expression
-  : post_increment_expression
+  : pre_increment_expression
+    {
+      $$ = $1;
+    }
+  | pre_decrement_expression
+    {
+      $$ = $1;
+    }
+  | post_increment_expression
     {
       $$ = $1;
     }
@@ -650,11 +658,30 @@ statement_expression
     {
       $$ = $1;
     }
-  | property_invocation
+  | method_invocation
     {
       $$ = yy.createExpressionStatementNode($1, @$.range);
     }
   // TODO class_instance_creation_expression
+  ;
+
+//Just using the side effect of the increment-decrement operators
+pre_increment_expression
+  : OPERATOR_INCREMENT postfix_expression %prec PRE_INCREMENT
+    {
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
+      var addExpression = yy.createMathOperation('+', $1, incrementOne, @$.range);
+      $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, addExpression);
+    }
+  ;
+
+pre_decrement_expression
+  : OPERATOR_DECREMENT postfix_expression  %prec PRE_DECREMENT
+    {
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
+      var subExpression = yy.createMathOperation('-', $1, decrementOne, @$.range);
+      $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, subExpression);
+    }
   ;
 
 
@@ -777,6 +804,10 @@ array_expression
     {
       $$ = yy.createTwoDimensionalArray([$4, $7]);
     }
+  | KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET
+    {
+      $$ = yy.createTwoDimensionalArray([$4, null]);
+    }
   | KEYWORD_NEW type LEFT_BRACKET expression RIGHT_BRACKET 
     {
       $$ = yy.createArrayWithNullInitialization($4);
@@ -869,7 +900,7 @@ expression
     { 
       $$ = $1;
     }
-  | property_invocation
+  | method_invocation
     {
       $$ = $1;
     }
@@ -1086,6 +1117,17 @@ primary
     }
   ;
 
+method_invocation
+  : simple_method_invocation
+    {
+      $$ = $1;
+    }
+  | property_invocation
+    {
+      $$ = $1;
+    }
+  ;
+
 property_invocation
   : static_method_invocation
     {
@@ -1094,13 +1136,20 @@ property_invocation
   ;
 
 static_method_invocation
-  : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN RIGHT_PAREN 
+  : CLASS_IDENTIFIER OPERATOR_CALL simple_method_invocation
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, [], @$.range);
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
     }
-  | CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
+  ;
+
+simple_method_invocation
+  : IDENTIFIER LEFT_PAREN RIGHT_PAREN
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @3.range, $5, @$.range);
+      $$ = yy.createSimpleMethodInvokeNode($1, @1.range, [], @$.range);
+    }
+  | IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
+    {
+      $$ = yy.createSimpleMethodInvokeNode($1, @1.range, $3, @$.range);
     }
   ;
 
