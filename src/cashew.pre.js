@@ -485,8 +485,6 @@ exports.Cashew = function(javaCode){
 				declarationNodeAssignment.right = getArgumentForName(className, classNameRange);
 		typeNode.expression = declarationNodeAssignment;
 
-		console.log(typeNode);
-
 		classNodeExpressionRightCalleeBody.body.push(typeNode);
 		//TODO when the class declares the constructor
 		classNodeExpressionRightCalleeBody.body.push(createDefaultConstructorNode(className, classNameRange));
@@ -1229,7 +1227,7 @@ exports.___JavaRuntime = {
 						}else{
 							type = varRawType;
 						}
-					}else if(arrayIndex1 && value[0].constructor !== Array){
+					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
 						//if the assign contains 1 index the variable can receive an array
 						varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
 						if(value instanceof _Object){
@@ -1239,10 +1237,9 @@ exports.___JavaRuntime = {
 							type = varRawType;
 						}
 					}else{
-						console.log("Aqui");
 						throw new SyntaxError("Incompatible types");
 					}
-				} else if (arrayIndex2 && value.constructor !== Array){
+				} else if (arrayIndex2 != undefined && value.constructor !== Array){
 					//if the assign contains 2 indexes the variable can receive only the basic type
 					varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
 				}else{
@@ -1251,7 +1248,7 @@ exports.___JavaRuntime = {
 				}
 			} else if(variablesDictionary[index].type.indexOf("[]")>-1){
 				//if both value and variables are arrays
-				if (value.constructor === Array && !arrayIndex1){
+				if (value.constructor === Array && arrayIndex1 == undefined){
 					if(value[0].constructor === Array){
 						throw new SyntaxError("Incompatible types");
 					}
@@ -1261,7 +1258,7 @@ exports.___JavaRuntime = {
 					}else{
 						type = varRawType;
 					}
-				}else if(arrayIndex1){
+				}else if(arrayIndex1 != undefined){
 					//if there's an index the array can recive only the basic type
 
 					varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
@@ -1293,8 +1290,6 @@ exports.___JavaRuntime = {
 					throw new SyntaxError("Array index out of bounds");
 				}
 			}
-			console.log(type);
-			console.log(varRawType);
 			switch (varRawType){
 				case 'int':
 					if (typeof value === 'number'){
