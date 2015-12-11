@@ -352,10 +352,10 @@ exports.Cashew = function(javaCode){
 				}
 			});
 		}
-		var isStatic = true;
+		var isStatic = false;
 		_.each(methodSignatureObject.modifiers, function(modifier){
 			if (modifier == "static"){
-				isStatic = false;
+				isStatic = true;
 			}
 		});
 
@@ -376,9 +376,9 @@ exports.Cashew = function(javaCode){
 
 		var functionDeclarationNodeAssignmentLeftObject;
 		if(isStatic){
-			functionDeclarationNodeAssignmentLeftObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", headerRange), headerRange);
-		}else{
 			functionDeclarationNodeAssignmentLeftObject = createIdentifierNode("__TemporaryClassName", [0,0]);
+		}else{
+			functionDeclarationNodeAssignmentLeftObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", headerRange), headerRange);
 		}
 
 		var functionDeclarationNodeAssignmentLeft;
@@ -431,10 +431,12 @@ exports.Cashew = function(javaCode){
 		var classNode = new node("ExpressionStatement");
 		classNode.range = range;
 
+		var classNameId = createIdentifierNode(className, classNameRange);
+
 		var classNodeExpression = new node("AssignmentExpression");
 		classNodeExpression.range = range;
 		classNodeExpression.operator = '=';
-		classNodeExpression.left = createIdentifierNode(className, classNameRange);
+		classNodeExpression.left = classNameId;
 
 		var classNodeExpressionRight = new node("CallExpression");
 		classNodeExpressionRight.range = range;
@@ -466,12 +468,26 @@ exports.Cashew = function(javaCode){
 		extensionNodeExpression.callee = extensionNodeExpressionCallee;
 
 		extensionNodeExpression.arguments = [];
-		extensionNodeExpression.arguments.push(createIdentifierNode(className, classNameRange));
+		extensionNodeExpression.arguments.push(classNameId);
 		extensionNodeExpression.arguments.push(createIdentifierNode("superClass", classNameRange));
 
 		extensionNode.expression = extensionNodeExpression;
   
         classNodeExpressionRightCalleeBody.body.push(extensionNode);
+
+        var typeNode = new node("ExpressionStatement");
+		typeNode.range = range;
+        var memberExpressionVar = createMemberExpressionNode(classNameId, createIdentifierNode("type", [0,0]), range);
+        var declarationNodeAssignment = new node("AssignmentExpression");
+				declarationNodeAssignment.range = classNameRange;
+				declarationNodeAssignment.operator = '=';
+				declarationNodeAssignment.left = memberExpressionVar;
+				declarationNodeAssignment.right = getArgumentForName(className, classNameRange);
+		typeNode.expression = declarationNodeAssignment;
+
+		console.log(typeNode);
+
+		classNodeExpressionRightCalleeBody.body.push(typeNode);
 		//TODO when the class declares the constructor
 		classNodeExpressionRightCalleeBody.body.push(createDefaultConstructorNode(className, classNameRange));
 
@@ -503,15 +519,15 @@ exports.Cashew = function(javaCode){
 	}
 
 	parser.yy.createFieldVariableNode = function createFieldVariableNode(modifiers, variableDeclarationNode, range){
-		var isStatic = true;
+		var isStatic = false;
 		_.each(modifiers, function(modifier){
 			if (modifier == "static"){
-				isStatic = false;
+				isStatic = true;
 			}
 		});
 		var isPrivate = true;
 		_.each(modifiers, function(modifier){
-			if (modifier == "static"){
+			if (modifier == "public"){
 				isPrivate = false;
 			}
 		});
@@ -519,9 +535,9 @@ exports.Cashew = function(javaCode){
 		_.each(variableDeclarationNode.declarations, function(varNode){
 			var prototypeClassObject;
 			if(isStatic){
-				prototypeClassObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
-			}else{
 				prototypeClassObject = createIdentifierNode("__TemporaryClassName", [0,0]);
+			}else{
+				prototypeClassObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
 			}
 			var memberExpressionVar;
 			if(isPrivate){
@@ -1145,6 +1161,8 @@ _Object = (function() {
 		return id++; 
 	};
 
+	_Object.prototype.type = "_Object";
+
 	_Object.prototype.id = function() {
 		var newId = generateId();
 
@@ -1196,10 +1214,63 @@ exports.___JavaRuntime = {
 			if(typeof value === "function")
 				value = value();
 			
-			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
+			var varRawType = variablesDictionary[index].type;
+			var type;
+			//check the type
+			if(variablesDictionary[index].type.indexOf("[][]")>-1){
+				//if either the new value and the variable are arrays
+				if (value.constructor === Array){
+					if(value[0].constructor === Array){
+						if(value instanceof _Object){
+							type = variable.type;
+							type = type + "[][]"
+						}else{
+							type = varRawType;
+						}
+					}else if(arrayIndex1 && value[0].constructor !== Array){
+						//if the assign contains 1 index the variable can receive an array
+						varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
+						if(value instanceof _Object){
+							type = variable.type;
+							type = type + "[]"
+						}else{
+							type = varRawType;
+						}
+					}else{
+						console.log("Aqui");
+						throw new SyntaxError("Incompatible types");
+					}
+				} else if (arrayIndex2 && value.constructor !== Array){
+					//if the assign contains 2 indexes the variable can receive only the basic type
+					varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
+				}else{
+					//if the variable is an array but the value is incompatible
+					throw new SyntaxError("Incompatible types");
+				}
+			} else if(variablesDictionary[index].type.indexOf("[]")>-1){
+				//if both value and variables are arrays
+				if (value.constructor === Array && !arrayIndex1){
+					if(value[0].constructor === Array){
+						throw new SyntaxError("Incompatible types");
+					}
+					if(value instanceof _Object){
+						type = variable.type;
+						type = type + "[]"
+					}else{
+						type = varRawType;
+					}
+				}else if(arrayIndex1){
+					//if there's an index the array can recive only the basic type
+
+					varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
+				}else{
+					throw new SyntaxError("Incompatible types");
+				}
+
+			}
+			
 			if(arrayIndex1){
 				if(typeof arrayIndex1 === "function")
 					arrayIndex1 = arrayIndex1();
@@ -1222,6 +1293,8 @@ exports.___JavaRuntime = {
 					throw new SyntaxError("Array index out of bounds");
 				}
 			}
+			console.log(type);
+			console.log(varRawType);
 			switch (varRawType){
 				case 'int':
 					if (typeof value === 'number'){
@@ -1250,6 +1323,9 @@ exports.___JavaRuntime = {
 						return value;
 					}
 					throw new SyntaxError("This is not a String maybe a cast is missing");
+					break;
+				case type:
+					return value;
 					break;
 				default:
 					break;

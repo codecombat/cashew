@@ -64,8 +64,8 @@
         eval(js);
       } catch(err){
         console.log(err);
-        jseditor.setValue('');
-        astHigh.setValue('');
+        //jseditor.setValue('');
+        //astHigh.setValue('');
       }
     }     
 	</script>
@@ -73,8 +73,7 @@
 </head>
 <body>
   <button class="btn-parser" onclick='submitCode()'>Parse it!</button>
-  <div id="codeArea">
-  public class MyClass {
+  <div id="codeArea">public class MyClass {
     /** main method */
     public static void main(String[] args)
     {
