@@ -849,7 +849,7 @@ exports.Cashew = function(javaCode){
 		return ifElseNode;
 	}
 
-	var createSimpleArrayNode = parser.yy.createSimpleArrayNode = function createSimpleArrayInit(varName, varRange, range){
+	var createSimpleArrayNode = parser.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, range){
 		var simpleArray = new node("VariableDeclarator");
 		simpleArray.range = range;
 
@@ -1325,7 +1325,23 @@ exports.___JavaRuntime = {
 				default:
 					break;
 			}
-		}
+		},
+		validateIndex: function(value){
+			if(typeof value === "function")
+				value = value();
+			if (typeof value === 'number'){
+						if (value % 1 === 0){
+							return value;
+						}else{
+							throw new SyntaxError("Possible loss of precision, received double, expected int");
+						}
+			}
+			if(value instanceof _Object){
+				throw new SyntaxError("Incompatible types, received "+ value.type +", expected int");
+			}
+			throw new SyntaxError("Incompatible types, received "+ typeof value  +", expected int");
+
+		},
 	},
 	ops : {
 		add: function(arg1, arg2){
@@ -1342,8 +1358,8 @@ exports.___JavaRuntime = {
 		},
 		mod: function(arg1, arg2){
 			return arg1 % arg2;
-		}
-	}
+		},
+	},
 }
 
 

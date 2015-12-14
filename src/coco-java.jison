@@ -759,6 +759,10 @@ variable_initializer
     {
       $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
     }
+  |  variable_declarator_id OPERATOR_ASSIGNMENT constructor_call
+    {
+      $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
+    }
   ;
 
 
@@ -844,6 +848,10 @@ assignment
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
+  | IDENTIFIER OPERATOR_ASSIGNMENT constructor_call LINE_TERMINATOR
+    {
+      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
+    }
   | IDENTIFIER '+=' expression LINE_TERMINATOR
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
@@ -890,7 +898,17 @@ assignment
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
-  // TODO FieldAccess 
+  ;
+
+constructor_call
+  : KEYWORD_NEW CLASS_IDENTIFIER LEFT_PAREN RIGHT_PAREN
+    {
+
+    }
+  | KEYWORD_NEW CLASS_IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
+    {
+
+    }
   ;
 
 // Names
@@ -1150,10 +1168,44 @@ property_invocation
     {
       $$ = $1;
     }
+  | instance_method_invocation
+    {
+
+    }
+  | public_variable_invocation
+    {
+
+    }
+  ;
+
+public_variable_invocation
+  : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER
+    {
+
+    }
+  | IDENTIFIER OPERATOR_CALL IDENTIFIER
+    {
+      
+    }
+  | method_invocation OPERATOR_CALL IDENTIFIER
+    {
+
+    }
   ;
 
 static_method_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL simple_method_invocation
+    {
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
+    }
+  ;
+
+instance_method_invocation
+  : IDENTIFIER OPERATOR_CALL simple_method_invocation
+    {
+      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
+    }
+  | method_invocation OPERATOR_CALL simple_method_invocation
     {
       $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
     }
