@@ -93,7 +93,7 @@ case 2:
       return yy.ast.createRoot($$[$0-1],this._$.range);
     
 break;
-case 3: case 4: case 5: case 6: case 7: case 20: case 21: case 22: case 23: case 28: case 29: case 30: case 63: case 64: case 65: case 66: case 69: case 70: case 71: case 72: case 74: case 75: case 83: case 84: case 85: case 86: case 98: case 99: case 105: case 106: case 113: case 132: case 133: case 134: case 137: case 162: case 173: case 175: case 176: case 177: case 190: case 195: case 196: case 197: case 216:
+case 3: case 4: case 5: case 6: case 7: case 20: case 21: case 22: case 23: case 28: case 29: case 30: case 63: case 64: case 65: case 66: case 69: case 70: case 71: case 72: case 74: case 75: case 83: case 84: case 85: case 86: case 98: case 99: case 105: case 106: case 113: case 132: case 133: case 134: case 137: case 162: case 173: case 175: case 176: case 177: case 178: case 179: case 190: case 195: case 196: case 197: case 216:
 
       this.$ = $$[$0];
     
@@ -468,9 +468,14 @@ case 123: case 124:
       this.$ = yy.createVariableAttribution($$[$0-6], _$[$0-6].range, this._$.range, $$[$0-1], $$[$0-4]);
     
 break;
-case 126: case 127: case 178: case 179: case 180: case 182:
+case 126:
 
+      this.$ = yy.createConstructorCall($$[$0-2], _$[$0-2].range,[], this._$.range);
+    
+break;
+case 127:
 
+      this.$ = yy.createConstructorCall($$[$0-3], _$[$0-3].range, $$[$0-2], this._$.range);
     
 break;
 case 128:
@@ -518,14 +523,9 @@ case 167: case 168: case 169:
       this.$ = yy.createUnaryExpression($$[$0-1], $$[$0], this._$.range);
     
 break;
-case 181:
+case 180: case 181: case 182: case 183: case 184: case 185:
 
-      
-    
-break;
-case 183: case 184: case 185:
-
-      this.$ = yy.createSimpleStaticMethodInvokeNode($$[$0-2], _$[$0-2].range, $$[$0], this._$.range);
+      this.$ = yy.createInvokeNode($$[$0-2], _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
     
 break;
 case 186:

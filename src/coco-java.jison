@@ -903,11 +903,11 @@ assignment
 constructor_call
   : KEYWORD_NEW CLASS_IDENTIFIER LEFT_PAREN RIGHT_PAREN
     {
-
+      $$ = yy.createConstructorCall($2, @2.range,[], @$.range);
     }
   | KEYWORD_NEW CLASS_IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
     {
-
+      $$ = yy.createConstructorCall($2, @2.range, $3, @$.range);
     }
   ;
 
@@ -1170,44 +1170,44 @@ property_invocation
     }
   | instance_method_invocation
     {
-
+      $$ = $1;
     }
   | public_variable_invocation
     {
-
+      $$ = $1;
     }
   ;
 
 public_variable_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL IDENTIFIER
     {
-
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   | IDENTIFIER OPERATOR_CALL IDENTIFIER
     {
-      
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   | method_invocation OPERATOR_CALL IDENTIFIER
     {
-
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   ;
 
 static_method_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL simple_method_invocation
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   ;
 
 instance_method_invocation
   : IDENTIFIER OPERATOR_CALL simple_method_invocation
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   | method_invocation OPERATOR_CALL simple_method_invocation
     {
-      $$ = yy.createSimpleStaticMethodInvokeNode($1, @1.range, $3, @$.range);
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   ;
 

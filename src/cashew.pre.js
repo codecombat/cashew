@@ -620,12 +620,25 @@ exports.Cashew = function(javaCode){
 		return constructorNode;
 	}
 
-	parser.yy.createSimpleStaticMethodInvokeNode = function createSimpleStaticMethodInvokeNode(className, classRange, methodInvokeNode, range){
-		var classObjectNode = createIdentifierNode(className, classRange);
-		var propertyNode = methodInvokeNode.callee;
-		var memberExpressionNode = createMemberExpressionNode(classObjectNode, propertyNode, range);
-		methodInvokeNode.callee = memberExpressionNode;
-		return methodInvokeNode;
+	parser.yy.createInvokeNode = function createInvokeNode(nameOrObject, nameRange, invokeNode, invokeRange, range){
+		var classObjectNode;
+		if(typeof nameOrObject === "string"){
+			classObjectNode = createIdentifierNode(nameOrObject, nameRange);
+		}else{
+			classObjectNode = nameOrObject;
+		}
+		var propertyNode, memberExpressionNode;
+		if(typeof invokeNode === "string"){
+			propertyNode = createIdentifierNode(invokeNode, invokeRange);
+			memberExpressionNode = createMemberExpressionNode(classObjectNode, propertyNode, range);
+			return memberExpressionNode;
+		}else{
+			propertyNode = invokeNode.callee;
+			memberExpressionNode = createMemberExpressionNode(classObjectNode, propertyNode, range);
+			invokeNode.callee = memberExpressionNode;
+			return invokeNode;
+		}
+		
 	}
 
 	parser.yy.createSimpleMethodInvokeNode = function createSimpleMethodInvokeNode(methodName, methodRange, argumentsNodes, range){
@@ -636,6 +649,15 @@ exports.Cashew = function(javaCode){
 		//TODO: Validate argument types
 		methodInvokeNodeExpression.arguments = argumentsNodes;
 		return methodInvokeNodeExpression;
+	}
+
+	parser.yy.createConstructorCall = function createConstructorCall(methodName, methodRange, argumentsNodes, range){
+		var constructorNode = new node("NewExpression");
+		constructorNode.range = range;
+		constructorNode.callee = createIdentifierNode(methodName, methodRange);
+		//TODO: Validate argument types
+		constructorNode.arguments = argumentsNodes;
+		return constructorNode;
 	}
 
 	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode, index1, index2){
@@ -659,9 +681,12 @@ exports.Cashew = function(javaCode){
 		}
 		assignmentExpressionNode.left = assignmentNodeLeft;
 
-		var setNode = createRuntimeValidateSet(varName, varRange, expressionNode, index1, index2, assignmentRange);
-
-		assignmentExpressionNode.right = setNode;
+		if(expressionNode.type === "NewExpression"){
+			assignmentExpressionNode.right = expressionNode;
+		}else{
+			var setNode = createRuntimeValidateSet(varName, varRange, expressionNode, index1, index2, assignmentRange);
+			assignmentExpressionNode.right = setNode;
+		}
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
 	}
@@ -774,10 +799,12 @@ exports.Cashew = function(javaCode){
 
 		varDeclaratorNode.id = idNode;
 
-		var initNode = createRuntimeValidateSet(varName, varRange, assignment, null, null, assignmentRange);
-
-		varDeclaratorNode.init = initNode;
-
+		if(assignment.type === "NewExpression"){
+			varDeclaratorNode.init = assignment;
+		}else{
+			var initNode = createRuntimeValidateSet(varName, varRange, assignment, null, null, assignmentRange);
+			varDeclaratorNode.init = initNode;
+		}
 		return varDeclaratorNode;
 	}
 
