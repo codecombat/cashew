@@ -1207,7 +1207,6 @@ instance_method_invocation
     }
   | method_invocation OPERATOR_CALL simple_method_invocation
     {
-    console.log("Passou aqui");
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
   ;

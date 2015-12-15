@@ -523,14 +523,8 @@ case 167: case 168: case 169:
       this.$ = yy.createUnaryExpression($$[$0-1], $$[$0], this._$.range);
     
 break;
-case 180: case 181: case 182: case 183: case 184:
+case 180: case 181: case 182: case 183: case 184: case 185:
 
-      this.$ = yy.createInvokeNode($$[$0-2], _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
-    
-break;
-case 185:
-
-    console.log("Passou aqui");
       this.$ = yy.createInvokeNode($$[$0-2], _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
     
 break;
