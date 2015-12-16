@@ -428,6 +428,10 @@ exports.Cashew = function(javaCode){
 	}
 
 	parser.yy.createSimpleClassDeclarationNode = function createClassDeclarationNode(className, classNameRange, classBody, classBodyRange, range){
+		return createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, null, null, range);
+	}
+	
+	var createClassExtendedDeclarationNode = parser.yy.createClassExtendedDeclarationNode = function createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, extensionName, extensionRange, range){ 
 		var classNode = new node("ExpressionStatement");
 		classNode.range = range;
 
@@ -508,7 +512,14 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRight.callee = classNodeExpressionRightCallee;
 
 		classNodeExpressionRight.arguments = [];
-		classNodeExpressionRight.arguments.push(createMemberExpressionNode(createIdentifierNode("___JavaRuntime", classNameRange),createIdentifierNode("_Object", classNameRange),classNameRange));
+		var extensionClass;
+		if(extensionName == null){
+			extensionClass = createMemberExpressionNode(createIdentifierNode("___JavaRuntime", classNameRange),createIdentifierNode("_Object", classNameRange),classNameRange);
+		}else{
+			extensionClass = createIdentifierNode(extensionName, extensionRange);
+		}
+
+		classNodeExpressionRight.arguments.push(extensionClass);
 
 		classNodeExpression.right = classNodeExpressionRight;
 
@@ -1088,6 +1099,22 @@ exports.Cashew = function(javaCode){
 
 		return consoleLogNode;
 	}
+
+	parser.yy.createClassCastNode = function createClassCastNode(type, typeRange, expression, range){
+		var classCastNode = new node("CallExpression");
+		classCastNode.range = range;
+		classCastNode.arguments = [];
+		if(type === "int" || type === "double"){
+			classCastNode.arguments.push(getArgumentForName(type, typeRange));
+		}else if(type === "Integer" || type === "Double" || type ===  "String" || type ===  "boolean" || type ===  "Boolean"){
+			throw new SyntaxError("Invalid Class cast");
+		}else{
+			classCastNode.arguments.push(createIdentifierNode(type, typeRange));
+		}
+		classCastNode.arguments.push(expression);
+		classCastNode.callee = createMemberExpressionNode(getRuntimeFunctions(range),createIdentifierNode("classCast", range),range, false);
+		return classCastNode;
+	}
 	
 
 	ast = parser.parse(javaCode);
@@ -1320,11 +1347,7 @@ exports.___JavaRuntime = {
 			switch (varRawType){
 				case 'int':
 					if (typeof value === 'number'){
-						if (value % 1 === 0){
-							return value;
-						}else{
-							return Math.floor(value);
-						}
+						return Math.floor(value);
 					}
 					throw new SyntaxError("This is not an int maybe a cast is missing");
 					break;
@@ -1369,6 +1392,23 @@ exports.___JavaRuntime = {
 			throw new SyntaxError("Incompatible types, received "+ typeof value  +", expected int");
 
 		},
+		classCast: function(type, value){
+			if(typeof type === "string"){
+				if (typeof value === "number"){
+						if(type === "int"){
+							return Math.floor(value);
+						}else{
+							return value;
+						}
+					}
+			}else{
+				if(value instanceof type){
+					return type;
+				}else{
+					throw new SyntaxError("Invalid Class cast");
+				}
+			}
+		}
 	},
 	ops : {
 		add: function(arg1, arg2){
