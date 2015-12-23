@@ -586,6 +586,7 @@ exports.Cashew = function(javaCode){
 	}
 
 	var createDefaultConstructorNode = function createDefaultConstructorNode(className, range){
+
 		var constructorNode = new node("FunctionDeclaration");
 		constructorNode.range = range;
 		constructorNode.id = createIdentifierNode(className, range);
@@ -1121,14 +1122,14 @@ exports.Cashew = function(javaCode){
 	return ast;
 }
 
-exports.wrapFunction = wrapFunction = function(ast, className, staticCall){
+exports.wrapFunction = wrapFunction = function(ast, functionName, className, staticCall){
 	node = function(type){
 		this.type = type;
 	}
 	astBody = ast.body;
 
 	//check if there's a different static call other than the main
-	if(className && staticCall){
+	if(className !== undefined && className !== ""  && staticCall !== undefined &&  staticCall !== ""){
 		var staticCallNode = new node("ReturnStatement");
 
 	    var staticCallNodeExpression = new node("CallExpression");
@@ -1158,7 +1159,11 @@ exports.wrapFunction = wrapFunction = function(ast, className, staticCall){
 
 	fooFunctNode = new node("FunctionDeclaration")
 	fooId = new node("Identifier");
-	fooId.name = "foo";
+	if(functionName !== undefined && functionName !== ""){
+		fooId.name = functionName;
+	}else{
+		fooId.name = "foo";		
+	}
 	fooFunctNode.id = fooId;
 	fooFunctNode.params = [];
 
