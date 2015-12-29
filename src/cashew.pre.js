@@ -1159,7 +1159,7 @@ exports.wrapFunction = wrapFunction = function(ast, functionName, className, sta
 
 	fooFunctNode = new node("FunctionDeclaration")
 	fooId = new node("Identifier");
-	if(functionName !== undefined && functionName !== ""){
+	if(functionName){
 		fooId.name = functionName;
 	}else{
 		fooId.name = "foo";		
