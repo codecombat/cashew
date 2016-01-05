@@ -25,6 +25,7 @@ var mainMethodCall;
 
 exports.Cashew = function(javaCode){
 	
+	___JavaRuntime.variablesDictionary = [];
 	methodsDictionary = [];
 	mainMethodCall = undefined;
 	
