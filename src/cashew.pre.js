@@ -1274,10 +1274,10 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = ___JavaRuntime.variablesDictionary[index].type;
+			var varRawType = this.variablesDictionary[index].type;
 			var type;
 			//check the type
-			if(___JavaRuntime.variablesDictionary[index].type.indexOf("[][]")>-1){
+			if(this.variablesDictionary[index].type.indexOf("[][]")>-1){
 				//if either the new value and the variable are arrays
 				if (value.constructor === Array){
 					if(value[0].constructor === Array){
@@ -1289,7 +1289,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 						}
 					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
 						//if the assign contains 1 index the variable can receive an array
-						varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
+						varRawType = this.variablesDictionary[index].type.replace('[','').replace(']','');
 						if(value instanceof _Object){
 							type = variable.type;
 							type = type + "[]"
@@ -1301,12 +1301,12 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					}
 				} else if (arrayIndex2 != undefined && value.constructor !== Array){
 					//if the assign contains 2 indexes the variable can receive only the basic type
-					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
+					varRawType = this.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
 				}else{
 					//if the variable is an array but the value is incompatible
 					throw new SyntaxError("Incompatible types");
 				}
-			} else if(___JavaRuntime.variablesDictionary[index].type.indexOf("[]")>-1){
+			} else if(this.variablesDictionary[index].type.indexOf("[]")>-1){
 				//if both value and variables are arrays
 				if (value.constructor === Array && arrayIndex1 == undefined){
 					if(value[0].constructor === Array){
@@ -1321,7 +1321,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				}else if(arrayIndex1 != undefined){
 					//if there's an index the array can recive only the basic type
 
-					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
+					varRawType = this.variablesDictionary[index].type.replace('[','').replace(']','');
 				}else{
 					throw new SyntaxError("Incompatible types");
 				}
