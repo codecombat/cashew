@@ -20,12 +20,11 @@
 	mod(root.cashew || (root.cashew = {}));
 })(this, function(exports){
 
-var variablesDictionary;
 var methodsDictionary;
 var mainMethodCall;
 
 exports.Cashew = function(javaCode){
-	variablesDictionary = [];
+	
 	methodsDictionary = [];
 	mainMethodCall = undefined;
 	
@@ -60,7 +59,7 @@ exports.Cashew = function(javaCode){
 
 	getVariableType = function(varName){
 		var varType = "unknown";
-		_.each(variablesDictionary, function(variableEntry){
+		_.each(___JavaRuntime.variablesDictionary, function(variableEntry){
 			if(variableEntry.name == varName){
 				varType = variableEntry.type;
 			}
@@ -309,7 +308,7 @@ exports.Cashew = function(javaCode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
 					"class", className, "", variableNode.ASTNodeID);
 				findUpdateChildren(block, newVar);
-				variablesDictionary.push(newVar);
+				___JavaRuntime.variablesDictionary.push(newVar);
 			});
 		});
 	}
@@ -319,7 +318,7 @@ exports.Cashew = function(javaCode){
 			var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
 				"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
 			findUpdateChildren(block, newVar);
-			variablesDictionary.push(newVar);
+			___JavaRuntime.variablesDictionary.push(newVar);
 		});
 	}
 
@@ -329,7 +328,7 @@ exports.Cashew = function(javaCode){
 				"method", "", methodProperties.methodSignature, paramNode.ASTNodeID);
 			findUpdateChildren(block, newVar);
 			findUpdateChildren(paramNodes, newVar);
-			variablesDictionary.push(newVar);
+			___JavaRuntime.variablesDictionary.push(newVar);
 		});
 	}
 
@@ -339,7 +338,7 @@ exports.Cashew = function(javaCode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
 					"", "", "", variableNode.ASTNodeID);
 				findUpdateChildren(block, newVar);
-				variablesDictionary.push(newVar);
+				___JavaRuntime.variablesDictionary.push(newVar);
 			});
 		});
 	}
@@ -1116,9 +1115,9 @@ exports.Cashew = function(javaCode){
 		classCastNode.callee = createMemberExpressionNode(getRuntimeFunctions(range),createIdentifierNode("classCast", range),range, false);
 		return classCastNode;
 	}
-	
 
 	ast = parser.parse(javaCode);
+
 	return ast;
 }
 
@@ -1245,7 +1244,8 @@ _Object = (function() {
 })();
 
 
-exports.___JavaRuntime = { 
+exports.___JavaRuntime = ___JavaRuntime = { 
+	variablesDictionary : [],
 	extend : function(child, parent) { 
 		hasProp = {}.hasOwnProperty;
 		for (var key in parent) { 
@@ -1273,10 +1273,10 @@ exports.___JavaRuntime = {
 			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = variablesDictionary[index].type;
+			var varRawType = ___JavaRuntime.variablesDictionary[index].type;
 			var type;
 			//check the type
-			if(variablesDictionary[index].type.indexOf("[][]")>-1){
+			if(___JavaRuntime.variablesDictionary[index].type.indexOf("[][]")>-1){
 				//if either the new value and the variable are arrays
 				if (value.constructor === Array){
 					if(value[0].constructor === Array){
@@ -1288,7 +1288,7 @@ exports.___JavaRuntime = {
 						}
 					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
 						//if the assign contains 1 index the variable can receive an array
-						varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
+						varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
 						if(value instanceof _Object){
 							type = variable.type;
 							type = type + "[]"
@@ -1300,12 +1300,12 @@ exports.___JavaRuntime = {
 					}
 				} else if (arrayIndex2 != undefined && value.constructor !== Array){
 					//if the assign contains 2 indexes the variable can receive only the basic type
-					varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
+					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
 				}else{
 					//if the variable is an array but the value is incompatible
 					throw new SyntaxError("Incompatible types");
 				}
-			} else if(variablesDictionary[index].type.indexOf("[]")>-1){
+			} else if(___JavaRuntime.variablesDictionary[index].type.indexOf("[]")>-1){
 				//if both value and variables are arrays
 				if (value.constructor === Array && arrayIndex1 == undefined){
 					if(value[0].constructor === Array){
@@ -1320,7 +1320,7 @@ exports.___JavaRuntime = {
 				}else if(arrayIndex1 != undefined){
 					//if there's an index the array can recive only the basic type
 
-					varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
+					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
 				}else{
 					throw new SyntaxError("Incompatible types");
 				}
