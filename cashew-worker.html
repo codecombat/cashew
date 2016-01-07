@@ -38,7 +38,7 @@
     (function() {
       var oldLog = console.log;
       console.log = function(message){
-        outputText.innerHTML = message;
+        outputText.innerHTML += (message + '\n');
         oldLog.apply(console, arguments);
       };
     })();
@@ -47,6 +47,7 @@
 
     function submitCode(){
       var code = editor.getValue();
+      outputText.innerHTML = '';
 
       try {
         var ast = Cashew(code);
@@ -64,8 +65,6 @@
         eval(js);
       } catch(err){
         console.log(err);
-        //jseditor.setValue('');
-        //astHigh.setValue('');
       }
     }     
 	</script>

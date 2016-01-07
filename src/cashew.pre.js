@@ -20,12 +20,12 @@
 	mod(root.cashew || (root.cashew = {}));
 })(this, function(exports){
 
-var variablesDictionary;
 var methodsDictionary;
 var mainMethodCall;
 
 exports.Cashew = function(javaCode){
-	variablesDictionary = [];
+	
+	___JavaRuntime.variablesDictionary = [];
 	methodsDictionary = [];
 	mainMethodCall = undefined;
 	
@@ -60,7 +60,7 @@ exports.Cashew = function(javaCode){
 
 	getVariableType = function(varName){
 		var varType = "unknown";
-		_.each(variablesDictionary, function(variableEntry){
+		_.each(___JavaRuntime.variablesDictionary, function(variableEntry){
 			if(variableEntry.name == varName){
 				varType = variableEntry.type;
 			}
@@ -309,7 +309,7 @@ exports.Cashew = function(javaCode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
 					"class", className, "", variableNode.ASTNodeID);
 				findUpdateChildren(block, newVar);
-				variablesDictionary.push(newVar);
+				___JavaRuntime.variablesDictionary.push(newVar);
 			});
 		});
 	}
@@ -319,7 +319,7 @@ exports.Cashew = function(javaCode){
 			var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
 				"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
 			findUpdateChildren(block, newVar);
-			variablesDictionary.push(newVar);
+			___JavaRuntime.variablesDictionary.push(newVar);
 		});
 	}
 
@@ -329,7 +329,7 @@ exports.Cashew = function(javaCode){
 				"method", "", methodProperties.methodSignature, paramNode.ASTNodeID);
 			findUpdateChildren(block, newVar);
 			findUpdateChildren(paramNodes, newVar);
-			variablesDictionary.push(newVar);
+			___JavaRuntime.variablesDictionary.push(newVar);
 		});
 	}
 
@@ -339,7 +339,7 @@ exports.Cashew = function(javaCode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
 					"", "", "", variableNode.ASTNodeID);
 				findUpdateChildren(block, newVar);
-				variablesDictionary.push(newVar);
+				___JavaRuntime.variablesDictionary.push(newVar);
 			});
 		});
 	}
@@ -428,6 +428,10 @@ exports.Cashew = function(javaCode){
 	}
 
 	parser.yy.createSimpleClassDeclarationNode = function createClassDeclarationNode(className, classNameRange, classBody, classBodyRange, range){
+		return createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, null, null, range);
+	}
+	
+	var createClassExtendedDeclarationNode = parser.yy.createClassExtendedDeclarationNode = function createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, extensionName, extensionRange, range){ 
 		var classNode = new node("ExpressionStatement");
 		classNode.range = range;
 
@@ -508,7 +512,14 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRight.callee = classNodeExpressionRightCallee;
 
 		classNodeExpressionRight.arguments = [];
-		classNodeExpressionRight.arguments.push(createMemberExpressionNode(createIdentifierNode("___JavaRuntime", classNameRange),createIdentifierNode("_Object", classNameRange),classNameRange));
+		var extensionClass;
+		if(extensionName == null){
+			extensionClass = createMemberExpressionNode(createIdentifierNode("___JavaRuntime", classNameRange),createIdentifierNode("_Object", classNameRange),classNameRange);
+		}else{
+			extensionClass = createIdentifierNode(extensionName, extensionRange);
+		}
+
+		classNodeExpressionRight.arguments.push(extensionClass);
 
 		classNodeExpression.right = classNodeExpressionRight;
 
@@ -575,6 +586,7 @@ exports.Cashew = function(javaCode){
 	}
 
 	var createDefaultConstructorNode = function createDefaultConstructorNode(className, range){
+
 		var constructorNode = new node("FunctionDeclaration");
 		constructorNode.range = range;
 		constructorNode.id = createIdentifierNode(className, range);
@@ -1088,20 +1100,36 @@ exports.Cashew = function(javaCode){
 
 		return consoleLogNode;
 	}
-	
+
+	parser.yy.createClassCastNode = function createClassCastNode(type, typeRange, expression, range){
+		var classCastNode = new node("CallExpression");
+		classCastNode.range = range;
+		classCastNode.arguments = [];
+		if(type === "int" || type === "double"){
+			classCastNode.arguments.push(getArgumentForName(type, typeRange));
+		}else if(type === "Integer" || type === "Double" || type ===  "String" || type ===  "boolean" || type ===  "Boolean"){
+			throw new SyntaxError("Invalid Class cast");
+		}else{
+			classCastNode.arguments.push(createIdentifierNode(type, typeRange));
+		}
+		classCastNode.arguments.push(expression);
+		classCastNode.callee = createMemberExpressionNode(getRuntimeFunctions(range),createIdentifierNode("classCast", range),range, false);
+		return classCastNode;
+	}
 
 	ast = parser.parse(javaCode);
+
 	return ast;
 }
 
-exports.wrapFunction = wrapFunction = function(ast, className, staticCall){
+exports.wrapFunction = wrapFunction = function(ast, functionName, className, staticCall){
 	node = function(type){
 		this.type = type;
 	}
 	astBody = ast.body;
 
 	//check if there's a different static call other than the main
-	if(className && staticCall){
+	if(className !== undefined && className !== ""  && staticCall !== undefined &&  staticCall !== ""){
 		var staticCallNode = new node("ReturnStatement");
 
 	    var staticCallNodeExpression = new node("CallExpression");
@@ -1131,7 +1159,11 @@ exports.wrapFunction = wrapFunction = function(ast, className, staticCall){
 
 	fooFunctNode = new node("FunctionDeclaration")
 	fooId = new node("Identifier");
-	fooId.name = "foo";
+	if(functionName){
+		fooId.name = functionName;
+	}else{
+		fooId.name = "foo";		
+	}
 	fooFunctNode.id = fooId;
 	fooFunctNode.params = [];
 
@@ -1213,7 +1245,8 @@ _Object = (function() {
 })();
 
 
-exports.___JavaRuntime = { 
+exports.___JavaRuntime = ___JavaRuntime = { 
+	variablesDictionary : [],
 	extend : function(child, parent) { 
 		hasProp = {}.hasOwnProperty;
 		for (var key in parent) { 
@@ -1241,10 +1274,10 @@ exports.___JavaRuntime = {
 			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = variablesDictionary[index].type;
+			var varRawType = this.variablesDictionary[index].type;
 			var type;
 			//check the type
-			if(variablesDictionary[index].type.indexOf("[][]")>-1){
+			if(this.variablesDictionary[index].type.indexOf("[][]")>-1){
 				//if either the new value and the variable are arrays
 				if (value.constructor === Array){
 					if(value[0].constructor === Array){
@@ -1256,7 +1289,7 @@ exports.___JavaRuntime = {
 						}
 					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
 						//if the assign contains 1 index the variable can receive an array
-						varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
+						varRawType = this.variablesDictionary[index].type.replace('[','').replace(']','');
 						if(value instanceof _Object){
 							type = variable.type;
 							type = type + "[]"
@@ -1268,12 +1301,12 @@ exports.___JavaRuntime = {
 					}
 				} else if (arrayIndex2 != undefined && value.constructor !== Array){
 					//if the assign contains 2 indexes the variable can receive only the basic type
-					varRawType = variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
+					varRawType = this.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
 				}else{
 					//if the variable is an array but the value is incompatible
 					throw new SyntaxError("Incompatible types");
 				}
-			} else if(variablesDictionary[index].type.indexOf("[]")>-1){
+			} else if(this.variablesDictionary[index].type.indexOf("[]")>-1){
 				//if both value and variables are arrays
 				if (value.constructor === Array && arrayIndex1 == undefined){
 					if(value[0].constructor === Array){
@@ -1288,7 +1321,7 @@ exports.___JavaRuntime = {
 				}else if(arrayIndex1 != undefined){
 					//if there's an index the array can recive only the basic type
 
-					varRawType = variablesDictionary[index].type.replace('[','').replace(']','');
+					varRawType = this.variablesDictionary[index].type.replace('[','').replace(']','');
 				}else{
 					throw new SyntaxError("Incompatible types");
 				}
@@ -1320,11 +1353,7 @@ exports.___JavaRuntime = {
 			switch (varRawType){
 				case 'int':
 					if (typeof value === 'number'){
-						if (value % 1 === 0){
-							return value;
-						}else{
-							return Math.floor(value);
-						}
+						return Math.floor(value);
 					}
 					throw new SyntaxError("This is not an int maybe a cast is missing");
 					break;
@@ -1369,6 +1398,23 @@ exports.___JavaRuntime = {
 			throw new SyntaxError("Incompatible types, received "+ typeof value  +", expected int");
 
 		},
+		classCast: function(type, value){
+			if(typeof type === "string"){
+				if (typeof value === "number"){
+						if(type === "int"){
+							return Math.floor(value);
+						}else{
+							return value;
+						}
+					}
+			}else{
+				if(value instanceof type){
+					return type;
+				}else{
+					throw new SyntaxError("Invalid Class cast");
+				}
+			}
+		}
 	},
 	ops : {
 		add: function(arg1, arg2){

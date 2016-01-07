@@ -1,6 +1,6 @@
 {
   "name": "cashew-js",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A JavaToJavaScript parser, outputs a Mozilla AST ",
   "main": "cashew.js",
   "repository": {
@@ -14,7 +14,7 @@
     "JAVA",
     "MozillaAST"
   ],
-  "author": "Lucas Farias & Rafael Monteiro",
+  "author": "Claudia Farias, Gustavo Sizilio, Lucas Farias & Rafael Monteiro",
   "license": [
     {
       "type": "MIT",

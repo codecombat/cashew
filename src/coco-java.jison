@@ -63,6 +63,10 @@ BSL               "\\".
 "false"               return 'FALSE_LITERAL';
 
 "class"               return 'KEYWORD_CLASS';
+"extends"             return 'KEYWORD_EXTENDS';
+"interface"           return 'KEYWORD_INTERFACE';
+"abstract"            return 'KEYWORD_ABSTRACT';
+
 "new"                 return 'KEYWORD_NEW';
 "return"              return 'KEYWORD_RETURN';
 
@@ -218,13 +222,28 @@ null_literal
 // Compilation Unit
 
 class_declarations
-  : class_declaration
+  : class_interface_declaration
     { 
       $$ = [$1];
     }
-  | class_declarations class_declaration
+  | class_declarations class_interface_declaration
     {
       $1.push($2);
+      $$ = $1;
+    }
+  ;
+
+class_interface_declaration
+  : abstract_class_declaration
+    {
+      $$ = $1;
+    }
+  | class_declaration
+    {
+      $$ = $1;
+    }
+  | interface_declaration
+    {
       $$ = $1;
     }
   ;
@@ -242,9 +261,41 @@ class_declaration
       yy.createUpdateClassVariableReference(variables, $3, bodyNodes);
       $$ = yy.createSimpleClassDeclarationNode($3, @3.range, bodyNodes, @4.range, @$.range);
     }
-  | KEYWORD_CLASS class_body CLASS_IDENTIFIER
+  | 'public' KEYWORD_CLASS CLASS_IDENTIFIER KEYWORD_EXTENDS CLASS_IDENTIFIER class_body
     {
-      $$ = yy.createSimpleClassDeclarationNode($3, @3.range, $4, @4.range, @$.range);
+      var bodyNodes = $6;
+      var variables = [];
+      yy._.each(bodyNodes, function(bodyNode){
+        if(bodyNode.type == "VariableDeclaration"){
+          variables.push(bodyNode);
+        }
+      });
+      yy.createUpdateClassVariableReference(variables, $3, bodyNodes);
+      $$ = yy.createClassExtendedDeclarationNode($3, @3.range, $6, @6.range, $5, @5.range, @$.range);
+    }
+  | KEYWORD_CLASS CLASS_IDENTIFIER class_body 
+    {
+      var bodyNodes = $3;
+      var variables = [];
+      yy._.each(bodyNodes, function(bodyNode){
+        if(bodyNode.type == "VariableDeclaration"){
+          variables.push(bodyNode);
+        }
+      });
+      yy.createUpdateClassVariableReference(variables, $2, bodyNodes);
+      $$ = yy.createSimpleClassDeclarationNode($2, @2.range, $3, @3.range, @$.range);
+    }
+  | KEYWORD_CLASS CLASS_IDENTIFIER KEYWORD_EXTENDS CLASS_IDENTIFIER class_body
+    {
+      var bodyNodes = $5;
+      var variables = [];
+      yy._.each(bodyNodes, function(bodyNode){
+        if(bodyNode.type == "VariableDeclaration"){
+          variables.push(bodyNode);
+        }
+      });
+      yy.createUpdateClassVariableReference(variables, $2, bodyNodes);
+      $$ = yy.createClassExtendedDeclarationNode($2, @2.range, $5, @5.range, $4, @4.range, @$.range);
     }
   ;
 
@@ -1243,7 +1294,9 @@ parameter
 
 cast_expression
   : LEFT_PAREN type RIGHT_PAREN unary_expression
-    {}
+    {
+      $$ = yy.createClassCastNode($2, @2.range, $4, @$.range);
+    }
   ;
 
 while_statement
