@@ -27,6 +27,8 @@ exports.Cashew = function(javaCode){
 	
 	___JavaRuntime.variablesDictionary = [];
 	methodsDictionary = [];
+	constructorBodyNodes = undefined;
+	constructorParams = undefined;
 	mainMethodCall = undefined;
 	
 	//parser helpers
@@ -303,7 +305,7 @@ exports.Cashew = function(javaCode){
 		return memberExpressionNode;
 	}
 
-	parser.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
+	var createUpdateClassVariableReference = parser.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
 		_.each(variableNodes, function(variableNode){
 			_.each(variableNode.declarations, function(varNode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
@@ -422,6 +424,18 @@ exports.Cashew = function(javaCode){
 
 		functionDeclarationNodeAssignment.right = functionDeclarationNodeAssignmentMethod;
 
+		if (isStatic && !isPrivate){
+			var functionDeclarationNodeAssignmentStatic = new node("AssignmentExpression");
+			functionDeclarationNodeAssignmentStatic.range = range;
+			functionDeclarationNodeAssignmentStatic.operator = '=';
+			functionDeclarationNodeAssignmentStatic.right = functionDeclarationNodeAssignment.right;
+			var leftObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", headerRange), headerRange);
+			var left = createMemberExpressionNode(leftObject, createIdentifierNode(methodSignatureObject.methodName, headerRange), range);
+			functionDeclarationNodeAssignmentStatic.left = left;
+			functionDeclarationNodeAssignment.right = functionDeclarationNodeAssignmentStatic;
+		}
+
+
 		functionDeclarationNode.expression = functionDeclarationNodeAssignment;
 
 		return functionDeclarationNode;
@@ -490,9 +504,23 @@ exports.Cashew = function(javaCode){
 		typeNode.expression = declarationNodeAssignment;
 
 		classNodeExpressionRightCalleeBody.body.push(typeNode);
-		//TODO when the class declares the constructor
-		classNodeExpressionRightCalleeBody.body.push(createDefaultConstructorNode(className, classNameRange));
 
+		//Binds __ref to this
+ 		var refExpression = new node("ExpressionStatement");
+ 		refExpression.range = range;
+        var refNodeAssignment = new node("AssignmentExpression");
+				refNodeAssignment.range = range;
+				refNodeAssignment.operator = '=';
+				refNodeAssignment.left = createIdentifierNode("__ref", [0,0]);
+				var thisNode = new node("ThisExpression");
+				thisNode.range = range;
+				refNodeAssignment.right = thisNode;
+		refExpression.expression = refNodeAssignment;
+
+		classNodeExpressionRightCalleeBody.body.push(refExpression);
+
+		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, constructorParams, classNameRange));
+		
 		//Add Methods to the class
 		replaceTemporaryClassWithClassName(classBody, className);
 		_.each(methodsDictionary, function(methodSignature){
@@ -525,6 +553,15 @@ exports.Cashew = function(javaCode){
 
 		classNode.expression = classNodeExpression;
 		return classNode;
+	}
+
+	parser.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
+		constructorBodyNodes = methodBodyNodes;
+	}
+
+	parser.yy.createParameterizedConstructor = function createParameterizedConstructor(modifiers, params, methodBodyNodes){
+		constructorBodyNodes = methodBodyNodes;
+		constructorParams = params;
 	}
 
 	parser.yy.createFieldVariableNode = function createFieldVariableNode(modifiers, variableDeclarationNode, range){
@@ -566,6 +603,18 @@ exports.Cashew = function(javaCode){
 				declarationNodeAssignment.right = oldInit;
 				varNode.init = declarationNodeAssignment;
 			}
+
+			if (isStatic && !isPrivate){
+				var declarationNodeAssignmentStatic = new node("AssignmentExpression");
+				declarationNodeAssignmentStatic.range = range;
+				declarationNodeAssignmentStatic.operator = '=';
+				declarationNodeAssignmentStatic.right = varNode.init;
+				var leftObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
+				var left = createMemberExpressionNode(leftObject, varNode.id, range);
+				declarationNodeAssignmentStatic.left = left;
+				varNode.init = declarationNodeAssignmentStatic;
+			}
+
 		});
 		return variableDeclarationNode;
 
@@ -585,12 +634,23 @@ exports.Cashew = function(javaCode){
 		return ast;
 	}
 
-	var createDefaultConstructorNode = function createDefaultConstructorNode(className, range){
-
+	var createConstructorNode = function createConstructorNode(className, methodBodyNodes, methodParams, range){
 		var constructorNode = new node("FunctionDeclaration");
 		constructorNode.range = range;
 		constructorNode.id = createIdentifierNode(className, range);
-		constructorNode.params = [];
+
+		if(methodParams == undefined){
+			constructorNode.params = [];
+		}else{
+			var paramNodes = [];
+			_.each(methodParams, function(param){
+				var newParam = createIdentifierNode(param.paramName, param.range);
+				newParam.javaType = param.type;
+				paramNodes.push(newParam);
+			});
+			createUpdateClassVariableReference(paramNodes, className, methodBodyNodes);
+			constructorNode.params = paramNodes;
+		}
 		constructorNode.defaults = [];
 
 		var constructorNodeBody = new node("BlockStatement");
@@ -624,6 +684,10 @@ exports.Cashew = function(javaCode){
 		constructorCallNode.arguments.push(argumentsNode);
 
 		//Returns the class
+		if(methodBodyNodes){
+			constructorNodeBody.body = constructorNodeBody.body.concat(methodBodyNodes);
+		}
+
 		constructorNodeBody.body.push(createReturnStatementNode(constructorCallNode, range));
 
 		constructorNode.body = constructorNodeBody;
@@ -680,7 +744,13 @@ exports.Cashew = function(javaCode){
 		assignmentExpressionNode.range = assignmentRange;
 		assignmentExpressionNode.operator = '=';
 
-		var varIdentifier = createIdentifierNode(varName, varRange); 
+		if(typeof varName === "string"){
+			var varIdentifier = createIdentifierNode(varName, varRange); 
+		}
+		else{
+			var varIdentifier = varName;
+		}
+
 		var assignmentNodeLeft;
 
 		if(index1){
@@ -1274,10 +1344,10 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			
 			//Removes the '__' from the variable name
 			var index = parseInt(variableName.substring(2));
-			var varRawType = this.variablesDictionary[index].type;
+			var varRawType = ___JavaRuntime.variablesDictionary[index].type;
 			var type;
 			//check the type
-			if(this.variablesDictionary[index].type.indexOf("[][]")>-1){
+			if(___JavaRuntime.variablesDictionary[index].type.indexOf("[][]")>-1){
 				//if either the new value and the variable are arrays
 				if (value.constructor === Array){
 					if(value[0].constructor === Array){
@@ -1289,7 +1359,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 						}
 					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
 						//if the assign contains 1 index the variable can receive an array
-						varRawType = this.variablesDictionary[index].type.replace('[','').replace(']','');
+						varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
 						if(value instanceof _Object){
 							type = variable.type;
 							type = type + "[]"
@@ -1301,12 +1371,12 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					}
 				} else if (arrayIndex2 != undefined && value.constructor !== Array){
 					//if the assign contains 2 indexes the variable can receive only the basic type
-					varRawType = this.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
+					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
 				}else{
 					//if the variable is an array but the value is incompatible
 					throw new SyntaxError("Incompatible types");
 				}
-			} else if(this.variablesDictionary[index].type.indexOf("[]")>-1){
+			} else if(___JavaRuntime.variablesDictionary[index].type.indexOf("[]")>-1){
 				//if both value and variables are arrays
 				if (value.constructor === Array && arrayIndex1 == undefined){
 					if(value[0].constructor === Array){
@@ -1321,7 +1391,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				}else if(arrayIndex1 != undefined){
 					//if there's an index the array can recive only the basic type
 
-					varRawType = this.variablesDictionary[index].type.replace('[','').replace(']','');
+					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
 				}else{
 					throw new SyntaxError("Incompatible types");
 				}
