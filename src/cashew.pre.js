@@ -305,45 +305,47 @@ exports.Cashew = function(javaCode){
 		return memberExpressionNode;
 	}
 
+
+	//FIXME disabling validations for now
 	var createUpdateClassVariableReference = parser.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
-		_.each(variableNodes, function(variableNode){
+		/*_.each(variableNodes, function(variableNode){
 			_.each(variableNode.declarations, function(varNode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
 					"class", className, "", variableNode.ASTNodeID);
 				findUpdateChildren(block, newVar);
 				___JavaRuntime.variablesDictionary.push(newVar);
 			});
-		});
+		});*/
 	}
 
 	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
-		_.each(variableNodes, function(variableNode){
+		/*_.each(variableNodes, function(variableNode){
 			var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
 				"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
 			findUpdateChildren(block, newVar);
 			___JavaRuntime.variablesDictionary.push(newVar);
-		});
+		});*/
 	}
 
 	createUpdateParamVariableReference = function createUpdateParamVariableReference(paramNodes, methodProperties, block){
-		_.each(paramNodes, function(paramNode){
+		/*_.each(paramNodes, function(paramNode){
 			var newVar = new variableEntry(paramNode.name, "", paramNode.javaType, 
 				"method", "", methodProperties.methodSignature, paramNode.ASTNodeID);
 			findUpdateChildren(block, newVar);
 			findUpdateChildren(paramNodes, newVar);
 			___JavaRuntime.variablesDictionary.push(newVar);
-		});
+		});*/
 	}
 
 	parser.yy.createUpdateBlockVariableReference = function createUpdateBlockVariableReference(variableNodes, block){
-		_.each(variableNodes, function(variableNode){
+		/*_.each(variableNodes, function(variableNode){
 			_.each(variableNode.declarations, function(varNode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
 					"", "", "", variableNode.ASTNodeID);
 				findUpdateChildren(block, newVar);
 				___JavaRuntime.variablesDictionary.push(newVar);
 			});
-		});
+		});*/
 	}
 
 	parser.yy.createMethodDeclarationNode = function createMethodDeclarationNode(methodSignatureObject, headerRange, methodBodyNodes, methodBodyRange, range){
@@ -495,7 +497,7 @@ exports.Cashew = function(javaCode){
 
         var typeNode = new node("ExpressionStatement");
 		typeNode.range = range;
-        var memberExpressionVar = createMemberExpressionNode(classNameId, createIdentifierNode("type", [0,0]), range);
+        var memberExpressionVar = createMemberExpressionNode(classNameId, createIdentifierNode("__type", [0,0]), range);
         var declarationNodeAssignment = new node("AssignmentExpression");
 				declarationNodeAssignment.range = classNameRange;
 				declarationNodeAssignment.operator = '=';
@@ -503,31 +505,64 @@ exports.Cashew = function(javaCode){
 				declarationNodeAssignment.right = getArgumentForName(className, classNameRange);
 		typeNode.expression = declarationNodeAssignment;
 
+		//".class" = __type
 		classNodeExpressionRightCalleeBody.body.push(typeNode);
 
-		//Binds __ref to this
- 		var refExpression = new node("ExpressionStatement");
- 		refExpression.range = range;
-        var refNodeAssignment = new node("AssignmentExpression");
-				refNodeAssignment.range = range;
-				refNodeAssignment.operator = '=';
-				refNodeAssignment.left = createIdentifierNode("__ref", [0,0]);
-				var thisNode = new node("ThisExpression");
-				thisNode.range = range;
-				refNodeAssignment.right = thisNode;
-		refExpression.expression = refNodeAssignment;
-
-		classNodeExpressionRightCalleeBody.body.push(refExpression);
-
-		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, constructorParams, classNameRange));
-		
-		//Add Methods to the class
+		//Replaces __TemproaryClass in class body nodes and updates methods dictionary
 		replaceTemporaryClassWithClassName(classBody, className);
 		_.each(methodsDictionary, function(methodSignature){
 			if(methodSignature.clazz == "__TemporaryClassName"){
 				methodSignature.clazz = className;
 			}
 		});
+
+		//Extract variables from the class
+		var variableNodes = [];
+		_.each(classBody, function(fieldNode){
+			if(fieldNode.type == "ExpressionStatement" && fieldNode.expression.type == "SequenceExpression"){
+				if(!fieldNode.expression.isPrivate){
+					var constructorExpressions = [];
+					var staticExpressions = [];
+					_.each(fieldNode.expression.expressions, function(varNode){
+						var lastMember = varNode.right.right;
+						varNode.right.right = lastMember.left;
+						constructorExpressions.push(varNode);
+						staticExpressions.push(lastMember);
+					});
+					//JSON clone
+					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
+					fieldNode.expression.expressions = staticExpressions;
+				}
+				else if(fieldNode.expression.isPrivate && fieldNode.expression.isStatic){
+					var constructorExpressions = [];
+					var staticExpressions = [];
+					_.each(fieldNode.expression.expressions, function(varNode){
+						var lastMember = varNode.right;
+						varNode.right = lastMember.left;
+						constructorExpressions.push(varNode);
+						staticExpressions.push(lastMember);
+					});
+					//JSON clone
+					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
+					fieldNode.expression.expressions = staticExpressions;
+				}else{
+					var constructorExpressions = [];
+					_.each(fieldNode.expression.expressions, function(varNode){
+						var lastMember = varNode;
+						varNode = lastMember.left;
+						constructorExpressions.push(varNode);
+					});
+					//JSON clone
+					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
+					fieldNode.expression.expressions = [];
+				}
+					
+			}
+		});
+		//Insert the constructor
+		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, constructorParams, classNameRange, variableNodes));
+		
+		//Add Methods to the class
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(classBody);
 
 		//Return the class
@@ -569,54 +604,77 @@ exports.Cashew = function(javaCode){
 		_.each(modifiers, function(modifier){
 			if (modifier == "static"){
 				isStatic = true;
+				
 			}
 		});
-		var isPrivate = true;
+		variableDeclarationNode.isStatic = isStatic;
+		var isPrivate = undefined;
 		_.each(modifiers, function(modifier){
 			if (modifier == "public"){
 				isPrivate = false;
+			}if (modifier == "private"){
+				isPrivate = true;
 			}
 		});
+		variableDeclarationNode.isPrivate = isPrivate;
+
+		if (isPrivate == undefined){
+			//FIXME change this to a "NotImplementedException"
+			throw new SyntaxError("Field variables are only implemented as public or private");
+		}else if(!isStatic && !isPrivate){
+			//FIXME change this to a "NotImplementedException"
+			throw new SyntaxError("Instence variables are only implemented as private");
+		}
+
 
 		_.each(variableDeclarationNode.declarations, function(varNode){
-			var prototypeClassObject;
-			if(isStatic){
-				prototypeClassObject = createIdentifierNode("__TemporaryClassName", [0,0]);
+			varNode.type = "AssignmentExpression";
+			varNode.operator = "=";
+			varNode.left = createMemberExpressionNode(createIdentifierNode("__ref", [0,0]), varNode.id, range);
+			var prototypeClass;
+			if(isStatic && !isPrivate){
+				prototypeClass = new node("AssignmentExpression");
+				prototypeClass.range = range;
+				prototypeClass.operator = "=";
+				prototypeClass.left = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range), varNode.id, range);
+				prototypeClassRight =  new node("AssignmentExpression");
+				prototypeClassRight.range = range;
+				prototypeClassRight.operator = "=";
+				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				if(varNode.init == null){
+					prototypeClassRight.right = createIdentifierNode("undefined",[0,0]);
+				}else{
+					prototypeClassRight.right = varNode.init;
+				}
+				prototypeClass.right = prototypeClassRight;
+			}else if (isStatic && isPrivate){
+				prototypeClass = new node("AssignmentExpression");
+				prototypeClass.range = range;
+				prototypeClass.operator = "=";
+				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				if(varNode.init == null){
+					prototypeClass.right = createIdentifierNode("undefined",[0,0]);
+				}else{
+					prototypeClass.right = varNode.init;
+				}
 			}else{
-				prototypeClassObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
-			}
-			var memberExpressionVar;
-			if(isPrivate){
-				memberExpressionVar =  varNode.id;
-			}else{
-				memberExpressionVar = createMemberExpressionNode(prototypeClassObject, varNode.id, range);
+				if(varNode.init == null){
+					prototypeClass = createIdentifierNode("undefined",[0,0]);
+				}else{
+					prototypeClass = varNode.init;
+				}
 			}
 			
-			if(varNode.init == null){
-				varNode.init = memberExpressionVar;
-			}else{
-				var declarationNodeAssignment = new node("AssignmentExpression");
-				declarationNodeAssignment.range = range;
-				declarationNodeAssignment.operator = '=';
-				declarationNodeAssignment.left = memberExpressionVar;
-				var oldInit = varNode.init;
-				declarationNodeAssignment.right = oldInit;
-				varNode.init = declarationNodeAssignment;
-			}
-
-			if (isStatic && !isPrivate){
-				var declarationNodeAssignmentStatic = new node("AssignmentExpression");
-				declarationNodeAssignmentStatic.range = range;
-				declarationNodeAssignmentStatic.operator = '=';
-				declarationNodeAssignmentStatic.right = varNode.init;
-				var leftObject = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), createIdentifierNode("prototype", range), range);
-				var left = createMemberExpressionNode(leftObject, varNode.id, range);
-				declarationNodeAssignmentStatic.left = left;
-				varNode.init = declarationNodeAssignmentStatic;
-			}
-
+			varNode.right = prototypeClass;
+			
+			delete varNode.id;
+			delete varNode.init;
 		});
-		return variableDeclarationNode;
+		variableDeclarationNode.type = "SequenceExpression";
+		variableDeclarationNode.expressions = variableDeclarationNode.declarations;
+		delete  variableDeclarationNode.declarations;
+
+		return createExpressionStatementNode(variableDeclarationNode, range);
 
 	}
 
@@ -634,7 +692,7 @@ exports.Cashew = function(javaCode){
 		return ast;
 	}
 
-	var createConstructorNode = function createConstructorNode(className, methodBodyNodes, methodParams, range){
+	var createConstructorNode = function createConstructorNode(className, methodBodyNodes, methodParams, range, variableNodes ){
 		var constructorNode = new node("FunctionDeclaration");
 		constructorNode.range = range;
 		constructorNode.id = createIdentifierNode(className, range);
@@ -683,12 +741,13 @@ exports.Cashew = function(javaCode){
 		var argumentsNode = createIdentifierNode("arguments", range);
 		constructorCallNode.arguments.push(argumentsNode);
 
-		//Returns the class
+		constructorNodeBody.body.push(createExpressionStatementNode(constructorCallNode, range));
+		
+		constructorNodeBody.body = constructorNodeBody.body.concat(variableNodes);
+
 		if(methodBodyNodes){
 			constructorNodeBody.body = constructorNodeBody.body.concat(methodBodyNodes);
 		}
-
-		constructorNodeBody.body.push(createReturnStatementNode(constructorCallNode, range));
 
 		constructorNode.body = constructorNodeBody;
 		constructorNode.generator = false;
@@ -766,8 +825,9 @@ exports.Cashew = function(javaCode){
 		if(expressionNode.type === "NewExpression"){
 			assignmentExpressionNode.right = expressionNode;
 		}else{
-			var setNode = createRuntimeValidateSet(varName, varRange, expressionNode, index1, index2, assignmentRange);
-			assignmentExpressionNode.right = setNode;
+			//var setNode = createRuntimeCheckAssignment(varName, varRange, expressionNode, index1, index2, assignmentRange);
+			//FIXME Removed Validations for now
+			assignmentExpressionNode.right = expressionNode;
 		}
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
@@ -884,13 +944,14 @@ exports.Cashew = function(javaCode){
 		if(assignment.type === "NewExpression"){
 			varDeclaratorNode.init = assignment;
 		}else{
-			var initNode = createRuntimeValidateSet(varName, varRange, assignment, null, null, assignmentRange);
-			varDeclaratorNode.init = initNode;
+			//var initNode = createRuntimeCheckAssignment(varName, varRange, assignment, null, null, assignmentRange);
+			//FIXME Removed Validations for now
+			varDeclaratorNode.init = assignment;
 		}
 		return varDeclaratorNode;
 	}
 
-	var createRuntimeValidateSet = function createRuntimeValidateSet(varName, varRange, assignment, index1, index2, range){
+	var createRuntimeCheckAssignment = function createRuntimeCheckAssignment(varName, varRange, assignment, index1, index2, range){
 		var initNode = new node("CallExpression");
 		initNode.range = range;
 		initNode.arguments = [];
@@ -908,14 +969,14 @@ exports.Cashew = function(javaCode){
 			initNode.arguments.push(getNullArgument());
 		}
 		initNode.arguments.push(getArgumentForNumber(assignment.ASTNodeID, range));
-		
-		var callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("validateSet", range), range, false);
+		//FIXME changed validateSet to checkAssignment for now
+		var callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("checkAssignment", range), range, false);
 
 		initNode.callee = callee;
 		return initNode;
 	}
 
-	parser.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
+	var createExpressionStatementNode = parser.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
 		var expressionStatementNode = new node("ExpressionStatement");
 		expressionStatementNode.range = range
 		expressionStatementNode.expression = expression;
@@ -1299,6 +1360,7 @@ _Object = (function() {
 	};
 
 	function _Object() {
+		__ref = this;
 		this.id = generateId();
 	};
 
@@ -1337,6 +1399,12 @@ exports.___JavaRuntime = ___JavaRuntime = {
 	functions : {
 		print: function(str){
 			console.log(str);
+		},
+		//FIXME: chaneged validateSet to checkAssignment, most validations will be in the AST soon
+		checkAssignment: function(value, variableName, variable, arrayIndex1, arrayIndex2, ASTNodeID){
+			if(typeof value === "function")
+				value = value();
+			return value;
 		},
 		validateSet: function(value, variableName, variable, arrayIndex1, arrayIndex2, ASTNodeID){
 			if(typeof value === "function")
