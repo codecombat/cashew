@@ -527,6 +527,7 @@ exports.Cashew = function(javaCode){
 						var lastMember = varNode.right.right;
 						varNode.right.right = lastMember.left;
 						constructorExpressions.push(varNode);
+						lastMember.left.object.name = className;
 						staticExpressions.push(lastMember);
 					});
 					//JSON clone
@@ -540,6 +541,7 @@ exports.Cashew = function(javaCode){
 						var lastMember = varNode.right;
 						varNode.right = lastMember.left;
 						constructorExpressions.push(varNode);
+						lastMember.left.object.name = className;
 						staticExpressions.push(lastMember);
 					});
 					//JSON clone
@@ -630,7 +632,7 @@ exports.Cashew = function(javaCode){
 		_.each(variableDeclarationNode.declarations, function(varNode){
 			varNode.type = "AssignmentExpression";
 			varNode.operator = "=";
-			varNode.left = createMemberExpressionNode(createIdentifierNode("__ref", [0,0]), varNode.id, range);
+			varNode.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
 			var prototypeClass;
 			if(isStatic && !isPrivate){
 				prototypeClass = new node("AssignmentExpression");
@@ -640,7 +642,7 @@ exports.Cashew = function(javaCode){
 				prototypeClassRight =  new node("AssignmentExpression");
 				prototypeClassRight.range = range;
 				prototypeClassRight.operator = "=";
-				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("__ref", [0,0]), varNode.id, range);
 				if(varNode.init == null){
 					prototypeClassRight.right = createIdentifierNode("undefined",[0,0]);
 				}else{
@@ -651,15 +653,16 @@ exports.Cashew = function(javaCode){
 				prototypeClass = new node("AssignmentExpression");
 				prototypeClass.range = range;
 				prototypeClass.operator = "=";
-				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("__ref", [0,0]), varNode.id, range);
 				if(varNode.init == null){
 					prototypeClass.right = createIdentifierNode("undefined",[0,0]);
 				}else{
 					prototypeClass.right = varNode.init;
 				}
 			}else{
+				varNode.left.object.name = "__ref";
 				if(varNode.init == null){
-					prototypeClass = createIdentifierNode("undefined",[0,0]);
+					prototypeClass = createMemberExpressionNode(createIdentifierNode("__ref", [0,0]), varNode.id, range);
 				}else{
 					prototypeClass = varNode.init;
 				}
@@ -743,10 +746,12 @@ exports.Cashew = function(javaCode){
 
 		constructorNodeBody.body.push(createExpressionStatementNode(constructorCallNode, range));
 		
-		constructorNodeBody.body = constructorNodeBody.body.concat(variableNodes);
-
 		if(methodBodyNodes){
 			constructorNodeBody.body = constructorNodeBody.body.concat(methodBodyNodes);
+		}
+
+		if(variableNodes){
+			constructorNodeBody.body = constructorNodeBody.body.concat(variableNodes);
 		}
 
 		constructorNode.body = constructorNodeBody;
