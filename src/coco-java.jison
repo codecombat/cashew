@@ -684,6 +684,10 @@ expression_statement
     {
       $$ = $1;
     }
+  | method_invocation LINE_TERMINATOR
+    {
+      $$ = yy.createExpressionStatementNode($1, @$.range);
+    }
   ;
 
 //FIXME: Return without any validation so we can integrate with Aether
@@ -735,10 +739,6 @@ statement_expression
   | post_decrement_expression
     {
       $$ = $1;
-    }
-  | method_invocation
-    {
-      $$ = yy.createExpressionStatementNode($1, @$.range);
     }
   // TODO class_instance_creation_expression
   ;
@@ -1045,7 +1045,11 @@ constructor_call
 // Names
 
 name
-  : IDENTIFIER
+  : method_invocation
+    {
+      $$ = $1;
+    }
+  | IDENTIFIER
     { 
       $$ = yy.createIdentifierNode($1, @$.range); 
     }
@@ -1064,10 +1068,6 @@ name
 expression
   : assignment_expression
     { 
-      $$ = $1;
-    }
-  | method_invocation
-    {
       $$ = $1;
     }
   ;
