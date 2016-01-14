@@ -1245,6 +1245,10 @@ exports.Cashew = function(javaCode){
 		return forNode;
 	}
 
+	parser.yy.createEnhancedForStatement = function createEnhancedForStatement(typeVar, varName, varRange, arraylist, forBlock, range){
+		return createIdentifierNode("WIP - ForEach",range);
+	}
+
 	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;
@@ -1487,6 +1491,8 @@ exports.___JavaRuntime = ___JavaRuntime = {
 	},
 
  	_Object : _Object,
+
+ 	_ArrayList : _ArrayList,
 
 	functions : {
 		print: function(str){

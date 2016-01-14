@@ -554,7 +554,7 @@ floating_point_type
   ;
 
 list_type
-  : KEYWORD_ARRAYLIST // OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN
+  : KEYWORD_ARRAYLIST
     {}
   | KEYWORD_LIST
     {}
@@ -806,7 +806,7 @@ variable_declaration
       yy.validateDeclaratorsDimension($4, $1);
       $$ = yy.createVarDeclarationNode($1 + $2 + $3, $4, @$.range);
     }
-  | generic_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN arraylist_declarator
+  | list_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN arraylist_declarator
     {
       // TODO: yy.validateArrayListTypes($3, $5);
       $$ = yy.createVarDeclarationNode($3, $5, @$.range);
@@ -934,7 +934,7 @@ arraylist_initializer
   ;
 
 arraylist_expression
-  : KEYWORD_NEW generic_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN LEFT_PAREN RIGHT_PAREN
+  : KEYWORD_NEW list_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN LEFT_PAREN RIGHT_PAREN
     { 
       $$ = yy.createListInitialization($4, @$.range);
     }
@@ -1455,6 +1455,10 @@ for_statement
       yy.createUpdateBlockVariableReference(variables, forBlock);
 
       $$ = forBlock;
+    }
+  | KEYWORD_FOR LEFT_PAREN type IDENTIFIER COLON IDENTIFIER RIGHT_PAREN statement
+    {
+      $$ = yy.createEnhancedForStatement($3, $4, @4.range, $6, $8, @$.range);
     }
   ;
 
