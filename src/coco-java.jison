@@ -76,6 +76,9 @@ BSL               "\\".
 "double"              return 'PRIMITIVE_DOUBLE';
 "String"              return 'STRING_TYPE';
 
+"ArrayList"           return 'KEYWORD_ARRAYLIST';
+"List"                return 'KEYWORD_LIST';
+
 "<<"                  return 'OPERATOR_LEFTSHIFT';
 ">>>"                 return 'OPERATOR_ZEROFILL_RIGHTSHIFT';
 ">>"                  return 'OPERATOR_RIGHTSHIFT';
@@ -550,6 +553,13 @@ floating_point_type
     {}
   ;
 
+list_type
+  : KEYWORD_ARRAYLIST // OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN
+    {}
+  | KEYWORD_LIST
+    {}
+  ;
+
 // Blocks
 
 block
@@ -762,7 +772,6 @@ pre_decrement_expression
     }
   ;
 
-
 post_increment_expression
   : postfix_expression OPERATOR_INCREMENT %prec POST_INCREMENT
     {
@@ -781,7 +790,6 @@ post_decrement_expression
     }
   ;
 
-
 // Variable Declarators
 
 variable_declaration
@@ -797,6 +805,11 @@ variable_declaration
     {
       yy.validateDeclaratorsDimension($4, $1);
       $$ = yy.createVarDeclarationNode($1 + $2 + $3, $4, @$.range);
+    }
+  | generic_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN arraylist_declarator
+    {
+      // TODO: yy.validateArrayListTypes($3, $5);
+      $$ = yy.createVarDeclarationNode($3, $5, @$.range);
     }
   ;
 
@@ -855,7 +868,6 @@ array_declarators
     }
   ;
 
-
 array_declarator
   : array_declarator_id
     {
@@ -895,6 +907,38 @@ array_expression
       $$ = yy.createArrayFromInitialArray($2, @$.range);
     }
   ;
+ 
+arraylist_declarator
+  : arraylist_declarator_id
+    {
+      $$ = yy.createSimpleListNode($1, @$.range);
+    }
+  | arraylist_initializer
+    {
+      $$ = $1;
+    }
+  ;
+
+arraylist_declarator_id
+  : IDENTIFIER
+    {
+      $$ = $1;
+    }
+  ;
+
+arraylist_initializer
+  : arraylist_declarator_id OPERATOR_ASSIGNMENT arraylist_expression
+    {
+      $$ = yy.createListWithInitNode($1, @1.range, $3, @$.range);
+    }
+  ;
+
+arraylist_expression
+  : KEYWORD_NEW generic_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN LEFT_PAREN RIGHT_PAREN
+    { 
+      $$ = yy.createListInitialization($4, @$.range);
+    }
+  ;
 
 primary_expression_list
   : primary_expression_value
@@ -918,7 +962,6 @@ primary_expression_value
       $$ = $2;
     }
   ;
-
 
 assignment
   : variable_invocation OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
