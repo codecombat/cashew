@@ -15,10 +15,10 @@
       height: 45%;
       padding: 10px 15px; 
       font-size: 16px;
-      margin: 13px;
+      margin: 10px;
       border: 1px solid silver;
       display: inline-block;
-      overflow: scroll;
+      overflow: hidden;
     }
     .btn-parser {
       padding: 10px 25px;
@@ -26,8 +26,8 @@
       font-size: 16px;
       border: none;
       position: absolute;
-      left: 40%;
-      top: 44%;
+      left: 38%;
+      top: 42%;
       z-index: 9;
     }
   </style>
@@ -90,6 +90,7 @@
     editor.setTheme("ace/theme/github");
     editor.getSession().setTabSize(2);
     editor.getSession().setMode("ace/mode/java");
+    editor.$blockScrolling = Infinity;
 
     var jseditor = ace.edit("jsText");
     jseditor.setTheme("ace/theme/textmate");
