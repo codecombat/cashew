@@ -1024,6 +1024,35 @@ exports.Cashew = function(javaCode){
 		return ifElseNode;
 	}
 
+	var createSimpleListNode = parser.yy.createSimpleListNode = function createSimpleListNode(varName, varRange, range){
+		var simpleList = new node("VariableDeclarator");
+		simpleList.range = range;
+
+		var idNode = createIdentifierNode(varName, varRange);
+		simpleList.id = idNode;
+
+		var nodeList = new node("ExpressionStatement");
+		simpleList.init = nodeList;
+
+		return simpleList;
+	}
+
+	parser.yy.createListWithInitNode = function createListWithInitNode(varName, varRange, initNode, range){
+		var nullList = createSimpleListNode(varName, varRange, range);
+		nullList.init = initNode;
+		return nullList;
+	}
+
+	var createListInitialization = parser.yy.createListInitialization = function createListInitialization(nodeType, range){
+		var newExpressionNode = new node("NewExpression");
+		newExpressionNode.range = range;
+		var newExpressionNodecallee = createMemberExpressionNode(createIdentifierNode("___JavaRuntime", range),createIdentifierNode("_ArrayList", range), range);
+		newExpressionNode.callee = newExpressionNodecallee;
+		newExpressionNode.arguments = [];
+		newExpressionNode.arguments.push(getArgumentForName(nodeType, range));
+		return newExpressionNode;
+ 	}
+
 	var createSimpleArrayNode = parser.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, range){
 		var simpleArray = new node("VariableDeclarator");
 		simpleArray.range = range;
@@ -1039,7 +1068,7 @@ exports.Cashew = function(javaCode){
 	}
 
 	parser.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
-		var nullArray = createSimpleArrayNode(varName, varRange,range);
+		var nullArray = createSimpleArrayNode(varName, varRange, range);
 		nullArray.init = initNode;
 		return nullArray;
 	}
@@ -1381,6 +1410,64 @@ _Object = (function() {
 
 })();
 
+_ArrayList = (function() {
+
+	function _ArrayList(type) {
+		this.type = type;
+		this.arraylist = [];
+	}
+
+	_ArrayList.prototype.size = function() {
+		return this.arraylist.length;
+	};
+
+	_ArrayList.prototype.add = function(index, object) {
+		//hacky way so we can have method overload
+		if (object == undefined) {
+			//todo("validate type");
+			this.arraylist.push(index);
+			return true;
+		} else {
+			if (index > 0 && index < this.arraylist.length) {
+				//todo("fixthis");
+				this.arraylist[index] = object;
+				return true;
+			} else {
+				throw new SyntaxError("Index out of bounds Exception");
+			}
+		}
+	};
+
+	_ArrayList.prototype.get = function(index) {
+		if (index < 0 || index > this.arraylist.length) {
+			throw new SyntaxError("Index out of bounds Exception");
+		}
+		return this.arraylist[index];
+	};
+
+	_ArrayList.prototype.set = function(index, object) {
+		var old;
+		if (index < 0 || index > this.arraylist.length) {
+			throw new SyntaxError("Index out of bounds Exception");
+		}
+		var old = this.arraylist[index];
+		//todo("validate type");
+		this.arraylist[index] = object;
+		return old;
+	};
+
+	_ArrayList.prototype.remove = function(index) {
+		if (index < 0 || index > this.arraylist.length) {
+			throw new SyntaxError("Index out of bounds Exception");
+		}
+		//todo("do the index subtraction");
+
+		return this.arraylist[index];
+	};
+
+	return _ArrayList;
+
+})();
 
 exports.___JavaRuntime = ___JavaRuntime = { 
 	variablesDictionary : [],
