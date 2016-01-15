@@ -79,6 +79,10 @@ BSL               "\\".
 "ArrayList"           return 'KEYWORD_ARRAYLIST';
 "List"                return 'KEYWORD_LIST';
 
+"java.util.ArrayList" return 'PACKAGE_ARRAYLIST';
+"java.util.List"      return 'PACKAGE_LIST';
+"java.util.*"         return 'PACKAGE_UTIL';
+
 "<<"                  return 'OPERATOR_LEFTSHIFT';
 ">>>"                 return 'OPERATOR_ZEROFILL_RIGHTSHIFT';
 ">>"                  return 'OPERATOR_RIGHTSHIFT';
@@ -118,7 +122,6 @@ BSL               "\\".
 {Ds}          return 'DECIMAL_INTEGER_LITERAL';
 "\"\""                return 'STRING_LITERAL';
 "\""([^"]|{BSL})*"\"" return 'STRING_LITERAL';
-"."                   return 'SEPARATOR_DOT';
 
 <<EOF>>               return 'EOF';
 .                     return 'INVALID';
@@ -154,6 +157,42 @@ compilation_unit
     {
       return yy.ast.createRoot($1,@$.range);
     }
+  | import_declarations class_declarations EOF
+    {
+      var rootNode = yy.ast.createRoot($2,@$.range);
+      yy._.each($1, function(import){
+        rootNode.body.splice(1,0,import);
+      });
+      return rootNode;
+    }
+  ;
+
+import_declarations
+  : import_declaration
+    {
+      $$ = [$1];
+    }
+  | import_declarations import_declaration
+    { 
+      $1.push($2);
+      $$ = $1;
+    }
+  ;
+
+import_declaration
+  : KEYWORD_IMPORT package_name LINE_TERMINATOR
+    {
+      $$ = yy.createImportNodeForName($2);
+    }
+  ;
+
+package_name
+  : PACKAGE_ARRAYLIST
+    {}
+  | PACKAGE_LIST
+    {}
+  | PACKAGE_UTIL
+    {}
   ;
 
 // Lexical Structure
