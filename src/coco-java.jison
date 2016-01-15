@@ -1458,7 +1458,7 @@ for_statement
     }
   | KEYWORD_FOR LEFT_PAREN type IDENTIFIER COLON IDENTIFIER RIGHT_PAREN statement
     {
-      $$ = yy.createEnhancedForStatement($3, $4, @4.range, $6, $8, @$.range);
+      $$ = yy.createEnhancedForStatement($3, $4, @4.range, $6, @6.range, $8, @8.range, @$.range);
     }
   ;
 

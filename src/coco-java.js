@@ -636,7 +636,7 @@ case 223:
 break;
 case 224:
 
-      this.$ = yy.createEnhancedForStatement($$[$0-5], $$[$0-4], _$[$0-4].range, $$[$0-2], $$[$0], this._$.range);
+      this.$ = yy.createEnhancedForStatement($$[$0-5], $$[$0-4], _$[$0-4].range, $$[$0-2], _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
     
 break;
 case 229:

@@ -1245,8 +1245,37 @@ exports.Cashew = function(javaCode){
 		return forNode;
 	}
 
-	parser.yy.createEnhancedForStatement = function createEnhancedForStatement(typeVar, varName, varRange, arraylist, forBlock, range){
-		return createIdentifierNode("WIP - ForEach",range);
+	parser.yy.createEnhancedForStatement = function createEnhancedForStatement(typeVar, varName, varRange, arraylist, arraylistRange, forBlock, blockRange, range){
+		//list._arrayList.forEach(function(varName){blocks});
+		var enhancedForExpression = new node("ExpressionStatement");
+		enhancedForExpression.range = range;
+
+		enhancedForExpressionExpression = new node("CallExpression");
+		enhancedForExpressionExpression.range = range;
+		enhancedForExpressionExpression.callee = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode(arraylist,arraylistRange),createIdentifierNode("_arraylist",range),range), createIdentifierNode("forEach"),range);
+
+		
+
+		enhancedForExpressionArgument = new node("FunctionExpression");
+		enhancedForExpressionArgument.range = range;
+		enhancedForExpressionArgument.id = null;
+		enhancedForExpressionArgument.params = [];
+		enhancedForExpressionArgument.params.push(createIdentifierNode(varName, varRange));
+		enhancedForExpressionArgument.defaults = [];
+
+		enhancedForExpressionArgumentBlock = new node("BlockStatement");
+		enhancedForExpressionArgumentBlock.range = blockRange;
+		enhancedForExpressionArgumentBlock.body = forBlock;
+
+		enhancedForExpressionArgument.body = enhancedForExpressionArgumentBlock;
+		enhancedForExpressionArgument.generator = false;
+		enhancedForExpressionArgument.expression = false;
+
+		enhancedForExpressionExpression.arguments = [];
+		enhancedForExpressionExpression.arguments.push(enhancedForExpressionArgument);	
+		enhancedForExpression.expression = enhancedForExpressionExpression;
+
+		return enhancedForExpression;
 	}
 
 	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
@@ -1417,24 +1446,24 @@ _Object = (function() {
 _ArrayList = (function() {
 
 	function _ArrayList(type) {
-		this.type = type;
-		this.arraylist = [];
+		this._type = type;
+		this._arraylist = [];
 	}
 
 	_ArrayList.prototype.size = function() {
-		return this.arraylist.length;
+		return this._arraylist.length;
 	};
 
 	_ArrayList.prototype.add = function(index, object) {
 		//hacky way so we can have method overload
 		if (object == undefined) {
 			//todo("validate type");
-			this.arraylist.push(index);
+			this._arraylist.push(index);
 			return true;
 		} else {
-			if (index > 0 && index < this.arraylist.length) {
+			if (index > 0 && index < this._arraylist.length) {
 				//todo("fixthis");
-				this.arraylist[index] = object;
+				this._arraylist[index] = object;
 				return true;
 			} else {
 				throw new SyntaxError("Index out of bounds Exception");
@@ -1443,30 +1472,30 @@ _ArrayList = (function() {
 	};
 
 	_ArrayList.prototype.get = function(index) {
-		if (index < 0 || index > this.arraylist.length) {
+		if (index < 0 || index > this._arraylist.length) {
 			throw new SyntaxError("Index out of bounds Exception");
 		}
-		return this.arraylist[index];
+		return this._arraylist[index];
 	};
 
 	_ArrayList.prototype.set = function(index, object) {
 		var old;
-		if (index < 0 || index > this.arraylist.length) {
+		if (index < 0 || index > this._arraylist.length) {
 			throw new SyntaxError("Index out of bounds Exception");
 		}
-		var old = this.arraylist[index];
+		var old = this._arraylist[index];
 		//todo("validate type");
-		this.arraylist[index] = object;
+		this._arraylist[index] = object;
 		return old;
 	};
 
 	_ArrayList.prototype.remove = function(index) {
-		if (index < 0 || index > this.arraylist.length) {
+		if (index < 0 || index > this._arraylist.length) {
 			throw new SyntaxError("Index out of bounds Exception");
 		}
 		//todo("do the index subtraction");
 
-		return this.arraylist[index];
+		return this._arraylist[index];
 	};
 
 	return _ArrayList;
