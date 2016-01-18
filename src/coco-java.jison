@@ -67,6 +67,7 @@ BSL               "\\".
 "interface"           return 'KEYWORD_INTERFACE';
 "abstract"            return 'KEYWORD_ABSTRACT';
 "this"                return 'KEYWORD_THIS';
+"super"               return 'KEYWORD_SUPER';
 
 "new"                 return 'KEYWORD_NEW';
 "return"              return 'KEYWORD_RETURN';
@@ -1385,6 +1386,10 @@ property_invocation
     {
       $$ = $1;
     }
+  | super_method_invocation
+    {
+      $$ = $1;
+    }
   | variable_invocation
     {
       $$ = $1;
@@ -1414,6 +1419,21 @@ static_method_invocation
   : CLASS_IDENTIFIER OPERATOR_CALL simple_method_invocation
     {
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
+    }
+  ;
+
+super_method_invocation
+  : KEYWORD_SUPER OPERATOR_CALL simple_method_invocation
+    {
+      $$ = yy.createSuperInvokeNode($3, @1.range, @$.range);
+    }
+  | KEYWORD_SUPER LEFT_PAREN RIGHT_PAREN
+    {
+      $$ = yy.createSuperConstructorNode(@1.range, [], @$.range);
+    }
+  | KEYWORD_SUPER LEFT_PAREN parameter_list RIGHT_PAREN
+    {
+      $$ = yy.createSuperConstructorNode(@1.range, $3, @$.range);
     }
   ;
 

@@ -815,6 +815,26 @@ exports.Cashew = function(javaCode){
 		return constructorNode;
 	}
 
+	parser.yy.createSuperInvokeNode = function createSuperInvokeNode(methodNode, superRange, range){
+		var oldCallee = methodNode.callee;
+		var innerMemberExpression = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", superRange), createIdentifierNode("__super__", superRange), range);
+		var newCallee = createMemberExpressionNode(innerMemberExpression, oldCallee, range);
+		methodNode.callee = newCallee;
+		return methodNode;
+	}
+
+	parser.yy.createSuperConstructorNode = function createSuperConstructorNode(superRange, argumentsNodes, range){
+		var mostInnerMember = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", superRange), createIdentifierNode("__super__", superRange), superRange);
+		var innerMemberExpression = createMemberExpressionNode(mostInnerMember, createIdentifierNode("constructor", superRange), superRange);
+		var memberExpressionNode = createMemberExpressionNode(innerMemberExpression, createIdentifierNode("call", superRange), range);
+		var superInvokeNodeExpression = new node("CallExpression");
+		superInvokeNodeExpression.range = range;
+		superInvokeNodeExpression.callee = memberExpressionNode;
+		//TODO: Validate argument types
+		superInvokeNodeExpression.arguments = argumentsNodes;
+		return superInvokeNodeExpression;
+	}
+
 	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode, index1, index2){
 		var assignmentNode = new node("ExpressionStatement");
 		assignmentNode.range = assignmentRange;
