@@ -242,7 +242,9 @@ exports.Cashew = function(javaCode){
 	     }
 
 	     //inserting Object at the begining of the code so classes can extend it;
-		_Object = {"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_Object"},"right":{"type":"CallExpression","callee":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"id"},"init":{"type":"Literal","value":0,"raw":"0"}}],"kind":"var"},{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"generateId"},"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"UpdateExpression","operator":"++","argument":{"type":"Identifier","name":"id"},"prefix":false}}]},"generator":false,"expression":false},{"type":"EmptyStatement"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"type"}},"right":{"type":"Literal","value":"_Object","raw":"\"_Object\""}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"id"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"newId"},"init":{"type":"CallExpression","callee":{"type":"Identifier","name":"generateId"},"arguments":[]}}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"id"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"Identifier","name":"newId"}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"newId"}}]},"generator":false,"expression":false}}},{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_Object"},"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"__ref"},"right":{"type":"ThisExpression"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"id"}},"right":{"type":"CallExpression","callee":{"type":"Identifier","name":"generateId"},"arguments":[]}}}]},"generator":false,"expression":false},{"type":"EmptyStatement"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"equals"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"other"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"===","left":{"type":"ThisExpression"},"right":{"type":"Identifier","name":"other"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"toString"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"+","left":{"type":"BinaryExpression","operator":"+","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"constructor"}},"property":{"type":"Identifier","name":"name"}},"right":{"type":"Literal","value":"@","raw":"\"@\""}},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"id"}}}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_Object"}}]},"generator":false,"expression":false},"arguments":[]}}};
+		_Object = {"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_Object"},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"id"},"init":{"type":"Literal","value":0,"raw":"0"}}],"kind":"var"},{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"generateId"},"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"UpdateExpression","operator":"++","argument":{"type":"Identifier","name":"id"},"prefix":false}}]},"generator":false,"expression":false},{"type":"EmptyStatement"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"type"}},"right":{"type":"Literal","value":"_Object","raw":"\"_Object\""}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"id"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"newId"},"init":{"type":"CallExpression","callee":{"type":"Identifier","name":"generateId"},"arguments":[]}}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"id"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"Identifier","name":"newId"}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"newId"}}]},"generator":false,"expression":false}}},{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_Object"},"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"__ref"},"right":{"type":"ThisExpression"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"id"}},"right":{"type":"CallExpression","callee":{"type":"Identifier","name":"generateId"},"arguments":[]}}}]},"generator":false,"expression":false},{"type":"EmptyStatement"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"equals"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"other"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"===","left":{"type":"ThisExpression"},"right":{"type":"Identifier","name":"other"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"toString"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"+","left":{"type":"BinaryExpression","operator":"+","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"constructor"}},"property":{"type":"Identifier","name":"name"}},"right":{"type":"Literal","value":"@","raw":"\"@\""}},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"id"}}}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_Object"}}]},"generator":false,"expression":false}}};
+		_ObjectCall = {"type": "ExpressionStatement","expression": {"type": "CallExpression","callee": {"type": "Identifier","name": "_Object"},"arguments": []}}
+		this.rootNode.body.unshift(_ObjectCall);
 		this.rootNode.body.unshift(_Object);
 
 
@@ -464,9 +466,6 @@ exports.Cashew = function(javaCode){
 		classNodeExpression.operator = '=';
 		classNodeExpression.left = classNameId;
 
-		var classNodeExpressionRight = new node("CallExpression");
-		classNodeExpressionRight.range = range;
-
 		var classNodeExpressionRightCallee = new node("FunctionExpression");
 		classNodeExpressionRightCallee.range = range;
 		classNodeExpressionRightCallee.id = null;
@@ -580,9 +579,12 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRightCallee.generator = false;
 		classNodeExpressionRightCallee.expression = false;
 
-		classNodeExpressionRight.callee = classNodeExpressionRightCallee;
+		var classNodeInvokeExpression = new node("CallExpression");
+		classNodeInvokeExpression.range = range;
 
-		classNodeExpressionRight.arguments = [];
+		classNodeInvokeExpression.callee = createIdentifierNode(className, classNameRange);
+
+		classNodeInvokeExpression.arguments = [];
 		var extensionClass;
 		if(extensionName == null){
 			extensionClass = createIdentifierNode("_Object", classNameRange);
@@ -590,12 +592,24 @@ exports.Cashew = function(javaCode){
 			extensionClass = createIdentifierNode(extensionName, extensionRange);
 		}
 
-		classNodeExpressionRight.arguments.push(extensionClass);
+		classNodeInvokeExpression.arguments.push(extensionClass);
 
-		classNodeExpression.right = classNodeExpressionRight;
+		var classNodeInvoke = new node("ExpressionStatement");
+		classNodeInvoke.range = range;
+		classNodeInvoke.expression = classNodeInvokeExpression;
+
+		classNodeExpression.right = classNodeExpressionRightCallee;
 
 		classNode.expression = classNodeExpression;
-		return classNode;
+		
+		var blockClass = new node("BlockStatement");
+		blockClass.range = range;
+		blockClass.body = [];
+
+		blockClass.body.push(classNode);
+		blockClass.body.push(classNodeInvoke);
+
+		return blockClass;
 	}
 
 	parser.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
@@ -711,7 +725,7 @@ exports.Cashew = function(javaCode){
 	}
 
 	var createConstructorNode = function createConstructorNode(className, methodBodyNodes, methodParams, range, variableNodes ){
-		var constructorNode = new node("FunctionDeclaration");
+		var constructorNode = new node("FunctionExpression");
 		constructorNode.range = range;
 		constructorNode.id = createIdentifierNode(className, range);
 
@@ -772,7 +786,19 @@ exports.Cashew = function(javaCode){
 		constructorNode.body = constructorNodeBody;
 		constructorNode.generator = false;
 		constructorNode.expression = false;
-		return constructorNode;
+
+		var expressionConstructor = new node("ExpressionStatement");
+		expressionConstructor.range = range;
+
+		var expressionConstructorExpression = new node("AssignmentExpression");
+		expressionConstructorExpression.range = range;
+		expressionConstructorExpression.operator = "=";
+		expressionConstructorExpression.left = createIdentifierNode(className, range);
+		expressionConstructorExpression.right = constructorNode;
+		
+		expressionConstructor.expression = expressionConstructorExpression;
+
+		return expressionConstructor;
 	}
 
 	parser.yy.createInvokeNode = function createInvokeNode(nameOrObject, nameRange, invokeNode, invokeRange, range){
@@ -1351,7 +1377,6 @@ exports.Cashew = function(javaCode){
 	}
 
 	ast = parser.parse(javaCode);
-
 	return ast;
 }
 
@@ -1363,7 +1388,7 @@ exports.wrapFunction = wrapFunction = function(ast, functionName, className, sta
 
 	//check if there's a different static call other than the main
 	if(className !== undefined && className !== ""  && staticCall !== undefined &&  staticCall !== ""){
-		var staticCallNode = new node("ReturnStatement");
+		var staticCallNode = new node("ExpressionStatement");
 
 	    var staticCallNodeExpression = new node("CallExpression");
 
@@ -1381,12 +1406,12 @@ exports.wrapFunction = wrapFunction = function(ast, functionName, className, sta
 
 	    staticCallNodeExpression.arguments = [];
 
-	    staticCallNode.argument = staticCallNodeExpression;
+	    staticCallNode.expression = staticCallNodeExpression;
 	    astBody.push(staticCallNode);
 	}else if(astBody[astBody.length-1].expression.type === "CallExpression"){
 		// transform the static call into return that same static call
-		var staticCallNode = new node("ReturnStatement");
-		staticCallNode.argument = astBody[astBody.length-1].expression;
+		var staticCallNode = new node("ExpressionStatement");
+		staticCallNode.expression = astBody[astBody.length-1].expression;
 		astBody[astBody.length-1] = staticCallNode
 	}
 
@@ -1427,7 +1452,6 @@ exports.wrapFunction = wrapFunction = function(ast, functionName, className, sta
 
 	fooBody.body.push(functReturn);
 	fooFunctNode.body = fooBody;
-
 	ast.body = [];
 	ast.body.push(fooFunctNode);
 
@@ -1443,7 +1467,7 @@ exports.toNode = function(p){
   function node(){}
 }
 
-_Object = (function() {
+_Object = function() {
 
 	var id = 0;
 
@@ -1476,9 +1500,9 @@ _Object = (function() {
 
 	return _Object;
 
-})();
+};
 
-_ArrayList = (function() {
+_ArrayList = function() {
 
 	function _ArrayList(type) {
 		this._type = type;
@@ -1532,7 +1556,7 @@ _ArrayList = (function() {
 
 	return _ArrayList;
 
-})();
+};
 
 exports.___JavaRuntime = ___JavaRuntime = { 
 	variablesDictionary : [],
