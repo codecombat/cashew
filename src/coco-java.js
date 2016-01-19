@@ -615,7 +615,7 @@ case 215: case 216: case 217: case 219: case 223: case 224:
 break;
 case 218: case 225:
 
-      this.$ = yy.createInvokeNode("__ref", _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
+      this.$ = yy.createInvokeNode("this", _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
     
 break;
 case 220:

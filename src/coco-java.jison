@@ -1411,7 +1411,7 @@ variable_invocation
     }
   | KEYWORD_THIS OPERATOR_CALL IDENTIFIER
     {
-      $$ = yy.createInvokeNode("__ref", @1.range, $3, @3.range, @$.range);
+      $$ = yy.createInvokeNode("this", @1.range, $3, @3.range, @$.range);
     }
   ;
 
@@ -1448,7 +1448,7 @@ instance_method_invocation
     }
   | KEYWORD_THIS OPERATOR_CALL simple_method_invocation
     {
-      $$ = yy.createInvokeNode("__ref", @1.range, $3, @3.range, @$.range);
+      $$ = yy.createInvokeNode("this", @1.range, $3, @3.range, @$.range);
     }
   ;
 
