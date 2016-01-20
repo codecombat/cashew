@@ -360,7 +360,7 @@ exports.Cashew = function(javaCode){
 		if(methodSignatureObject.returnType == 'void'){
 			_.each(methodBodyNodes , function(bodyNode){
 				if(bodyNode.type === "ReturnStatement"){
-					throw SyntaxError("Cannot return a value from method whose return type is void");
+					raise("Cannot return a value from method whose return type is void", range);
 				}
 			});
 		}
@@ -628,10 +628,10 @@ exports.Cashew = function(javaCode){
 
 		if (isPrivate == undefined){
 			//FIXME change this to a "NotImplementedException"
-			throw new SyntaxError("Field variables are only implemented as public or private");
+			raise("Field variables are only implemented as public or private", range);
 		}else if(!isStatic && !isPrivate){
 			//FIXME change this to a "NotImplementedException"
-			throw new SyntaxError("Instence variables are only implemented as private");
+			raise("Instence variables are only implemented as private", range);
 		}
 
 
@@ -924,7 +924,7 @@ exports.Cashew = function(javaCode){
 				operation = "mod";
 				break;
 			default:
-				throw SyntaxError('Invalid Operation');
+				raise('Invalid Operation', range);
 				break;
 		}
 
@@ -1180,7 +1180,7 @@ exports.Cashew = function(javaCode){
 	parser.yy.validateDeclaratorsDimension = function validateDeclaratorsDimension(declaratorNodes, type){
 		_.each(declaratorNodes, function(declaratorNode){
 			if(declaratorNode.init.elements.length > 0 && declaratorNode.init.elements[0].type == "ArrayExpression"){
-				throw TypeError("Invalid type for " + type);
+				raise("Invalid type for " + type, declaratorNode.range);
 			}
 		});
 	}
@@ -1196,11 +1196,11 @@ exports.Cashew = function(javaCode){
 		if(dimensions == 2){
 			for (var i = 0; i < arrays.length; i++) {
 				if(arrays[i].constructor != Array){
-					throw SyntaxError("Incompatible types on array");
+					raise("Incompatible types on array", range);
 				}
 				for(var j = 0; j < arrays[i].length; j++){
 					if(arrays[i][j].constructor == Array){
-						throw SyntaxError("More than 2-dimension arrays are not supported");
+						raise("More than 2-dimension arrays are not supported", range);
 					}
 				}
 			}
@@ -1367,7 +1367,7 @@ exports.Cashew = function(javaCode){
 		if(type === "int" || type === "double"){
 			classCastNode.arguments.push(getArgumentForName(type, typeRange));
 		}else if(type === "Integer" || type === "Double" || type ===  "String" || type ===  "boolean" || type ===  "Boolean"){
-			throw new SyntaxError("Invalid Class cast");
+			raise("Invalid Class cast", range);
 		}else{
 			classCastNode.arguments.push(createIdentifierNode(type, typeRange));
 		}
@@ -1376,7 +1376,36 @@ exports.Cashew = function(javaCode){
 		return classCastNode;
 	}
 
-	ast = parser.parse(javaCode);
+	//Get line number for when raising errors
+	var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
+
+	var getLineInfo = function(range) {
+		offset = range[0];
+	    for (var line = 1, cur = 0;;) {
+			lineBreak.lastIndex = cur;
+			var match = lineBreak.exec(javaCode);
+			if (match && match.index < offset) {
+				++line;
+				cur = match.index + match[0].length;
+			} else break;
+		}
+		return {line: line, column: offset - cur};
+	}
+
+	function raise(message, range) {
+		var loc = getLineInfo(range);
+		var err = new SyntaxError(message);
+		err.pos = range[0]; err.loc = loc; err.range = range;
+		throw err;
+	}
+
+	try{
+		ast = parser.parse(javaCode);
+	}catch(err){
+		ast = {"type": "Program", "body": []}
+		throw err;
+	}
+	
 	return ast;
 }
 
