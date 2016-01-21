@@ -1123,6 +1123,10 @@ constructor_call
     {
       $$ = yy.createConstructorCall($2, @2.range, $4, @$.range);
     }
+  | KEYWORD_NEW STRING_TYPE LEFT_PAREN parameter RIGHT_PAREN
+    {
+      $$ = $4;
+    }
   ;
 
 // Names
