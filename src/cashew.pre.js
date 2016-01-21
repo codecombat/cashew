@@ -32,7 +32,7 @@ exports.Cashew = function(javaCode){
 	mainMethodCall = undefined;
 	
 	//parser helpers
-	parser.yy._ = _;
+	cocoJava.yy._ = _;
 
 	function getRuntimeFunctions(range){
 		var functions = new node("MemberExpression");
@@ -102,7 +102,7 @@ exports.Cashew = function(javaCode){
 		varEntryId += 1;
 	}
 
-	parser.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature, params, range){
+	cocoJava.yy.createMethodSignatureObject = function createMethodSignatureObject(methodIdentifier, methodSignature, params, range){
 		var methodSignatureObject = {
 			'methodName' : methodIdentifier,
 			'methodSignature' : methodSignature,
@@ -253,7 +253,7 @@ exports.Cashew = function(javaCode){
 	    }
 
 	  };
-	parser.yy.ast = ast;
+	cocoJava.yy.ast = ast;
 
 	node = function(type){
 		ASTNodeID += 1;
@@ -282,7 +282,7 @@ exports.Cashew = function(javaCode){
 		});
 	}
 
-	var createLiteralNode = parser.yy.createLiteralNode = function createLiteralNode(value, raw, range){
+	var createLiteralNode = cocoJava.yy.createLiteralNode = function createLiteralNode(value, raw, range){
 		var literalNode = new node("Literal");
 		literalNode.range = range;
 		literalNode.value = value;
@@ -290,13 +290,13 @@ exports.Cashew = function(javaCode){
 		return literalNode;
 	}
 
-	var createIdentifierNode = parser.yy.createIdentifierNode = function createIdentifierNode(name, range){
+	var createIdentifierNode = cocoJava.yy.createIdentifierNode = function createIdentifierNode(name, range){
 		var identifierNode = new node("Identifier");
 		identifierNode.range = range;
 		identifierNode.name = name;
 		return identifierNode;
 	}
-	var createArrayIdentifierNode = parser.yy.createArrayIdentifierNode = function createArrayIdentifierNode(varName, varRange, index1Node, index1Range, index2Node, index2Range, range){
+	var createArrayIdentifierNode = cocoJava.yy.createArrayIdentifierNode = function createArrayIdentifierNode(varName, varRange, index1Node, index1Range, index2Node, index2Range, range){
 		var identifierNode = createMemberExpressionNode(createIdentifierNode(varName, varRange), index1Node, index1Range, true);
 		if(index2Node){
 			identifierNode = createMemberExpressionNode(identifierNode, index2Node, index2Range, true);
@@ -315,7 +315,7 @@ exports.Cashew = function(javaCode){
 
 
 	//FIXME disabling validations for now
-	var createUpdateClassVariableReference = parser.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
+	var createUpdateClassVariableReference = cocoJava.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
 		/*_.each(variableNodes, function(variableNode){
 			_.each(variableNode.declarations, function(varNode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
@@ -326,7 +326,7 @@ exports.Cashew = function(javaCode){
 		});*/
 	}
 
-	parser.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
+	cocoJava.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
 		/*_.each(variableNodes, function(variableNode){
 			var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
 				"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
@@ -345,7 +345,7 @@ exports.Cashew = function(javaCode){
 		});*/
 	}
 
-	parser.yy.createUpdateBlockVariableReference = function createUpdateBlockVariableReference(variableNodes, block){
+	cocoJava.yy.createUpdateBlockVariableReference = function createUpdateBlockVariableReference(variableNodes, block){
 		/*_.each(variableNodes, function(variableNode){
 			_.each(variableNode.declarations, function(varNode){
 				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
@@ -356,7 +356,7 @@ exports.Cashew = function(javaCode){
 		});*/
 	}
 
-	parser.yy.createMethodDeclarationNode = function createMethodDeclarationNode(methodSignatureObject, headerRange, methodBodyNodes, methodBodyRange, range){
+	cocoJava.yy.createMethodDeclarationNode = function createMethodDeclarationNode(methodSignatureObject, headerRange, methodBodyNodes, methodBodyRange, range){
 		if(methodSignatureObject.returnType == 'void'){
 			_.each(methodBodyNodes , function(bodyNode){
 				if(bodyNode.type === "ReturnStatement"){
@@ -451,11 +451,11 @@ exports.Cashew = function(javaCode){
 		return functionDeclarationNode;
 	}
 
-	parser.yy.createSimpleClassDeclarationNode = function createClassDeclarationNode(className, classNameRange, classBody, classBodyRange, range){
+	cocoJava.yy.createSimpleClassDeclarationNode = function createClassDeclarationNode(className, classNameRange, classBody, classBodyRange, range){
 		return createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, null, null, range);
 	}
 	
-	var createClassExtendedDeclarationNode = parser.yy.createClassExtendedDeclarationNode = function createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, extensionName, extensionRange, range){ 
+	var createClassExtendedDeclarationNode = cocoJava.yy.createClassExtendedDeclarationNode = function createClassExtendedDeclarationNode(className, classNameRange, classBody, classBodyRange, extensionName, extensionRange, range){ 
 		var classNode = new node("ExpressionStatement");
 		classNode.range = range;
 
@@ -589,16 +589,16 @@ exports.Cashew = function(javaCode){
 		return blockClass;
 	}
 
-	parser.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
+	cocoJava.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
 		constructorBodyNodes = methodBodyNodes;
 	}
 
-	parser.yy.createParameterizedConstructor = function createParameterizedConstructor(modifiers, params, methodBodyNodes){
+	cocoJava.yy.createParameterizedConstructor = function createParameterizedConstructor(modifiers, params, methodBodyNodes){
 		constructorBodyNodes = methodBodyNodes;
 		constructorParams = params;
 	}
 
-	parser.yy.createImportNodeForName  = function createImportNodeForName(name){
+	cocoJava.yy.createImportNodeForName  = function createImportNodeForName(name){
 		//when importing other classes they shoud be here
 		if(name == "java.util.ArrayList" || name == "java.util.List" || name == "java.util.*"){
 			_ArrayList = {"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_ArrayList"},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_ArrayList"},"params":[{"type":"Identifier","name":"type"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Identifier","name":"type"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"right":{"type":"ArrayExpression","elements":[]}}}]},"generator":false,"expression":false},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"size"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"add"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"object"},"right":{"type":"Identifier","name":"undefined"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"push"}},"arguments":[{"type":"Identifier","name":"index"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":0,"raw":"0"},{"type":"Identifier","name":"object"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]}}]}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"get"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"set"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":null}],"kind":"var"},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]},"alternate":null},{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}},"right":{"type":"Identifier","name":"object"}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"old"}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"remove"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":1,"raw":"1"}]}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_ArrayList"}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"Identifier","name":"_ArrayList"},"arguments":[]}}]};
@@ -607,7 +607,7 @@ exports.Cashew = function(javaCode){
 
 	}
 
-	parser.yy.createFieldVariableNode = function createFieldVariableNode(modifiers, variableDeclarationNode, range){
+	cocoJava.yy.createFieldVariableNode = function createFieldVariableNode(modifiers, variableDeclarationNode, range){
 		var isStatic = false;
 		_.each(modifiers, function(modifier){
 			if (modifier == "static"){
@@ -801,7 +801,7 @@ exports.Cashew = function(javaCode){
 		return expressionConstructor;
 	}
 
-	parser.yy.createInvokeNode = function createInvokeNode(nameOrObject, nameRange, invokeNode, invokeRange, range){
+	cocoJava.yy.createInvokeNode = function createInvokeNode(nameOrObject, nameRange, invokeNode, invokeRange, range){
 		var classObjectNode;
 		if(typeof nameOrObject === "string"){
 			classObjectNode = createIdentifierNode(nameOrObject, nameRange);
@@ -822,7 +822,7 @@ exports.Cashew = function(javaCode){
 		
 	}
 
-	parser.yy.createSimpleMethodInvokeNode = function createSimpleMethodInvokeNode(methodName, methodRange, argumentsNodes, range){
+	cocoJava.yy.createSimpleMethodInvokeNode = function createSimpleMethodInvokeNode(methodName, methodRange, argumentsNodes, range){
 		var methodNode = createIdentifierNode(methodName, methodRange);
 		var methodInvokeNodeExpression = new node("CallExpression");
 		methodInvokeNodeExpression.range = range;
@@ -832,7 +832,7 @@ exports.Cashew = function(javaCode){
 		return methodInvokeNodeExpression;
 	}
 
-	parser.yy.createConstructorCall = function createConstructorCall(methodName, methodRange, argumentsNodes, range){
+	cocoJava.yy.createConstructorCall = function createConstructorCall(methodName, methodRange, argumentsNodes, range){
 		var constructorNode = new node("NewExpression");
 		constructorNode.range = range;
 		constructorNode.callee = createIdentifierNode(methodName, methodRange);
@@ -841,7 +841,7 @@ exports.Cashew = function(javaCode){
 		return constructorNode;
 	}
 
-	parser.yy.createSuperInvokeNode = function createSuperInvokeNode(methodNode, superRange, range){
+	cocoJava.yy.createSuperInvokeNode = function createSuperInvokeNode(methodNode, superRange, range){
 		var oldCallee = methodNode.callee;
 		var innerMemberExpression = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", superRange), createIdentifierNode("__super__", superRange), range);
 		var newCallee = createMemberExpressionNode(innerMemberExpression, oldCallee, range);
@@ -849,7 +849,7 @@ exports.Cashew = function(javaCode){
 		return methodNode;
 	}
 
-	parser.yy.createSuperConstructorNode = function createSuperConstructorNode(superRange, argumentsNodes, range){
+	cocoJava.yy.createSuperConstructorNode = function createSuperConstructorNode(superRange, argumentsNodes, range){
 		var mostInnerMember = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", superRange), createIdentifierNode("__super__", superRange), superRange);
 		var innerMemberExpression = createMemberExpressionNode(mostInnerMember, createIdentifierNode("constructor", superRange), superRange);
 		var memberExpressionNode = createMemberExpressionNode(innerMemberExpression, createIdentifierNode("call", superRange), range);
@@ -861,7 +861,7 @@ exports.Cashew = function(javaCode){
 		return superInvokeNodeExpression;
 	}
 
-	var createVariableAttribution = parser.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode, index1, index2){
+	var createVariableAttribution = cocoJava.yy.createVariableAttribution = function createVariableAttribution(varName, varRange, assignmentRange, expressionNode, index1, index2){
 		var assignmentNode = new node("ExpressionStatement");
 		assignmentNode.range = assignmentRange;
 
@@ -899,13 +899,13 @@ exports.Cashew = function(javaCode){
 		return assignmentNode;
 	}
 
-	parser.yy.createEmptyStatement = function createEmptyStatement(range){
+	cocoJava.yy.createEmptyStatement = function createEmptyStatement(range){
 		var emptyStatement = new node("EmptyStatement");
 		emptyStatement.range = range;
 		return emptyStatement;
 	}
 
-	parser.yy.createMathOperation = function createMathOperation(op, left, right, range){
+	cocoJava.yy.createMathOperation = function createMathOperation(op, left, right, range){
 		var operation;
 		switch (op){
 			case '+':
@@ -949,7 +949,7 @@ exports.Cashew = function(javaCode){
 		return operationNode;
 	}
 
-	parser.yy.createExpression = function createExpression(op, type, left, right, range){
+	cocoJava.yy.createExpression = function createExpression(op, type, left, right, range){
 		var logicalNode = new node(type);
 		logicalNode.range = range;
 		logicalNode.operator = op;
@@ -958,7 +958,7 @@ exports.Cashew = function(javaCode){
 		return logicalNode;
 	}
 
-	parser.yy.createUnaryExpression = function createExpression(op, expression, range){
+	cocoJava.yy.createUnaryExpression = function createExpression(op, expression, range){
 		var unaryNode = new node("UnaryExpression");
 		unaryNode.range = range;
 		unaryNode.operator = op;
@@ -967,7 +967,7 @@ exports.Cashew = function(javaCode){
 		return unaryNode;
 	}
 
-	parser.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
+	cocoJava.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
 		var ternaryNode = new node("ConditionalExpression");
 		ternaryNode.range = expressionRange;
 		ternaryNode.test = testExpression;
@@ -976,7 +976,7 @@ exports.Cashew = function(javaCode){
 		return ternaryNode;
 	}
 
-	parser.yy.createVarDeclarationNode = function createVarDeclarationNode(type, declarators, declarationRange){
+	cocoJava.yy.createVarDeclarationNode = function createVarDeclarationNode(type, declarators, declarationRange){
 		var varDeclarationNode = new node("VariableDeclaration");
 		varDeclarationNode.range = declarationRange;
 		varDeclarationNode.kind = "var";
@@ -988,7 +988,7 @@ exports.Cashew = function(javaCode){
 		return varDeclarationNode;
 	}
 
-	parser.yy.createVarDeclaratorNodeNoInit = function createVarDeclarationNodeNoInit(varName, declarationRange){
+	cocoJava.yy.createVarDeclaratorNodeNoInit = function createVarDeclarationNodeNoInit(varName, declarationRange){
 		var varDeclaratorNode = new node("VariableDeclarator");
 		varDeclaratorNode.range = declarationRange;
 
@@ -999,7 +999,7 @@ exports.Cashew = function(javaCode){
 		return varDeclaratorNode;
 	}
 
-	parser.yy.createVarDeclaratorNodeWithInit = function createVarDeclarationNodeWithInit(varName, varRange, assignment, assignmentRange, declarationRange){
+	cocoJava.yy.createVarDeclaratorNodeWithInit = function createVarDeclarationNodeWithInit(varName, varRange, assignment, assignmentRange, declarationRange){
 		var varDeclaratorNode = new node("VariableDeclarator");
 		varDeclaratorNode.range = declarationRange;
 
@@ -1042,21 +1042,21 @@ exports.Cashew = function(javaCode){
 		return initNode;
 	}
 
-	var createExpressionStatementNode = parser.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
+	var createExpressionStatementNode = cocoJava.yy.createExpressionStatementNode =  function createExpressionStatementNode(expression, range){
 		var expressionStatementNode = new node("ExpressionStatement");
 		expressionStatementNode.range = range
 		expressionStatementNode.expression = expression;
 		return expressionStatementNode;
 	}
 
-	var createReturnStatementNode = parser.yy.createReturnStatementNode =  function createReturnStatementNode(expression, range){
+	var createReturnStatementNode = cocoJava.yy.createReturnStatementNode =  function createReturnStatementNode(expression, range){
 		var returnStatementNode = new node("ReturnStatement");
 		returnStatementNode.range = range
 		returnStatementNode.argument = expression;
 		return returnStatementNode;
 	}
 
-	var createSimpleIfNode = parser.yy.createSimpleIfNode = function createSimpleIfNode(testExpression, consequentBlock, consequentRange, ifRange){
+	var createSimpleIfNode = cocoJava.yy.createSimpleIfNode = function createSimpleIfNode(testExpression, consequentBlock, consequentRange, ifRange){
 		var simpleIf = new node("IfStatement");
 		simpleIf.range = ifRange;
 		simpleIf.test = testExpression;
@@ -1072,7 +1072,7 @@ exports.Cashew = function(javaCode){
 		return simpleIf;
 	}
 
-	parser.yy.createSimpleIfElseNode = function createSimpleIfElseNode(testExpression, consequentBlock, consequentRange, alternateBlock, alternateRange, ifRange){
+	cocoJava.yy.createSimpleIfElseNode = function createSimpleIfElseNode(testExpression, consequentBlock, consequentRange, alternateBlock, alternateRange, ifRange){
 		var ifElseNode = createSimpleIfNode(testExpression, consequentBlock, consequentRange, ifRange);
 
 		alternateNode = new node("BlockStatement");
@@ -1085,7 +1085,7 @@ exports.Cashew = function(javaCode){
 		return ifElseNode;
 	}
 
-	var createSimpleListNode = parser.yy.createSimpleListNode = function createSimpleListNode(varName, varRange, range){
+	var createSimpleListNode = cocoJava.yy.createSimpleListNode = function createSimpleListNode(varName, varRange, range){
 		var simpleList = new node("VariableDeclarator");
 		simpleList.range = range;
 
@@ -1098,13 +1098,13 @@ exports.Cashew = function(javaCode){
 		return simpleList;
 	}
 
-	parser.yy.createListWithInitNode = function createListWithInitNode(varName, varRange, initNode, range){
+	cocoJava.yy.createListWithInitNode = function createListWithInitNode(varName, varRange, initNode, range){
 		var nullList = createSimpleListNode(varName, varRange, range);
 		nullList.init = initNode;
 		return nullList;
 	}
 
-	var createListInitialization = parser.yy.createListInitialization = function createListInitialization(nodeType, range){
+	var createListInitialization = cocoJava.yy.createListInitialization = function createListInitialization(nodeType, range){
 		var newExpressionNode = new node("NewExpression");
 		newExpressionNode.range = range;
 		var newExpressionNodecallee = createIdentifierNode("_ArrayList", range);
@@ -1114,7 +1114,7 @@ exports.Cashew = function(javaCode){
 		return newExpressionNode;
  	}
 
-	var createSimpleArrayNode = parser.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, range){
+	var createSimpleArrayNode = cocoJava.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, range){
 		var simpleArray = new node("VariableDeclarator");
 		simpleArray.range = range;
 
@@ -1128,13 +1128,13 @@ exports.Cashew = function(javaCode){
 		return simpleArray;
 	}
 
-	parser.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
+	cocoJava.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
 		var nullArray = createSimpleArrayNode(varName, varRange, range);
 		nullArray.init = initNode;
 		return nullArray;
 	}
 
-	var createArrayWithNullInitialization = parser.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
+	var createArrayWithNullInitialization = cocoJava.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
 		var nodeArray = new node("ArrayExpression")
 			, size = nodeExp.value || 0;
 		nodeArray.range = range;	
@@ -1148,7 +1148,7 @@ exports.Cashew = function(javaCode){
 		return nodeArray;
 	}
 
-	parser.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp, range){
+	cocoJava.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp, range){
 		var nodeArray = new node("ArrayExpression");
 		nodeArray.range = range;
 		nodeArray.elements = [];
@@ -1161,7 +1161,7 @@ exports.Cashew = function(javaCode){
 		return nodeArray;
 	}
 
-	var createArrayWithInitialization = parser.yy.createArrayWithInitialization = function createArrayWithInitialization(values, range){
+	var createArrayWithInitialization = cocoJava.yy.createArrayWithInitialization = function createArrayWithInitialization(values, range){
 		var nodeArray = new node("ArrayExpression")
 			, size = values.length;
 		nodeArray.range = range;	
@@ -1177,7 +1177,7 @@ exports.Cashew = function(javaCode){
 		return nodeArray;
 	}
 
-	parser.yy.validateDeclaratorsDimension = function validateDeclaratorsDimension(declaratorNodes, type){
+	cocoJava.yy.validateDeclaratorsDimension = function validateDeclaratorsDimension(declaratorNodes, type){
 		_.each(declaratorNodes, function(declaratorNode){
 			if(declaratorNode.init.elements.length > 0 && declaratorNode.init.elements[0].type == "ArrayExpression"){
 				raise("Invalid type for " + type, declaratorNode.range);
@@ -1185,7 +1185,7 @@ exports.Cashew = function(javaCode){
 		});
 	}
 
-	parser.yy.createArrayFromInitialArray = function createArrayFromInitialArray(arrays, range){
+	cocoJava.yy.createArrayFromInitialArray = function createArrayFromInitialArray(arrays, range){
 		//determine if it's 1 or 2 dimension and validates if it's more than 2 dimension
 		var dimensions = 1;
 		for (var i = 0; i < arrays.length; i++) {
@@ -1208,7 +1208,7 @@ exports.Cashew = function(javaCode){
 		return createArrayWithInitialization(arrays, range);
 	}
 
-	parser.yy.createSwitchNode = function createSwitchNode(discriminant, cases, range){
+	cocoJava.yy.createSwitchNode = function createSwitchNode(discriminant, cases, range){
 		var switchNode = new node("SwitchStatement");
 		switchNode.range = range;
 		switchNode.discriminant = discriminant;
@@ -1217,16 +1217,16 @@ exports.Cashew = function(javaCode){
 		return switchNode;
 	}
 
-	parser.yy.createDefaultSwitchNode = function createDefaultSwitchNode(range){
+	cocoJava.yy.createDefaultSwitchNode = function createDefaultSwitchNode(range){
 		return createCaseSwitchNode(null, range);
 	}
 
-	parser.yy.addSwitchCaseStatements = function addSwitchCaseStatements(cases, block){
+	cocoJava.yy.addSwitchCaseStatements = function addSwitchCaseStatements(cases, block){
 		cases[cases.length -1].consequent = block;
 		return cases;
 	}
 
-	var createCaseSwitchNode = parser.yy.createCaseSwitchNode = function createCaseSwitchNode(testExpression, range){
+	var createCaseSwitchNode = cocoJava.yy.createCaseSwitchNode = function createCaseSwitchNode(testExpression, range){
 		var caseNode = new node("SwitchCase");
 		caseNode.range = range;
 		caseNode.test = testExpression;
@@ -1234,7 +1234,7 @@ exports.Cashew = function(javaCode){
 		return caseNode;
 	}
 
-	parser.yy.createSimpleWhileNode = function createSimpleWhileNode(testExpression, whileBlock, blockRange, whileRange){
+	cocoJava.yy.createSimpleWhileNode = function createSimpleWhileNode(testExpression, whileBlock, blockRange, whileRange){
 		var simpleWhile = new node("WhileStatement");
 		simpleWhile.range = whileRange;
 		simpleWhile.test = testExpression;
@@ -1249,7 +1249,7 @@ exports.Cashew = function(javaCode){
 		return simpleWhile;
 	}
 
-	parser.yy.createDoWhileNode = function createDoWhileNode(testExpression, whileBlock, blockRange, whileRange){
+	cocoJava.yy.createDoWhileNode = function createDoWhileNode(testExpression, whileBlock, blockRange, whileRange){
 		var doWhile = new node("DoWhileStatement");
 		doWhile.range = whileRange;
 		doWhile.test = testExpression;
@@ -1264,21 +1264,21 @@ exports.Cashew = function(javaCode){
 		return doWhile;
 	}
 
-	parser.yy.createBreakStatement = function createBreakStatement(range){
+	cocoJava.yy.createBreakStatement = function createBreakStatement(range){
 		var breakNode = new node("BreakStatement");
 		breakNode.range = range;
 
 		return breakNode;
 	}
 
-	parser.yy.createContinueStatement = function createContinueStatement(range){
+	cocoJava.yy.createContinueStatement = function createContinueStatement(range){
 		var continueNode = new node("ContinueStatement");
 		continueNode.range = range;
 
 		return continueNode;
 	}
 
-	parser.yy.createForStatement = function createForStatement(forInit, testExpression, updateExpressions, updateRange, forBlock, blockRange, forRange){
+	cocoJava.yy.createForStatement = function createForStatement(forInit, testExpression, updateExpressions, updateRange, forBlock, blockRange, forRange){
 		var forNode = new node("ForStatement");
 		forNode.range = forRange;
 		forNode.init = forInit;
@@ -1306,7 +1306,7 @@ exports.Cashew = function(javaCode){
 		return forNode;
 	}
 
-	parser.yy.createEnhancedForStatement = function createEnhancedForStatement(typeVar, varName, varRange, arraylist, arraylistRange, forBlock, blockRange, range){
+	cocoJava.yy.createEnhancedForStatement = function createEnhancedForStatement(typeVar, varName, varRange, arraylist, arraylistRange, forBlock, blockRange, range){
 		//list._arrayList.forEach(function(varName){blocks});
 		var enhancedForExpression = new node("ExpressionStatement");
 		enhancedForExpression.range = range;
@@ -1339,7 +1339,7 @@ exports.Cashew = function(javaCode){
 		return enhancedForExpression;
 	}
 
-	parser.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
+	cocoJava.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;
 		consoleLogNode.arguments = [];
@@ -1360,7 +1360,7 @@ exports.Cashew = function(javaCode){
 		return consoleLogNode;
 	}
 
-	parser.yy.createClassCastNode = function createClassCastNode(type, typeRange, expression, range){
+	cocoJava.yy.createClassCastNode = function createClassCastNode(type, typeRange, expression, range){
 		var classCastNode = new node("CallExpression");
 		classCastNode.range = range;
 		classCastNode.arguments = [];
@@ -1400,9 +1400,17 @@ exports.Cashew = function(javaCode){
 	}
 
 	try{
-		ast = parser.parse(javaCode);
+		ast = cocoJava.parse(javaCode);
 	}catch(err){
-		ast = {"type": "Program", "body": []}
+		if(err.hash){
+			err.message = "Unexpected " + err.hash.text;
+			if(err.hash.expected.indexOf("'LINE_TERMINATOR'") >= 0 ){
+				err.message = err.message + " maybe a ';'' is missing!"
+			};
+
+			err.loc = {line: err.hash.line, column: err.hash.loc.first_column};
+			err.range = err.hash.range
+		}
 		throw err;
 	}
 	

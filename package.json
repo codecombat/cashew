@@ -1,6 +1,6 @@
 {
   "name": "cashew-js",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "A JavaToJavaScript parser, outputs a Mozilla AST ",
   "main": "cashew.js",
   "repository": {
@@ -32,6 +32,6 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-shell": "^1.1.2",
     "jasmine-node": "^1.14.5",
-    "jison": "^0.4.15"
+    "jison": "^0.4.16"
   }
 }
