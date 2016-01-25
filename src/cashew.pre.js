@@ -247,8 +247,6 @@ exports.Cashew = function(javaCode){
 		this.rootNode.body.unshift(_ObjectCall);
 		this.rootNode.body.unshift(_Object);
 
-
-
 	     return this.rootNode;
 	    }
 
@@ -296,6 +294,7 @@ exports.Cashew = function(javaCode){
 		identifierNode.name = name;
 		return identifierNode;
 	}
+
 	var createArrayIdentifierNode = cocoJava.yy.createArrayIdentifierNode = function createArrayIdentifierNode(varName, varRange, index1Node, index1Range, index2Node, index2Range, range){
 		var identifierNode = createMemberExpressionNode(createIdentifierNode(varName, varRange), index1Node, index1Range, true);
 		if(index2Node){
@@ -312,7 +311,6 @@ exports.Cashew = function(javaCode){
 		memberExpressionNode.property = propertyNode;
 		return memberExpressionNode;
 	}
-
 
 	//FIXME disabling validations for now
 	var createUpdateClassVariableReference = cocoJava.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
@@ -445,9 +443,8 @@ exports.Cashew = function(javaCode){
 			functionDeclarationNodeAssignment.right = functionDeclarationNodeAssignmentStatic;
 		}
 
-
 		functionDeclarationNode.expression = functionDeclarationNodeAssignment;
-
+		functionDeclarationNode.details = methodSignatureObject;
 		return functionDeclarationNode;
 	}
 
@@ -477,18 +474,7 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRightCalleeBody.range = classBodyRange;
 		classNodeExpressionRightCalleeBody.body = [];
 
-        var typeNode = new node("ExpressionStatement");
-		typeNode.range = range;
-        var memberExpressionVar = createMemberExpressionNode(classNameId, createIdentifierNode("__type", [0,0]), range);
-        var declarationNodeAssignment = new node("AssignmentExpression");
-				declarationNodeAssignment.range = classNameRange;
-				declarationNodeAssignment.operator = '=';
-				declarationNodeAssignment.left = memberExpressionVar;
-				declarationNodeAssignment.right = getArgumentForName(className, classNameRange);
-		typeNode.expression = declarationNodeAssignment;
-
-		//".class" = __type
-		classNodeExpressionRightCalleeBody.body.push(typeNode);
+        
 
 		//Replaces __TemproaryClass in class body nodes and updates methods dictionary
 		replaceTemporaryClassWithClassName(classBody, className);
@@ -546,8 +532,23 @@ exports.Cashew = function(javaCode){
 		//Insert the constructor
 		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, constructorParams, classNameRange, variableNodes));
 		
+		var typeNode = new node("ExpressionStatement");
+		typeNode.range = range;
+        var memberExpressionVar = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode(className, classNameRange), createIdentifierNode("prototype", classNameRange), classNameRange), createIdentifierNode("__type", [0,0]), range);
+        var declarationNodeAssignment = new node("AssignmentExpression");
+				declarationNodeAssignment.range = classNameRange;
+				declarationNodeAssignment.operator = '=';
+				declarationNodeAssignment.left = memberExpressionVar;
+				declarationNodeAssignment.right = getArgumentForName(className, classNameRange);
+		typeNode.expression = declarationNodeAssignment;
+
+		//".class" = __type
+		classNodeExpressionRightCalleeBody.body.push(typeNode);
+
 		//Add Methods to the class
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(classBody);
+		//WIP - Create Method overload
+		createMethodOverload(classBody);
 
 		//Return the class
 		classNodeExpressionRightCalleeBody.body.push(createReturnStatementNode(createIdentifierNode(className, classNameRange), classNameRange));
@@ -587,6 +588,62 @@ exports.Cashew = function(javaCode){
 		blockClass.body.push(classNodeInvoke);
 
 		return blockClass;
+	}
+
+	createMethodOverload = function createMethodOverload(classBodyNodes){
+		var methodsWithOverload = [];
+		var methodsWithOverloadDetails = [];
+		var methodWithOverloadFunctionNode = [];
+		for (var i = classBodyNodes.length - 1; i >= 0; i--) {
+			//determine if the node is a method
+			console.log(classBodyNodes[i]);
+			if(classBodyNodes[i].details){
+				var methodName = classBodyNodes[i].details.methodName;
+				var methodOverload = false;
+				//if the current overload is not in the array yet, map it!
+				if(methodsWithOverload.indexOf(methodName) == -1){
+					for (var j = classBodyNodes.length - 1; j >= 0; j--) {
+						//if its not the current Node and if it's not already in the overloaded methods
+						if(i != j){
+							//determine if the other node is a method
+							if(classBodyNodes[j].details){
+								//check if there's other methods with the same name
+								if(methodName == classBodyNodes[j].details.methodName){
+									methodsWithOverload.push(methodName);
+									methodsWithOverloadDetails.push(classBodyNodes[j].details);
+									//get function definitions for the nodes overloaded
+									if(classBodyNodes[j].expression.right.type == "FunctionExpression"){
+										methodWithOverloadFunctionNode.push(classBodyNodes[j].expression.right);
+									}else if(classBodyNodes[j].expression.right.right.type == "FunctionExpression"){
+										methodWithOverloadFunctionNode.push(classBodyNodes[j].expression.right.right);
+									}else{
+										methodWithOverloadFunctionNode.push(classBodyNodes[j].expression.right.right.right);
+									}
+
+								}
+							}
+						}
+					}
+					//add the current to the overloaded pile
+					methodsWithOverload.push(methodName);
+					methodsWithOverloadDetails.push(classBodyNodes[i].details);
+					//get function definitions for the nodes overloaded
+					if(classBodyNodes[i].expression.right.type == "FunctionExpression"){
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right);
+					}else if(classBodyNodes[i].expression.right.right.type == "FunctionExpression"){
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right);
+					}else{
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right.right);
+					}				
+				}
+			}
+		}
+
+		//TODO: Add the signature switcher function
+		//TODO: Change the methods to match new signatures
+		console.log(methodsWithOverload)
+		console.log(methodsWithOverloadDetails);
+		console.log(methodWithOverloadFunctionNode);
 	}
 
 	cocoJava.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
@@ -1616,12 +1673,121 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			console.log(str);
 		},
 		//FIXME: chaneged validateSet to checkAssignment, most validations will be in the AST soon
-		checkAssignment: function(value, variableName, variable, arrayIndex1, arrayIndex2, ASTNodeID){
+		checkAssignment: function(value, variable, arrayIndex1, arrayIndex2, javaType, range){
 			if(typeof value === "function")
 				value = value();
-			return value;
+
+			var varRawType;
+
+			if (javaType){
+				varRawType = javaType.replace(/\[/g,'').replace(/\]/g,'');
+				if(javaType.indexOf("[][]")>-1){
+					//if either the new value and the variable are arrays
+					if (value.constructor === Array){
+						if(value[0].constructor === Array){
+							//both are arrays: fine
+						}else{
+							throw new SyntaxError("Incompatible types");
+						}
+					}else{
+						//if the value is an array but it's not 2-d
+						throw new SyntaxError("Incompatible types");
+					}
+				} else if(javaType.indexOf("[]")>-1){
+					//if both value and variables are arrays
+					if (value.constructor === Array && arrayIndex1 == undefined){
+						if(value[0].constructor === Array){
+							//if value is a 2-d array
+							throw new SyntaxError("Incompatible types");
+						}else{
+							//value is a 1-d array: fine
+						}
+					}else{
+						//variable is array but value isn't
+						throw new SyntaxError("Incompatible types");
+					}
+				}else{
+					if(javaType == 'int' || javaType == 'Integer'){
+						if(value.constructor == Number){
+							return Math.floor(value);
+						}else{
+							throw new SyntaxError("Int cannot accept " + value.constructor);
+						}
+					}else if(javaType == 'double' || javaType == 'Double'){
+						if(value.constructor == Number){
+							return value;
+						}else{
+							throw new SyntaxError("Double cannot accept " + value.constructor);
+						}
+					}else if(javaType == 'String'){
+						if(value.constructor  == String){
+							return value;
+						}else{
+							throw new SyntaxError("String cannot accept " + value.constructor);
+						}
+					}	
+				}
+			}
+			if(variable){
+				//If the variable is assigned already we can try determine the type
+				//Check first if the variable is an array
+				if (variable.constructor == Array){
+					if (variable[0].constructor == Array){
+						//variable is a 2-d array
+						if (value.constructor === Array){
+							if(value[0].constructor === Array){
+								// value is also a 2-d array: fine
+							}else{
+								//value isnt a 2-d array
+								throw new SyntaxError("Incompatible types");
+							}
+						}else{
+							//value isnt an array
+							throw new SyntaxError("Incompatible types");
+						}
+					}else{
+						//variable is a 1-d array
+						if (value.constructor === Array){
+							if(value[0].constructor === Array){
+								//value isnt a 1-d array
+								throw new SyntaxError("Incompatible types");
+							}else{
+								// value is also a 1-d array: fine
+							}
+						}
+					}
+				}else{
+					//if it's not an array it could be an integer, double, string, userType
+					if(variable.constructor == Number){
+						if(variable % 1 != 0){
+							//current variable is a double
+							if(value.constructor == Number){
+								return value;
+							}else{
+								throw new SyntaxError("Double cannot accept " + value.constructor);
+							}
+						}else{
+							//current variable is an int
+							if(value.constructor == Number){
+								return Math.floor(value);
+							}else{
+								throw new SyntaxError("Int cannot accept " + value.constructor);
+							}
+						}
+					}else if(variable.constructor == String){
+						if(value.constructor  == String){
+							return value;
+						}else{
+							throw new SyntaxError("String cannot accept " + value.constructor);
+						}
+					}
+				}
+			}else{
+				//If we cant check returns the variable anyway
+				return value;
+			}
 		},
-		validateSet: function(value, variableName, variable, arrayIndex1, arrayIndex2, ASTNodeID){
+		validateSet: function(value, variable, arrayIndex1, arrayIndex2, ASTNodeID){
 			if(typeof value === "function")
 				value = value();
 			
@@ -1735,7 +1901,64 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					break;
 			}
 		},
-		validateIndex: function(value){
+		determineType: function(value){
+			if (value.constructor == Array){
+				if (value[0].constructor == Array){
+					if(value[0][0].constructor == Number){
+						if(value[0][0] % 1 != 0){
+							//current variable is a double array
+							return "double[][]";
+						}else{
+							//current variable is an int
+							return "int[][]";
+						}
+					}else if(value[0][0].constructor == String){
+						return "String[][]";
+					}else if(typeof value[0][0] == "object"){
+						if(value[0][0].__type){
+							return value[0][0].__type + "[][]";
+						}
+					}
+				}else{
+					//current variable is an 1-d array
+					if(value[0].constructor == Number){
+						if(value[0] % 1 != 0){
+							//current variable is a double array
+							return "double[]";
+						}else{
+							//current variable is an int
+							return "int[]";
+						}
+					}else if(value[0].constructor == String){
+						return "String[]";
+					}else if(typeof value[0] == "object"){
+						if(value[0].__type){
+							return value[0].__type + "[]";
+						}
+					}
+				}
+		}else{
+				//if it's not an array it could be an integer, double, string, userType
+				if(value.constructor == Number){
+					if(value % 1 != 0){
+						//current variable is a double
+						return "double";
+					}else{
+						//current variable is an int
+						return "int";
+					}
+				}else if(value.constructor == String){
+					return "String";
+				}else if(typeof value == "object"){
+					if(value.__type){
+						return value.__type;
+					}
+				}
+			}
+			//if cant check the type its wildcard type
+			return "?";
+		},
+		validateIndex: function(value, range){
 			if(typeof value === "function")
 				value = value();
 			if (typeof value === 'number'){
@@ -1744,9 +1967,6 @@ exports.___JavaRuntime = ___JavaRuntime = {
 						}else{
 							throw new SyntaxError("Possible loss of precision, received double, expected int");
 						}
-			}
-			if(value instanceof _Object){
-				throw new SyntaxError("Incompatible types, received "+ value.type +", expected int");
 			}
 			throw new SyntaxError("Incompatible types, received "+ typeof value  +", expected int");
 
