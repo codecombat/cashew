@@ -262,8 +262,6 @@ case 49:
           modifiersText += (modifier + ' ');
           modifiers.push(modifier);
       });
-      var updatedSignature = modifiersText + $$[$0-1] + " " + $$[$0].methodSignature;
-      $$[$0].methodSignature = updatedSignature;
       $$[$0].returnType = $$[$0-1];
       $$[$0].modifiers = modifiers;
       this.$ = $$[$0];
@@ -277,8 +275,6 @@ case 50:
           modifiersText += (modifier + ' ');
           modifiers.push(modifier);
       });
-      var updatedSignature = modifiersText + $$[$0-1] + " " + $$[$0].methodSignature;
-      $$[$0].methodSignature = updatedSignature;
       $$[$0].returnType = $$[$0-1];
       $$[$0].modifiers = modifiers;
       this.$ = $$[$0];
@@ -295,7 +291,7 @@ case 52:
 
       var paramList = "";
       yy._.each($$[$0-1], function(param){
-        paramList = param.type + " " + param.paramName + " ";
+        paramList = param.type + " ";
       });
       paramList = paramList.trim();
       var signature = $$[$0-3] + $$[$0-2] + paramList + $$[$0];
