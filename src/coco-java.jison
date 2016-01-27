@@ -475,8 +475,6 @@ method_header
           modifiersText += (modifier + ' ');
           modifiers.push(modifier);
       });
-      var updatedSignature = modifiersText + $2 + " " + $3.methodSignature;
-      $3.methodSignature = updatedSignature;
       $3.returnType = $2;
       $3.modifiers = modifiers;
       $$ = $3;
@@ -489,8 +487,6 @@ method_header
           modifiersText += (modifier + ' ');
           modifiers.push(modifier);
       });
-      var updatedSignature = modifiersText + $2 + " " + $3.methodSignature;
-      $3.methodSignature = updatedSignature;
       $3.returnType = $2;
       $3.modifiers = modifiers;
       $$ = $3;
@@ -508,7 +504,7 @@ method_declarator
     {
       var paramList = "";
       yy._.each($3, function(param){
-        paramList = param.type + " " + param.paramName + " ";
+        paramList = param.type + " ";
       });
       paramList = paramList.trim();
       var signature = $1 + $2 + paramList + $4;
@@ -1122,6 +1118,10 @@ constructor_call
   | KEYWORD_NEW CLASS_IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN
     {
       $$ = yy.createConstructorCall($2, @2.range, $4, @$.range);
+    }
+  | KEYWORD_NEW STRING_TYPE LEFT_PAREN parameter RIGHT_PAREN
+    {
+      $$ = $4;
     }
   ;
 
