@@ -1401,6 +1401,10 @@ variable_invocation
     {
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
+  | primary OPERATOR_CALL IDENTIFIER
+    {
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
+    }
   | IDENTIFIER OPERATOR_CALL IDENTIFIER
     {
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
@@ -1439,6 +1443,10 @@ super_method_invocation
 
 instance_method_invocation
   : IDENTIFIER OPERATOR_CALL simple_method_invocation
+    {
+      $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
+    }
+  | primary OPERATOR_CALL simple_method_invocation
     {
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
