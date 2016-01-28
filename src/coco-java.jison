@@ -793,18 +793,18 @@ statement_expression
 pre_increment_expression
   : OPERATOR_INCREMENT postfix_expression %prec PRE_INCREMENT
     {
-      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
-      var addExpression = yy.createMathOperation('+', $1, incrementOne, @$.range);
-      $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, addExpression);
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @1.range);
+      var addExpression = yy.createMathOperation('+', $2, incrementOne, @$.range);
+      $$ = yy.createVariableAttribution($2.name, @2.range, @$.range, addExpression);
     }
   ;
 
 pre_decrement_expression
   : OPERATOR_DECREMENT postfix_expression  %prec PRE_DECREMENT
     {
-      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
-      var subExpression = yy.createMathOperation('-', $1, decrementOne, @$.range);
-      $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, subExpression);
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @1.range);
+      var subExpression = yy.createMathOperation('-', $2, decrementOne, @$.range);
+      $$ = yy.createVariableAttribution($2.name, @2.range, @$.range, subExpression);
     }
   ;
 

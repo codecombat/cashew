@@ -407,14 +407,28 @@ case 100:
       this.$ = consoleNode = yy.createConsoleLogExpression($$[$0-2], this._$.range);
     
 break;
-case 105: case 107:
+case 105:
+
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0-1].range);
+      var addExpression = yy.createMathOperation('+', $$[$0], incrementOne, this._$.range);
+      this.$ = yy.createVariableAttribution($$[$0].name, _$[$0].range, this._$.range, addExpression);
+    
+break;
+case 106:
+
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0-1].range);
+      var subExpression = yy.createMathOperation('-', $$[$0], decrementOne, this._$.range);
+      this.$ = yy.createVariableAttribution($$[$0].name, _$[$0].range, this._$.range, subExpression);
+    
+break;
+case 107:
 
       var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0].range);
       var addExpression = yy.createMathOperation('+', $$[$0-1], incrementOne, this._$.range);
       this.$ = yy.createVariableAttribution($$[$0-1].name, _$[$0-1].range, this._$.range, addExpression);
     
 break;
-case 106: case 108:
+case 108:
 
       var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0].range);
       var subExpression = yy.createMathOperation('-', $$[$0-1], decrementOne, this._$.range);
