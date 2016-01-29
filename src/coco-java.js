@@ -246,12 +246,23 @@ case 46:
 break;
 case 47:
 
+      var signature = $$[$0-3] + $$[$0-2] + $$[$0-1];
+      var details = yy.createMethodSignatureObject($$[$0-3], signature, [], this._$.range)
+      $$[$0].details = details;
       yy.createOverrideDefaultConstructor($$[$0-4], $$[$0]);
     
 break;
 case 48:
 
-      yy.createParameterizedConstructor($$[$0-5], $$[$0-2], $$[$0]);
+      var paramList = "";
+      yy._.each($$[$0-2], function(param){
+        paramList = param.type + " ";
+      });
+      paramList = paramList.trim();
+      var signature = $$[$0-4] + $$[$0-3] + paramList + $$[$0-1];
+      var details = yy.createMethodSignatureObject($$[$0-4], signature, $$[$0-2], this._$.range)
+      $$[$0].details = details;
+      yy.createOverrideDefaultConstructor($$[$0-5], $$[$0]);
     
 break;
 case 49:

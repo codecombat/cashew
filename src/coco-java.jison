@@ -452,15 +452,25 @@ method_declaration
   ;
 
 // Constructor declarations
-
 contructor_declaration
   : modifiers CLASS_IDENTIFIER LEFT_PAREN RIGHT_PAREN method_body
     {
+      var signature = $2 + $3 + $4;
+      var details = yy.createMethodSignatureObject($2, signature, [], @$.range)
+      $5.details = details;
       yy.createOverrideDefaultConstructor($1, $5);
     }
   | modifiers CLASS_IDENTIFIER LEFT_PAREN formal_parameter_list RIGHT_PAREN method_body
     {
-      yy.createParameterizedConstructor($1, $4, $6);
+      var paramList = "";
+      yy._.each($4, function(param){
+        paramList = param.type + " ";
+      });
+      paramList = paramList.trim();
+      var signature = $2 + $3 + paramList + $5;
+      var details = yy.createMethodSignatureObject($2, signature, $4, @$.range)
+      $6.details = details;
+      yy.createOverrideDefaultConstructor($1, $6);
     }
   ;
 

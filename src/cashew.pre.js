@@ -27,8 +27,7 @@ exports.Cashew = function(javaCode){
 	
 	___JavaRuntime.variablesDictionary = [];
 	methodsDictionary = [];
-	constructorBodyNodes = undefined;
-	constructorParams = undefined;
+	constructorBodyNodes = [];
 	mainMethodCall = undefined;
 	
 	//parser helpers
@@ -525,8 +524,10 @@ exports.Cashew = function(javaCode){
 			}
 		});
 		//Insert the constructor
-		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, constructorParams, classNameRange, variableNodes, extensionName));
-		
+		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, classNameRange, variableNodes, extensionName));
+		//reset bodyNodes to next class
+		constructorBodyNodes = [];
+
 		var typeNode = new node("ExpressionStatement");
 		typeNode.range = range;
         var memberExpressionVar = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode(className, classNameRange), createIdentifierNode("prototype", classNameRange), classNameRange), createIdentifierNode("__type", [0,0]), range);
@@ -601,7 +602,7 @@ exports.Cashew = function(javaCode){
 		return classNode;
 	}
 
-	createMethodOverload = function createMethodOverload(classBodyNodes){
+	var createMethodOverload = function createMethodOverload(classBodyNodes){
 		var methodsWithOverload = [];
 		var nodesWithoutOverload = [];
 		var methodsWithOverloadDetails = [];
@@ -774,10 +775,6 @@ exports.Cashew = function(javaCode){
 		return createSimpleIfNode(testExpression, consequentBlock, [0,0], [0,0]);		
 	}
 
-	var createNestedLogicalTest = function createNestedLogicalTest(logicalTest1, logicalTest2){
-
-	}
-
 	var createLogicalTestForIndexAndType = function createLogicalTestForIndexAndType(index, type){
 		range = [0,0];
 		var left = createExpression("==", "BinaryExpression", createDetermineTypeForIndex(index),  getArgumentForName("?", [0,0]), range);
@@ -815,12 +812,7 @@ exports.Cashew = function(javaCode){
 	}
 
 	cocoJava.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
-		constructorBodyNodes = methodBodyNodes;
-	}
-
-	cocoJava.yy.createParameterizedConstructor = function createParameterizedConstructor(modifiers, params, methodBodyNodes){
-		constructorBodyNodes = methodBodyNodes;
-		constructorParams = params;
+		constructorBodyNodes.push(methodBodyNodes);
 	}
 
 	cocoJava.yy.createImportNodeForName  = function createImportNodeForName(name){
@@ -928,23 +920,12 @@ exports.Cashew = function(javaCode){
 		return ast;
 	}
 
-	var createConstructorNode = function createConstructorNode(className, methodBodyNodes, methodParams, range, variableNodes, extensionName){
+	var createConstructorNode = function createConstructorNode(className, methodBodyNodes, range, variableNodes, extensionName){
 		var constructorNode = new node("FunctionExpression");
 		constructorNode.range = range;
 		constructorNode.id = createIdentifierNode(className, range);
 
-		if(methodParams == undefined){
-			constructorNode.params = [];
-		}else{
-			var paramNodes = [];
-			_.each(methodParams, function(param){
-				var newParam = createIdentifierNode(param.paramName, param.range);
-				newParam.javaType = param.type;
-				paramNodes.push(newParam);
-			});
-			createUpdateClassVariableReference(paramNodes, className, methodBodyNodes);
-			constructorNode.params = paramNodes;
-		}
+		constructorNode.params = [];
 		constructorNode.defaults = [];
 
 		var constructorNodeBody = new node("BlockStatement");
@@ -973,9 +954,10 @@ exports.Cashew = function(javaCode){
 
 		extensionExpression.expression = extensionExpressionXp;
 		constructorNodeBody.body.push(extensionExpression);
-		
-		if(methodBodyNodes){
-			constructorNodeBody.body = constructorNodeBody.body.concat(methodBodyNodes);
+
+		if(methodBodyNodes.length != 0){
+			//if there's a constructor start building methods
+			constructorNodeBody.body = constructorNodeBody.body.concat(createOverloadConstructorNode(className, methodBodyNodes));
 		}
 
 		if(variableNodes){
@@ -998,6 +980,76 @@ exports.Cashew = function(javaCode){
 		expressionConstructor.expression = expressionConstructorExpression;
 
 		return expressionConstructor;
+	}
+
+	var createOverloadConstructorNode = function createOverloadConstructorNode(className, bodyNodes){
+		var ifNodes = [];
+		for (var i = 0; i < bodyNodes.length; i++) {
+			currentConstructor = bodyNodes[i];
+			//check if constructor has the same class name
+			if(className != currentConstructor.details.methodName){
+				raise("Constructor needs to have the same name as class", currentConstructor.details.range);
+			}
+			//Check if there's a duplicate signature
+			for (var j = 0; j < bodyNodes.length; j++) {
+				otherConstructor = bodyNodes[j];
+				if(i != j){
+					if(currentConstructor.details.methodSignature == otherConstructor.details.methodSignature){
+						raise("Duplicated constructor signature " + currentConstructor.details.methodSignature, currentConstructor.details.range);
+					}
+				}
+			};
+			//Create a condition for each constructor
+			//check params anc create conditions
+			if(currentConstructor.details.params.length == 0){
+				ifNodes.push(createIfForMatchingConstructor([], currentConstructor));
+			}else{
+				var conditions = [];
+				for (var j = 0; j < currentConstructor.details.params.length; j++) {
+					conditions.push(createLogicalTestForIndexAndType(j, currentConstructor.details.params[j].type));
+					currentConstructor.unshift(createVariableReplacement(currentConstructor.details.params[j].paramName, j));
+				};
+
+				ifNodes.push(createIfForMatchingConstructor(conditions, currentConstructor, currentConstructor.details.params.length));
+			}
+		};
+		return ifNodes;
+	}
+
+	var createVariableReplacement = function createVariableReplacement(paramName, index){
+		var varReplacement = new node("AssignmentExpression");
+		varReplacement.range = [0,0];
+		varReplacement.operator = "=";
+		varReplacement.left = createIdentifierNode(paramName, [0,0]);
+		varReplacement.right = createArgumentArgumentsForIndex(index);
+		var expReplacement = new node("ExpressionStatement");
+		expReplacement.range = [0,0];
+		expReplacement.expression = varReplacement;
+		return expReplacement;
+	}
+
+	var createIfForMatchingConstructor = function createIfForMatchingConstructor(conditions, consequentBlock, paramsLength){
+		var testExpression;
+		var methodInvokeNodeExpressionArguments = [];
+		if(conditions.length == 0){
+			//the method has no parameters then arguments[0] == undefined
+			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), range);
+		}
+		else{
+			//nest all conditions to match a signature starting from 1 to nest the first 2
+			if(conditions.length == 1){
+				testExpression = conditions[0];
+			}else{
+				for (var i = 1; i < conditions.length; i++) {
+					testExpression = createExpression("&&", "LogicalExpression", conditions[i-1], conditions[i], [0,0]);
+				};
+			}
+			//create a new Argument for each original argument
+			for (var i = 0; i < paramsLength; i++) {
+				methodInvokeNodeExpressionArguments.push(createArgumentArgumentsForIndex(i));
+			};
+		}
+		return createSimpleIfNode(testExpression, consequentBlock, [0,0], [0,0]);
 	}
 
 	cocoJava.yy.createInvokeNode = function createInvokeNode(nameOrObject, nameRange, invokeNode, invokeRange, range){
