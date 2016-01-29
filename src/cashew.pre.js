@@ -818,7 +818,7 @@ exports.Cashew = function(javaCode){
 	cocoJava.yy.createImportNodeForName  = function createImportNodeForName(name){
 		//when importing other classes they shoud be here
 		if(name == "java.util.ArrayList" || name == "java.util.List" || name == "java.util.*"){
-			_ArrayList = {"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_ArrayList"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_ArrayList"},"params":[{"type":"Identifier","name":"type"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Identifier","name":"type"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"right":{"type":"ArrayExpression","elements":[]}}}]},"generator":false,"expression":false},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Object"},"property":{"type":"Identifier","name":"create"}},"arguments":[{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}}]}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"ArrayList","raw":"'ArrayList'"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"size"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"add"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"object"},"right":{"type":"Identifier","name":"undefined"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"push"}},"arguments":[{"type":"Identifier","name":"index"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":0,"raw":"0"},{"type":"Identifier","name":"object"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]}}]}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"get"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"set"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":null}],"kind":"var"},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]},"alternate":null},{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}},"right":{"type":"Identifier","name":"object"}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"old"}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"remove"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"IndexoutofboundsException","raw":"\"IndexoutofboundsException\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":1,"raw":"1"}]}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_ArrayList"}}]},"generator":false,"expression":false},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}}};
+			_ArrayList = {"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_ArrayList"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_ArrayList"},"params":[{"type":"Identifier","name":"type"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Identifier","name":"type"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"right":{"type":"ArrayExpression","elements":[]}}}]},"generator":false,"expression":false},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Object"},"property":{"type":"Identifier","name":"create"}},"arguments":[{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}}]}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"ArrayList","raw":"'ArrayList'"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"size"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"add"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"object"},"right":{"type":"Identifier","name":"undefined"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"index"}]}}},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"int","raw":"\"int\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Integer","raw":"\"Integer\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"index"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"index"}]}}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"double","raw":"\"double\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Double","raw":"\"Double\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"index"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"index"}]}}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"index"}]}}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"No suitable 'add' method found for ","raw":"\"No suitable 'add' method found for \""},"right":{"type":"Identifier","name":"objectType"}}]}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"push"}},"arguments":[{"type":"Identifier","name":"index"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"int","raw":"\"int\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Integer","raw":"\"Integer\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"double","raw":"\"double\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Double","raw":"\"Double\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"No suitable 'add' method found for ","raw":"\"No suitable 'add' method found for \""},"right":{"type":"Identifier","name":"objectType"}}]}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":0,"raw":"0"},{"type":"Identifier","name":"object"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]}}]}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"get"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"set"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":null}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"int","raw":"\"int\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Integer","raw":"\"Integer\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"double","raw":"\"double\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Double","raw":"\"Double\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"No suitable 'add' method found for ","raw":"\"No suitable 'add' method found for \""},"right":{"type":"Identifier","name":"objectType"}}]}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}],"kind":"var"},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"index"}]},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}},"right":{"type":"Identifier","name":"object"}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"old"}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"remove"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":1,"raw":"1"}]}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_ArrayList"}}]},"generator":false,"expression":false},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}}};
 			return _ArrayList;
 		}
 
@@ -1754,7 +1754,7 @@ exports.toNode = function(p){
   return node;
   function node(){}
 }
-/* These are included in the code directly
+/* These are included in the code directly*/
 
 String.prototype.compareTo = function (other){
 	for(var i = 0; i < this.length; i++){
@@ -1847,6 +1847,7 @@ Double = function () {
 _ArrayList = function() {
 
 	function _ArrayList(type) {
+		_Object.call(this);
 		this._type = type;
 		this._arraylist = [];
 	}
@@ -1859,40 +1860,77 @@ _ArrayList = function() {
 	_ArrayList.prototype.add = function(index, object) {
 		//hacky way so we can have method overload
 		if (object == undefined) {
-			//todo("validate type");
+			objectType = ___JavaRuntime.functions.determineType(index);
+			if(objectType == "int" && this._type == "Integer"){
+				index = new Integer(index);
+			}
+			if(objectType == "double" && this._type == "Double"){
+				index = new Integer(index);
+			}
+			//updates the type after autoboxing;
+			objectType = ___JavaRuntime.functions.determineType(index);
+			if(objectType !=  this._type){
+				throw new SyntaxError("No*suitable*'add'*method*found*for*" + objectType);
+			}
 			this._arraylist.push(index);
 			return true;
 		} else {
+			objectType = ___JavaRuntime.functions.determineType(object);
+			if(objectType == "int" && this._type == "Integer"){
+				object = new Integer(object);
+			}
+			if(objectType == "double" && this._type == "Double"){
+				object = new Integer(object);
+			}
+			//updates the type after autoboxing;
+			object = ___JavaRuntime.functions.determineType(object);
+			if(objectType !=  this._type){
+				throw new SyntaxError("No*suitable*'add'*method*found*for*" + objectType);
+			}
 			if (index > 0 && index < this._arraylist.length) {
 				this._arraylist.splice(index, 0, object);
 				return true;
 			} else {
-				throw new SyntaxError("Index out of bounds Exception");
+				throw new SyntaxError("Index*out*of*bounds*Exception!");
 			}
 		}
 	};
 
 	_ArrayList.prototype.get = function(index) {
 		if (index < 0 || index > this._arraylist.length) {
-			throw new SyntaxError("Index out of bounds Exception");
+			throw new SyntaxError("Index*out*of*bounds*Exception!");
 		}
 		return this._arraylist[index];
 	};
 
 	_ArrayList.prototype.set = function(index, object) {
 		var old;
+		objectType = ___JavaRuntime.functions.determineType(object);
+		if(objectType == "int" && this._type == "Integer"){
+			object = new Integer(object);
+		}
+		if(objectType == "double" && this._type == "Double"){
+			object = new Integer(object);
+		}
+		//updates the type after autoboxing;
+		object = ___JavaRuntime.functions.determineType(object);
+		if(objectType !=  this._type){
+			throw new SyntaxError("No*suitable*'add'*method*found*for*" + objectType);
+		}
 		if (index < 0 || index > this._arraylist.length) {
-			throw new SyntaxError("Index out of bounds Exception");
+			throw new SyntaxError("Index*out*of*bounds*Exception!");
 		}
 		var old = this._arraylist[index];
-		//todo("validate type");
+		if(___JavaRuntime.functions.determineType(index) !=  this._type){
+			throw new SyntaxError("Index*out*of*bounds*Exception!");	
+		}
 		this._arraylist[index] = object;
 		return old;
 	};
 
 	_ArrayList.prototype.remove = function(index) {
 		if (index < 0 || index > this._arraylist.length) {
-			throw new SyntaxError("Index out of bounds Exception");
+			throw new SyntaxError("Index*out*of*bounds*Exception!");
 		}
 		return this._arraylist.splice(index,1);
 	};
@@ -1900,7 +1938,7 @@ _ArrayList = function() {
 	return _ArrayList;
 
 }.call(this);
-*/
+/* ---------------------------- */
 exports.___JavaRuntime = ___JavaRuntime = { 
 	variablesDictionary : [],
 	extend : function(child, parent) { 
@@ -2244,19 +2282,88 @@ exports.___JavaRuntime = ___JavaRuntime = {
 	},
 	ops : {
 		add: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "String" && tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+			}
+			if(tArg1 != "String" && tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
 			return arg1 + arg2;
 		},
 		sub: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
 			return arg1 - arg2;
 		},
 		mul: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
 			return arg1 * arg2;
 		},
 		div: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
 			return arg1 / arg2;
 		},
 		mod: function(arg1, arg2){
-			return arg1 % arg2;
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}			return arg1 % arg2;
 		},
 	},
 }
