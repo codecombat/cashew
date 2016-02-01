@@ -25,7 +25,7 @@ var mainMethodCall;
 
 exports.Cashew = function(javaCode){
 	
-	___JavaRuntime.variablesDictionary = [];
+	___JavaRuntime.BufferedConsole = "";
 	methodsDictionary = [];
 	constructorBodyNodes = [];
 	mainMethodCall = undefined;
@@ -1785,6 +1785,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		};
 
 		Array.prototype.__defineGetter__("_length", function(){return this.length});
+		
 		_Object = function() {
 
 			function _Object() {
