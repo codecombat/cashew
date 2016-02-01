@@ -775,7 +775,7 @@ continue_statement
 log_statement
   : SYSOUT 'LEFT_PAREN' expression 'RIGHT_PAREN' 'LINE_TERMINATOR'
     {
-      $$ = consoleNode = yy.createConsoleLogExpression($3, @$.range);
+      $$ = yy.createConsoleLogExpression($1,$3, @$.range);
     }
   ;
 
@@ -1525,13 +1525,11 @@ do_statement
 for_statement
   : KEYWORD_FOR LEFT_PAREN for_init LINE_TERMINATOR expression LINE_TERMINATOR for_update RIGHT_PAREN statement
     { 
-      var variables = [];
-      variables.push($3);
-      var forBlock = yy.createForStatement($3, $5, $7, @7.range, $9, @9.range, @$.range);
-
-      yy.createUpdateBlockVariableReference(variables, forBlock);
-
-      $$ = forBlock;
+      $$ = yy.createForStatement($3, $5, $7, @7.range, $9, @9.range, @$.range);
+    }
+  | KEYWORD_FOR LEFT_PAREN LINE_TERMINATOR expression LINE_TERMINATOR for_update RIGHT_PAREN statement
+    { 
+      $$ =  yy.createForStatement(null, $4, $6, @6.range, $8, @8.range, @$.range);
     }
   | KEYWORD_FOR LEFT_PAREN type IDENTIFIER COLON IDENTIFIER RIGHT_PAREN statement
     {

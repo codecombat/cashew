@@ -1581,7 +1581,7 @@ exports.Cashew = function(javaCode){
 		return enhancedForExpression;
 	}
 
-	cocoJava.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
+	cocoJava.yy.createConsoleLogExpression = function createConsoleLogExpression(printType, expression, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;
 		consoleLogNode.arguments = [];
@@ -1591,7 +1591,13 @@ exports.Cashew = function(javaCode){
 
 		var functions = getRuntimeFunctions(range);
 
-		var printProperty = createIdentifierNode("print", range);
+		var printProperty;
+		if(printType == "System.out.print"){
+			printProperty = createIdentifierNode("print", range);
+		}else{
+			printProperty = createIdentifierNode("println", range);
+		}
+			
 
 		callee.object = functions;
 		callee.property = printProperty;
@@ -1655,7 +1661,15 @@ exports.Cashew = function(javaCode){
 		}
 		throw err;
 	}
-	
+	//Add call to BufferedConsole and print it;
+	var consolePrintNode = new node("ExpressionStatement");
+	var consoleCall = new node("CallExpression");
+	consoleCall.callee  = createMemberExpressionNode(getRuntimeFunctions([0,0]),createIdentifierNode("printLog", [0,0]),[0,0]);
+	consoleCall.arguments = [];
+	consolePrintNode.expression = consoleCall;
+
+	ast.body.push(consolePrintNode);
+
 	return ast;
 }
 
@@ -1747,6 +1761,7 @@ exports.toNode = function(p){
 }
 
 exports.___JavaRuntime = ___JavaRuntime = {
+	BufferedConsole : "",
 	loadEnv: function(){
 		String.prototype.compareTo = function (other){
 			for(var i = 0; i < this.length; i++){
@@ -1939,8 +1954,15 @@ exports.___JavaRuntime = ___JavaRuntime = {
 
 	},
 	functions : {
+		printLog: function(str){
+			console.log(___JavaRuntime.BufferedConsole);
+		},
 		print: function(str){
-			console.log(str);
+			___JavaRuntime.BufferedConsole += str;
+		},
+		println: function(str){
+			___JavaRuntime.BufferedConsole += str;
+			___JavaRuntime.BufferedConsole += "\n";
 		},
 		//FIXME: chaneged validateSet to checkAssignment, most validations will be in the AST soon
 		checkAssignment: function(value, variable, arrayIndex1, arrayIndex2, javaType, range){
