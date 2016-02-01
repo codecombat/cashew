@@ -2296,6 +2296,15 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			if(tArg2 == "Integer" || tArg2 == "Double"){
 				arg2 = arg2.value;
 			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 + arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 + arg2);
+			}
+			if(tArg1 == "int"){
+				return Math.floor(arg1 + arg2);
+			}
 			return arg1 + arg2;
 		},
 		sub: function(arg1, arg2){
@@ -2312,6 +2321,15 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			}
 			if(tArg2 == "Integer" || tArg2 == "Double"){
 				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 - arg2));
+			}
+			if(tArg1 == "Double" ){
+				return new Double(arg1 - arg2);
+			}
+			if(tArg1 == "int"){
+				return Math.floor(arg1 - arg2);
 			}
 			return arg1 - arg2;
 		},
@@ -2330,6 +2348,15 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			if(tArg2 == "Integer" || tArg2 == "Double"){
 				arg2 = arg2.value;
 			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 * arg2));
+			}
+			if(tArg1 == "Double" ){
+				return new Double(arg1 * arg2);
+			}
+			if(tArg1 == "int"){
+				return Math.floor(arg1 * arg2);
+			}
 			return arg1 * arg2;
 		},
 		div: function(arg1, arg2){
@@ -2347,6 +2374,15 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			if(tArg2 == "Integer" || tArg2 == "Double"){
 				arg2 = arg2.value;
 			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 / arg2));
+			}
+			if(tArg1 == "Double" ){
+				return new Double(arg1 / arg2);
+			}
+			if(tArg1 == "int"){
+				return Math.floor(arg1 / arg2);
+			}
 			return arg1 / arg2;
 		},
 		mod: function(arg1, arg2){
@@ -2363,7 +2399,17 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			}
 			if(tArg2 == "Integer" || tArg2 == "Double"){
 				arg2 = arg2.value;
-			}			return arg1 % arg2;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 % arg2));
+			}
+			if(tArg1 == "Double" ){
+				return new Double(arg1 % arg2);
+			}
+			if(tArg1 == "int"){
+				return Math.floor(arg1 % arg2);
+			}
+			return arg1 % arg2;
 		},
 	},
 }
