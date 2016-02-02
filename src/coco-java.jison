@@ -464,7 +464,7 @@ constructor_declaration
     {
       var paramList = "";
       yy._.each($4, function(param){
-        paramList = param.type + " ";
+        paramList += param.type + " ";
       });
       paramList = paramList.trim();
       var signature = $2 + $3 + paramList + $5;
@@ -514,7 +514,7 @@ method_declarator
     {
       var paramList = "";
       yy._.each($3, function(param){
-        paramList = param.type + " ";
+        paramList += param.type + " ";
       });
       paramList = paramList.trim();
       var signature = $1 + $2 + paramList + $4;

@@ -256,7 +256,7 @@ case 48:
 
       var paramList = "";
       yy._.each($$[$0-2], function(param){
-        paramList = param.type + " ";
+        paramList += param.type + " ";
       });
       paramList = paramList.trim();
       var signature = $$[$0-4] + $$[$0-3] + paramList + $$[$0-1];
@@ -302,7 +302,7 @@ case 52:
 
       var paramList = "";
       yy._.each($$[$0-1], function(param){
-        paramList = param.type + " ";
+        paramList += param.type + " ";
       });
       paramList = paramList.trim();
       var signature = $$[$0-3] + $$[$0-2] + paramList + $$[$0];
