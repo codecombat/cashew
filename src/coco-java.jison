@@ -417,7 +417,7 @@ class_body_declaration
   ;
 
 class_member_declaration
-  : contructor_declaration
+  : constructor_declaration
     {
       $$ = [];
     }
@@ -452,7 +452,7 @@ method_declaration
   ;
 
 // Constructor declarations
-contructor_declaration
+constructor_declaration
   : modifiers CLASS_IDENTIFIER LEFT_PAREN RIGHT_PAREN method_body
     {
       var signature = $2 + $3 + $4;
@@ -692,10 +692,6 @@ statement_without_trailing_substatement
     { 
       $$ = $1;
     }    
-  | assignment
-    {
-      $$ = $1; 
-    }
   | expression_statement
     {
       $$ = $1;
@@ -796,7 +792,10 @@ statement_expression
     {
       $$ = $1;
     }
-  // TODO class_instance_creation_expression
+  | assignment
+    {
+      $$ = $1;
+    }
   ;
 
 //Just using the side effect of the increment-decrement operators
@@ -895,10 +894,10 @@ variable_initializer
     {
       $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
     }
-  |  variable_declarator_id OPERATOR_ASSIGNMENT constructor_call
+ /* |  variable_declarator_id OPERATOR_ASSIGNMENT constructor_call
     {
       $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
-    }
+    }*/
   ;
 
 
@@ -951,6 +950,14 @@ array_expression
   | EMBRACE primary_expression_list UNBRACE
     {
       $$ = yy.createArrayFromInitialArray($2, @$.range);
+    }
+  | KEYWORD_NEW type LEFT_BRACKET RIGHT_BRACKET EMBRACE primary_expression_list UNBRACE
+    {
+      $$ = yy.createArrayFromInitialArray($6, @$.range);
+    }
+  | KEYWORD_NEW type LEFT_BRACKET RIGHT_BRACKET LEFT_BRACKET RIGHT_BRACKET EMBRACE primary_expression_list UNBRACE
+    {
+      $$ = yy.createArrayFromInitialArray($8, @$.range);
     }
   ;
  
@@ -1010,111 +1017,111 @@ primary_expression_value
   ;
 
 assignment
-  : variable_invocation OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+  : variable_invocation OPERATOR_ASSIGNMENT expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
-  | IDENTIFIER OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+  | IDENTIFIER OPERATOR_ASSIGNMENT expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
-  | variable_invocation OPERATOR_ASSIGNMENT constructor_call LINE_TERMINATOR
+/*  | variable_invocation OPERATOR_ASSIGNMENT constructor_call
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
-  | IDENTIFIER OPERATOR_ASSIGNMENT constructor_call LINE_TERMINATOR
+  | IDENTIFIER OPERATOR_ASSIGNMENT constructor_call
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
-    }
-  | variable_invocation '+=' expression LINE_TERMINATOR
+    }*/
+  | variable_invocation '+=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('+', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | IDENTIFIER '+=' expression LINE_TERMINATOR
+  | IDENTIFIER '+=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('+', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | variable_invocation '-=' expression LINE_TERMINATOR
+  | variable_invocation '-=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('-', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | IDENTIFIER '-=' expression LINE_TERMINATOR
+  | IDENTIFIER '-=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('-', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | variable_invocation '*=' expression LINE_TERMINATOR
+  | variable_invocation '*=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('*', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | IDENTIFIER '*=' expression LINE_TERMINATOR
+  | IDENTIFIER '*=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('*', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | variable_invocation '/=' expression LINE_TERMINATOR
+  | variable_invocation '/=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('/', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | IDENTIFIER '/=' expression LINE_TERMINATOR
+  | IDENTIFIER '/=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('/', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | variable_invocation '%=' expression LINE_TERMINATOR
+  | variable_invocation '%=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('%', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | IDENTIFIER '%=' expression LINE_TERMINATOR
+  | IDENTIFIER '%=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
       var addExpression = yy.createMathOperation('%', identifierVar, $3, @$.range);
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, addExpression);
     }
-  | variable_invocation LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+  | variable_invocation LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $9, $3, $6);
     }
-  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $9, $3, $6);
     }
-  | variable_invocation LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+  | variable_invocation LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
     }
-  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression LINE_TERMINATOR
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
     }
-  | variable_invocation LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT array_expression LINE_TERMINATOR
+  | variable_invocation LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT array_expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
     }
-  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT array_expression LINE_TERMINATOR
+  | IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET OPERATOR_ASSIGNMENT array_expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $6, $3);
     }
-  | variable_invocation OPERATOR_ASSIGNMENT array_expression LINE_TERMINATOR
+  | variable_invocation OPERATOR_ASSIGNMENT array_expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
-  | IDENTIFIER OPERATOR_ASSIGNMENT array_expression LINE_TERMINATOR
+  | IDENTIFIER OPERATOR_ASSIGNMENT array_expression
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
@@ -1170,7 +1177,7 @@ expression
     {
       $$ = $1;
     } 
-  | assignment
+  | assignment LINE_TERMINATOR
     {
       $$ = $1;
     }
@@ -1367,6 +1374,10 @@ postfix_expression
 
 primary
   : literal
+    {
+      $$ = $1;
+    }
+  | constructor_call
     {
       $$ = $1;
     }

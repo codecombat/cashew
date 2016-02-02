@@ -29,6 +29,7 @@ if ( !insideAether ) {
 			buffer += what + "\n";
 		}
 		var code = [
+			'import java.util.*;',
 			'public class MyClass {',
 			'	' + extra.join("\n\t"),
 			'	public static ' + type + ' output() {',
@@ -53,6 +54,7 @@ if ( !insideAether ) {
 			buffer += what + "\n";
 		}
 		var code = [
+			'import java.util.*;',
 			'public class MyClass {',
 			'	' + extra.join("\n\t"),
 			'	public static ' + type + ' output() {',
@@ -248,7 +250,7 @@ describe('JAVAM - 07 - class definition', function() {
 
 describe('JAVAM - 07 - 2d arrays', function() {
 	ct('simple', 'int', [
-		'int[][] multi = new int[5][];',
+		'int[][] multi = new int[5][10];',
 		'multi[0] = new int[10];',
 		'multi[1] = new int[10];',
 		'multi[2] = new int[10];',

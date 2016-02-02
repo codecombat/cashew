@@ -24,8 +24,7 @@ var methodsDictionary;
 var mainMethodCall;
 
 exports.Cashew = function(javaCode){
-	
-	___JavaRuntime.BufferedConsole = "";
+
 	methodsDictionary = [];
 	constructorBodyNodes = [];
 	mainMethodCall = undefined;
@@ -1008,15 +1007,16 @@ exports.Cashew = function(javaCode){
 	}
 
 	var createVariableReplacement = function createVariableReplacement(paramName, index){
-		var varReplacement = new node("AssignmentExpression");
+		var varReplacement = new node("VariableDeclarator");
 		varReplacement.range = [0,0];
-		varReplacement.operator = "=";
-		varReplacement.left = createIdentifierNode(paramName, [0,0]);
-		varReplacement.right = createArgumentArgumentsForIndex(index);
-		var expReplacement = new node("ExpressionStatement");
-		expReplacement.range = [0,0];
-		expReplacement.expression = varReplacement;
-		return expReplacement;
+		varReplacement.id = createIdentifierNode(paramName, [0,0]);
+		varReplacement.init = createArgumentArgumentsForIndex(index);
+		var declarationReplacement = new node("VariableDeclaration");
+		declarationReplacement.range = [0,0];
+		declarationReplacement.declarations = [];
+		declarationReplacement.declarations.push(varReplacement);
+		declarationReplacement.kind = "var";
+		return declarationReplacement;
 	}
 
 	var createIfForMatchingConstructor = function createIfForMatchingConstructor(conditions, consequentBlock, paramsLength){
@@ -1024,7 +1024,7 @@ exports.Cashew = function(javaCode){
 		var methodInvokeNodeExpressionArguments = [];
 		if(conditions.length == 0){
 			//the method has no parameters then arguments[0] == undefined
-			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), range);
+			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), [0,0]);
 		}
 		else{
 			//nest all conditions to match a signature starting from 1 to nest the first 2
@@ -1200,7 +1200,7 @@ exports.Cashew = function(javaCode){
 		return logicalNode;
 	}
 
-	cocoJava.yy.createUnaryExpression = function createExpression(op, expression, range){
+	cocoJava.yy.createUnaryExpression = function createUnaryExpression(op, expression, range){
 		var unaryNode = new node("UnaryExpression");
 		unaryNode.range = range;
 		unaryNode.operator = op;
@@ -1209,7 +1209,7 @@ exports.Cashew = function(javaCode){
 		return unaryNode;
 	}
 
-	cocoJava.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
+	var createTernaryNode = cocoJava.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
 		var ternaryNode = new node("ConditionalExpression");
 		ternaryNode.range = expressionRange;
 		ternaryNode.test = testExpression;
@@ -1555,7 +1555,10 @@ exports.Cashew = function(javaCode){
 
 		enhancedForExpressionExpression = new node("CallExpression");
 		enhancedForExpressionExpression.range = range;
-		enhancedForExpressionExpression.callee = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode(arraylist,arraylistRange),createIdentifierNode("_arraylist",range),range), createIdentifierNode("forEach"),range);
+
+		enhancedConditional = createTernaryNode(createExpression("instanceof", "BinaryExpression", createIdentifierNode(arraylist,[0,0]),createIdentifierNode("_ArrayList",[0,0]),[0,0]), createMemberExpressionNode(createIdentifierNode(arraylist,arraylistRange),createIdentifierNode("_arraylist",range),range), createIdentifierNode(arraylist, [0,0]), [0,0]);
+
+		enhancedForExpressionExpression.callee = createMemberExpressionNode(enhancedConditional, createIdentifierNode("forEach"),range);
 
 		
 
@@ -1763,6 +1766,7 @@ exports.toNode = function(p){
 exports.___JavaRuntime = ___JavaRuntime = {
 	BufferedConsole : "",
 	loadEnv: function(){
+		___JavaRuntime.BufferedConsole = "";
 		String.prototype.compareTo = function (other){
 			for(var i = 0; i < this.length; i++){
 				if(this[i].charCodeAt(0) != other.charCodeAt(i))
@@ -1785,7 +1789,6 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		};
 
 		Array.prototype.__defineGetter__("_length", function(){return this.length});
-		
 		_Object = function() {
 
 			function _Object() {
@@ -1855,6 +1858,14 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		        return "" + this.value;
 		    };
 		    return Double;
+		}.call(this);
+
+		_ArrayList = function(){
+			_ArrayList = function _ArrayList(type) {
+				_Object.call(this);
+				throw new SyntaxError("Cannot find ArrayList");
+			}
+			return _ArrayList;
 		}.call(this);
 	},
 	loadLists : function(){ 
@@ -1927,19 +1938,24 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					object = new Integer(object);
 				}
 				//updates the type after autoboxing;
-				object = ___JavaRuntime.functions.determineType(object);
+				objectType = ___JavaRuntime.functions.determineType(object);
 				if(objectType !=  this._type){
-					throw new SyntaxError("No suitable 'add' method found for " + objectType);
+					throw new SyntaxError("No suitable 'set' method found for " + objectType);
 				}
 				if (index < 0 || index > this._arraylist.length) {
 					throw new SyntaxError("Index out of bounds Exception!");
 				}
 				var old = this._arraylist[index];
-				if(___JavaRuntime.functions.determineType(index) !=  this._type){
-					throw new SyntaxError("Index out of bounds Exception!");	
+				if(___JavaRuntime.functions.determineType(index) == "int" || ___JavaRuntime.functions.determineType(index)== "Integer"){
+					if(___JavaRuntime.functions.determineType(index) == "Integer"){
+						this._arraylist[index.intValue()] = object;
+						}else{
+							this._arraylist[index] = object;
+						}
+						return old;
+				}else{
+					throw new SyntaxError("Incompatible types required: int, found: " + ___JavaRuntime.functions.determineType(index));	
 				}
-				this._arraylist[index] = object;
-				return old;
 			};
 
 			_ArrayList.prototype.remove = function(index) {
