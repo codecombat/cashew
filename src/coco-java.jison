@@ -224,7 +224,7 @@ literal
 integer_literal
   : DECIMAL_INTEGER_LITERAL
     {
-      $$ = new yy.createLiteralNode(parseInt($1), $1, @$.range);
+      $$ = new yy.createLiteralNode(parseInt($1), $1, @$.range, "int");
 
     }
   ;
@@ -232,7 +232,8 @@ integer_literal
 floating_point_literal
   : FLOATING_POINT_LITERAL
     {
-      $$ = new yy.createLiteralNode(parseFloat($1), $1, @$.range);
+
+      $$ = new yy.createLiteralNode(parseFloat($1), $1, @$.range, "double");
     }
   ;
 
@@ -802,7 +803,7 @@ statement_expression
 pre_increment_expression
   : OPERATOR_INCREMENT postfix_expression %prec PRE_INCREMENT
     {
-      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @1.range);
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @1.range, "int");
       var addExpression = yy.createMathOperation('+', $2, incrementOne, @$.range);
       $$ = yy.createVariableAttribution($2.name, @2.range, @$.range, addExpression);
     }
@@ -811,7 +812,7 @@ pre_increment_expression
 pre_decrement_expression
   : OPERATOR_DECREMENT postfix_expression  %prec PRE_DECREMENT
     {
-      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @1.range);
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @1.range, "int");
       var subExpression = yy.createMathOperation('-', $2, decrementOne, @$.range);
       $$ = yy.createVariableAttribution($2.name, @2.range, @$.range, subExpression);
     }
@@ -820,7 +821,7 @@ pre_decrement_expression
 post_increment_expression
   : postfix_expression OPERATOR_INCREMENT %prec POST_INCREMENT
     {
-      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range, "int");
       var addExpression = yy.createMathOperation('+', $1, incrementOne, @$.range);
       $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, addExpression);
     }
@@ -829,7 +830,7 @@ post_increment_expression
 post_decrement_expression
   : postfix_expression OPERATOR_DECREMENT %prec POST_DECREMENT
     {
-      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range);
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', @2.range, "int");
       var subExpression = yy.createMathOperation('-', $1, decrementOne, @$.range);
       $$ = yy.createVariableAttribution($1.name, @1.range, @$.range, subExpression);
     }

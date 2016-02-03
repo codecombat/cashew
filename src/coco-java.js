@@ -125,13 +125,14 @@ case 10: case 11: case 12: case 13: case 14: case 23: case 24: case 25: case 32:
 break;
 case 15:
 
-      this.$ = new yy.createLiteralNode(parseInt($$[$0]), $$[$0], this._$.range);
+      this.$ = new yy.createLiteralNode(parseInt($$[$0]), $$[$0], this._$.range, "int");
 
     
 break;
 case 16:
 
-      this.$ = new yy.createLiteralNode(parseFloat($$[$0]), $$[$0], this._$.range);
+
+      this.$ = new yy.createLiteralNode(parseFloat($$[$0]), $$[$0], this._$.range, "double");
     
 break;
 case 17: case 18:
@@ -415,28 +416,28 @@ case 99:
 break;
 case 105:
 
-      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0-1].range);
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0-1].range, "int");
       var addExpression = yy.createMathOperation('+', $$[$0], incrementOne, this._$.range);
       this.$ = yy.createVariableAttribution($$[$0].name, _$[$0].range, this._$.range, addExpression);
     
 break;
 case 106:
 
-      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0-1].range);
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0-1].range, "int");
       var subExpression = yy.createMathOperation('-', $$[$0], decrementOne, this._$.range);
       this.$ = yy.createVariableAttribution($$[$0].name, _$[$0].range, this._$.range, subExpression);
     
 break;
 case 107:
 
-      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0].range);
+      var incrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0].range, "int");
       var addExpression = yy.createMathOperation('+', $$[$0-1], incrementOne, this._$.range);
       this.$ = yy.createVariableAttribution($$[$0-1].name, _$[$0-1].range, this._$.range, addExpression);
     
 break;
 case 108:
 
-      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0].range);
+      var decrementOne = new yy.createLiteralNode(parseInt('1'), '1', _$[$0].range, "int");
       var subExpression = yy.createMathOperation('-', $$[$0-1], decrementOne, this._$.range);
       this.$ = yy.createVariableAttribution($$[$0-1].name, _$[$0-1].range, this._$.range, subExpression);
     
