@@ -1223,13 +1223,11 @@ exports.Cashew = function(javaCode){
 		}
 		assignmentExpressionNode.left = assignmentNodeLeft;
 
-		if(expressionNode.type === "NewExpression"){
-			assignmentExpressionNode.right = expressionNode;
-		}else{
-			//var setNode = createRuntimeCheckAssignment(varName, varRange, expressionNode, index1, index2, assignmentRange);
-			//FIXME Removed Validations for now
-			assignmentExpressionNode.right = expressionNode;
-		}
+		
+		var setNode = createRuntimeCheckAssignment(varName, varRange, expressionNode, index1, index2, assignmentRange);
+		//FIXME Removed Validations for now
+		assignmentExpressionNode.right = setNode;
+		
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
 	}
@@ -1352,7 +1350,35 @@ exports.Cashew = function(javaCode){
 		varDeclarationNode.kind = "var";
 		varDeclarationNode.javaType = type;
 		varDeclarationNode.declarations = [];
-
+		//Updates the type verification when declaring a variable;
+		for (var i = 0; i < declarators.length; i++) {
+			currentDeclarator = declarators[i];
+			if(declarators[i].init.type == "CallExpression"){
+				declarators[i].init.arguments.push(getArgumentForName(type, declarationRange));
+			}else if(declarators[i].init.type == "NewExpression"){
+				if(declarators[i].init.callee.name == "_NotInitialized"){
+					//changes the type of the not initialized
+					declarators[i].init.arguments[1] = getArgumentForName(type, declarationRange);
+				}else if(declarators[i].init.callee.name != type){
+					//Autobox
+					if(type == "int" && declarators[i].init.callee.name == "Integer"){
+						declarators[i].init = declarators[i].init.arguments[0];
+					}
+					else if(type == "double" && declarators[i].init.callee.name == "Double"){
+						declarators[i].init = declarators[i].init.arguments[0];
+						declarators[i].init.arguments[1] = getArgumentForName(type, declarationRange);
+					}
+					else if(type == "double" && declarators[i].init.callee.name == "Integer"){
+						declarators[i].init = declarators[i].init.arguments[0];
+						declarators[i].init.arguments[1] = getArgumentForName(type, declarationRange);
+					}else if(type == "Double" && declarators[i].init.callee.name == "Integer"){
+						declarators[i].init.callee.name = type;
+					}else{
+						raise("Incompatible types" , declarationRange);
+					}
+				}
+			}
+		};
 		varDeclarationNode.declarations = varDeclarationNode.declarations.concat(declarators);
 
 		return varDeclarationNode;
@@ -1364,7 +1390,14 @@ exports.Cashew = function(javaCode){
 
 		var idNode = createIdentifierNode(varName, declarationRange);
 		varDeclaratorNode.id = idNode;
-		varDeclaratorNode.init = null;
+		var initNode  = new node("NewExpression");
+		initNode.range = declarationRange;
+		initNode.callee = createIdentifierNode("_NotInitialized", declarationRange);
+		initNode.arguments = [];
+		initNode.arguments.push(getArgumentForName(varName, declarationRange));
+		initNode.arguments.push(getArgumentForName("tempType", declarationRange));
+		initNode.arguments.push(getArgumentForRange(declarationRange));
+		varDeclaratorNode.init = initNode;
 
 		return varDeclaratorNode;
 	}
@@ -1380,9 +1413,9 @@ exports.Cashew = function(javaCode){
 		if(assignment.type === "NewExpression"){
 			varDeclaratorNode.init = assignment;
 		}else{
-			//var initNode = createRuntimeCheckAssignment(varName, varRange, assignment, null, null, assignmentRange);
+			var initNode = createRuntimeCheckAssignment(varName, varRange, assignment, null, null, assignmentRange);
 			//FIXME Removed Validations for now
-			varDeclaratorNode.init = assignment;
+			varDeclaratorNode.init = initNode;
 		}
 		return varDeclaratorNode;
 	}
@@ -1392,7 +1425,6 @@ exports.Cashew = function(javaCode){
 		initNode.range = range;
 		initNode.arguments = [];
 		initNode.arguments.push(assignment);
-		initNode.arguments.push(getArgumentForVariable(varName, varRange));
 		initNode.arguments.push(getArgumentForVariable(varName, varRange));
 		if(index1){
 			initNode.arguments.push(index1);
@@ -1404,7 +1436,7 @@ exports.Cashew = function(javaCode){
 		}else{
 			initNode.arguments.push(getNullArgument());
 		}
-		initNode.arguments.push(getArgumentForNumber(assignment.ASTNodeID, range));
+		initNode.arguments.push(getArgumentForRange(range));
 		//FIXME changed validateSet to checkAssignment for now
 		var callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("checkAssignment", range), range, false);
 
@@ -1504,30 +1536,24 @@ exports.Cashew = function(javaCode){
 		return nullArray;
 	}
 
-	var createArrayWithNullInitialization = cocoJava.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
-		var nodeArray = new node("ArrayExpression")
-			, size = nodeExp.value || 0;
-		nodeArray.range = range;	
-		nodeArray.elements = [];
-
-		// TODO: Validar a expressão que declara o tamanho do array.
-		_.times(parseInt(size),function(){
-			var literal = getNullArgument();
-			nodeArray.elements.push(literal);
-		});
+	cocoJava.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
+		var nodeArray = new node("CallExpression");
+		nodeArray.range = range;
+		nodeArray.callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("createNullArrayForIndexes",range), range);
+		nodeArray.arguments = [];
+		nodeArray.arguments.push(nodeExp);
+ 		nodeArray.arguments.push(getArgumentForRange(range));
 		return nodeArray;
 	}
 
 	cocoJava.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp, range){
-		var nodeArray = new node("ArrayExpression");
+		var nodeArray = new node("CallExpression");
 		nodeArray.range = range;
-		nodeArray.elements = [];
-		_.times(nodesExp[0].value, function(){
-			if(nodesExp[1]){
-				var literal = createArrayWithNullInitialization(nodesExp[1],range);
-			}
-			nodeArray.elements.push(literal);
-		});
+		nodeArray.callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("createNullArrayForIndexes",range), range);
+		nodeArray.arguments = [];
+		nodeArray.arguments.push(nodesExp[0]);
+ 		nodeArray.arguments.push(getArgumentForRange(range));
+		nodeArray.arguments.push(nodesExp[1]);
 		return nodeArray;
 	}
 
@@ -1545,14 +1571,6 @@ exports.Cashew = function(javaCode){
 			}
 		};
 		return nodeArray;
-	}
-
-	cocoJava.yy.validateDeclaratorsDimension = function validateDeclaratorsDimension(declaratorNodes, type){
-		_.each(declaratorNodes, function(declaratorNode){
-			if(declaratorNode.init.elements.length > 0 && declaratorNode.init.elements[0].type == "ArrayExpression"){
-				raise("Invalid type for " + type, declaratorNode.range);
-			}
-		});
 	}
 
 	cocoJava.yy.createArrayFromInitialArray = function createArrayFromInitialArray(arrays, range){
@@ -1978,7 +1996,20 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			return _Object;
 
 		}.call(this);
+		_NotInitialized = function() {
 
+			_NotInitialized = function _NotInitialized(name, type, range) {
+				this._name = name;
+				this._initType = type;
+				this._range = range;
+			}
+
+			_Object.prototype.toString= function() {
+				___JavaRuntime.raise("Variable " + this._name + " might not have been initialized", this._range);
+			};
+			return _NotInitialized;
+
+		}.call(this);
 		Integer = function () {
 		    Integer = function Integer(value) {
 		        _Object.call(this);
@@ -2149,120 +2180,58 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			return _temp;
 		}
 		,
-		//FIXME: chaneged validateSet to checkAssignment, most validations will be in the AST soon
-		checkAssignment: function(value, variable, arrayIndex1, arrayIndex2, javaType, range){
+		//FIXME: validations on arrays pending
+		checkAssignment: function(value, variable, arrayIndex1, arrayIndex2, range, javaType){
 			if(typeof value === "function")
 				value = value();
-
-			var varRawType;
-
-			if (javaType){
-				varRawType = javaType.replace(/\[/g,'').replace(/\]/g,'');
-				if(javaType.indexOf("[][]")>-1){
-					//if either the new value and the variable are arrays
-					if (value.constructor === Array){
-						if(value[0].constructor === Array){
-							//both are arrays: fine
-						}else{
-							throw new SyntaxError("Incompatible types");
-						}
+			var tValue =  ___JavaRuntime.functions.determineType(value);
+			var tVariable;
+			if(javaType){
+				tVariable = javaType;
+			}else{
+				tVariable = ___JavaRuntime.functions.determineType(variable);	
+			}
+			if(tValue == tVariable){
+				//if both have the same type just return the value
+				return value;
+			}else{
+				if(tVariable == "Object"){
+					//if primitives, wrap them into objects
+					if(tValue == "int"){
+						return new Integer(value);
+					}else if (tVariable == "double"){
+						return new Double(value);
 					}else{
-						//if the value is an array but it's not 2-d
-						throw new SyntaxError("Incompatible types");
+						return value;
 					}
-				} else if(javaType.indexOf("[]")>-1){
-					//if both value and variables are arrays
-					if (value.constructor === Array && arrayIndex1 == undefined){
-						if(value[0].constructor === Array){
-							//if value is a 2-d array
-							throw new SyntaxError("Incompatible types");
-						}else{
-							//value is a 1-d array: fine
-						}
-					}else{
-						//variable is array but value isn't
-						throw new SyntaxError("Incompatible types");
-					}
-				}else{
-					if(javaType == 'int' || javaType == 'Integer'){
-						if(value.constructor == Number){
-							return Math.floor(value);
-						}else{
-							throw new SyntaxError("Int cannot accept " + value.constructor);
-						}
-					}else if(javaType == 'double' || javaType == 'Double'){
-						if(value.constructor == Number){
-							return value;
-						}else{
-							throw new SyntaxError("Double cannot accept " + value.constructor);
-						}
-					}else if(javaType == 'String'){
-						if(value.constructor  == String){
-							return value;
-						}else{
-							throw new SyntaxError("String cannot accept " + value.constructor);
-						}
-					}	
+				}
+				//Autobox
+				if(tVariable == "int" && tValue == "Integer"){
+					return value.intValue();
+				}else if(tVariable == "Integer" && tValue == "int"){
+					return new Integer(value);
+				}else if(tVariable == "double" && tValue == "Integer"){
+					var _temp = value.intValue();
+					_temp._type = "double";
+					return _temp;
+				}else if(tVariable == "double" && tValue == "int"){
+					value._type = "double";
+					return value;
+				}else if(tVariable == "double" && tValue == "Double"){
+					return value.doubleValue();
+				}else if(tVariable == "Double" && tValue == "Integer"){
+					return new Double(value.intValue());
+				}else if(tVariable == "Double" && tValue == "int"){
+					return new Double(value);
+				}else if(tVariable == "Double" && tValue == "double"){
+					return new Double(value);
 				}
 			}
-			if(variable){
-				//If the variable is assigned already we can try determine the type
-				//Check first if the variable is an array
-				if (variable.constructor == Array){
-					if (variable[0].constructor == Array){
-						//variable is a 2-d array
-						if (value.constructor === Array){
-							if(value[0].constructor === Array){
-								// value is also a 2-d array: fine
-							}else{
-								//value isnt a 2-d array
-								throw new SyntaxError("Incompatible types");
-							}
-						}else{
-							//value isnt an array
-							throw new SyntaxError("Incompatible types");
-						}
-					}else{
-						//variable is a 1-d array
-						if (value.constructor === Array){
-							if(value[0].constructor === Array){
-								//value isnt a 1-d array
-								throw new SyntaxError("Incompatible types");
-							}else{
-								// value is also a 1-d array: fine
-							}
-						}
-					}
-				}else{
-					//if it's not an array it could be an integer, double, string, userType
-					if(variable.constructor == Number){
-						if(variable % 1 != 0){
-							//current variable is a double
-							if(value.constructor == Number){
-								return value;
-							}else{
-								throw new SyntaxError("Double cannot accept " + value.constructor);
-							}
-						}else{
-							//current variable is an int
-							if(value.constructor == Number){
-								return Math.floor(value);
-							}else{
-								throw new SyntaxError("Int cannot accept " + value.constructor);
-							}
-						}
-					}else if(variable.constructor == String){
-						if(value.constructor  == String){
-							return value;
-						}else{
-							throw new SyntaxError("String cannot accept " + value.constructor);
-						}
-					}
-				}
-			}else{
-				//If we cant check returns the variable anyway
+			if(tVariable == "?"){
+				//if variable has a wildcard type, we cant validate
 				return value;
 			}
+			___JavaRuntime.raise("Incompatible types required " + tVariable + " found " + tValue, range);
 		},
 		validateSet: function(value, variable, arrayIndex1, arrayIndex2, ASTNodeID){
 			if(typeof value === "function")
@@ -2382,6 +2351,9 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			if(value == undefined){
 				return undefined;
 			}
+			if(value instanceof _NotInitialized){
+				return value._initType;
+			}
 			if (value.constructor == Array){
 				if (value[0].constructor == Array){
 					if(value[0][0].constructor == Number){
@@ -2417,21 +2389,48 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					}
 				}
 			}
+			if(typeof(value) === "boolean"){
+				return "boolean"
+			}
 			//if cant check the type its wildcard type
 			return "?";
 		},
-		validateIndex: function(value, range){
-			if(typeof value === "function")
-				value = value();
-			if (typeof value === 'number'){
-						if (value % 1 === 0){
-							return value;
-						}else{
-							throw new SyntaxError("Possible loss of precision, received double, expected int");
-						}
+		createNullArrayForIndexes: function(index1, range, index2){
+			if(typeof index1 === "function"){
+				index1 = index1();
 			}
-			throw new SyntaxError("Incompatible types, received "+ typeof value  +", expected int");
-
+			tIndex1 = ___JavaRuntime.functions.determineType(index1);
+			if(tIndex1 != "int"){
+				if(tIndex1 != "Integer"){
+					___JavaRuntime.raise("Possible loss of precision, received " + tIndex1 + ", expected int");
+				}
+				index1 = index1.intValue;
+			}
+			if(index2){
+				if(typeof index2 === "function"){
+					index2 = index2();
+				}
+				tIndex2 = ___JavaRuntime.functions.determineType(index2);
+				if(tIndex2 != "int"){
+					if(tIndex2 != "Integer"){
+						___JavaRuntime.raise("Possible loss of precision, received " + tIndex2 + ", expected int");
+					}
+					index2 = index2.intValue;
+				}
+			}
+			var _tempArray = [];
+			for (var i = 0; i < index1; i++) {
+				if(index2){
+					var _tempArray2 = [];
+					for (var j = 0; j < index2; j++) {
+						 _tempArray2.push(null);
+					};
+					_tempArray.push(_tempArray2);
+				}else{
+					_tempArray.push(null);
+				}
+			};
+			return _tempArray;	
 		},
 		classCast: function(type, value, range){
 			if(type.constructor == String){

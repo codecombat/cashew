@@ -454,7 +454,6 @@ case 110:
 break;
 case 111:
 
-      yy.validateDeclaratorsDimension($$[$0], $$[$0-3]);
       this.$ = yy.createVarDeclarationNode($$[$0-3] + $$[$0-2] + $$[$0-1], $$[$0], this._$.range);
     
 break;

@@ -849,7 +849,6 @@ variable_declaration
     }
   | type LEFT_BRACKET RIGHT_BRACKET array_declarators
     {
-      yy.validateDeclaratorsDimension($4, $1);
       $$ = yy.createVarDeclarationNode($1 + $2 + $3, $4, @$.range);
     }
   | list_type OPERATOR_LESS_THAN type OPERATOR_GREATER_THAN arraylist_declarator
