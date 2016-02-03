@@ -582,6 +582,7 @@ exports.Cashew = function(javaCode){
 		
 		//Replaces __TemproaryClass in class body nodes and updates methods dictionary
 		replaceTemporaryClassWithClassName(classNodeExpressionRightCalleeBody.body, className, extensionName);
+		specialReplacement(classNodeExpressionRightCalleeBody.body);
 		_.each(methodsDictionary, function(methodSignature){
 			if(methodSignature.clazz == "__TemporaryClassName"){
 				methodSignature.clazz = className;
@@ -723,10 +724,11 @@ exports.Cashew = function(javaCode){
 				if(originalNameNode == methodsWithOverloadDetails[j].originalName){
 					//if there's no parameters arguments[0] == undefined
 					if(methodsWithOverloadDetails[j].params.length == 0){
-						ifCases.push(createIfForMatchingSignature([], methodsWithOverload[j]));
+						ifCases.push(createIfForMatchingSignature([createLogicalTestForParamAmount(methodsWithOverloadDetails[j].params.length)], methodsWithOverload[j]));
 					}else{
 						//needs to create a condition for each parameter
 						var logicalTests = [];
+						logicalTests.push(createLogicalTestForParamAmount(methodsWithOverloadDetails[j].params.length));
 						for (var k = 0; k < methodsWithOverloadDetails[j].params.length; k++) {
 							var currentParameter = methodsWithOverloadDetails[j].params[k];
 							logicalTest = createLogicalTestForIndexAndType(k,currentParameter.type);
@@ -757,19 +759,18 @@ exports.Cashew = function(javaCode){
 	var createIfForMatchingSignature = function createIfForMatchingSignature(conditions, functionNewName, paramsLength){
 		var testExpression;
 		var methodInvokeNodeExpressionArguments = [];
-		if(conditions.length == 0){
+		if(conditions.length == 1){
 			//the method has no parameters then arguments[0] == undefined
 			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), range);
 		}
 		else{
 			//nest all conditions to match a signature starting from 1 to nest the first 2
-			if(conditions.length == 1){
-				testExpression = conditions[0];
-			}else{
-				for (var i = 1; i < conditions.length; i++) {
-					testExpression = createExpression("&&", "LogicalExpression", conditions[i-1], conditions[i], [0,0]);
-				};
-			}
+			
+			testExpression = conditions[0];
+			for (var i = 1; i < conditions.length; i++) {
+				testExpression = createExpression("&&", "LogicalExpression", testExpression, conditions[i], [0,0]);
+			};
+			
 			//create a new Argument for each original argument
 			for (var i = 0; i < paramsLength; i++) {
 				methodInvokeNodeExpressionArguments.push(createArgumentArgumentsForIndex(i));
@@ -783,6 +784,11 @@ exports.Cashew = function(javaCode){
 		methodInvokeNodeExpression.arguments = methodInvokeNodeExpressionArguments;
 		consequentBlock = createReturnStatementNode(methodInvokeNodeExpression, [0,0]);
 		return createSimpleIfNode(testExpression, consequentBlock, [0,0], [0,0]);		
+	}
+
+	var createLogicalTestForParamAmount = function createLogicalTestForParamAmount(amount){
+		range = [0,0];
+		return createExpression("==", "BinaryExpression", createMemberExpressionNode(createIdentifierNode("arguments", range),createIdentifierNode("__xlength",range),range),  getArgumentForNumber(amount, [0,0]), range);
 	}
 
 	var createLogicalTestForIndexAndType = function createLogicalTestForIndexAndType(index, type){
@@ -947,6 +953,19 @@ exports.Cashew = function(javaCode){
 				}
 				ast[k] = node;
 				ast[k] = replaceTemporaryClassWithClassName(ast[k], className, extensionName);
+			}
+		}
+		return ast;
+	}
+	var specialReplacement = function specialReplacement(ast){
+		for (var k in ast) {
+		    if (typeof ast[k] == "object" && ast[k] !== null) {
+				var node = ast[k];
+				if(node.type !== undefined && node.type == 'Identifier' && node.name == '__xlength'){
+					node.name = "length";
+				}
+				ast[k] = node;
+				ast[k] = specialReplacement(ast[k]);
 			}
 		}
 		return ast;
@@ -1965,7 +1984,9 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			return ___JavaRuntime.functions.createNumber(this.length, "int");
 		};
 
+		
 		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
+
 		_Object = function() {
 
 			function _Object() {
@@ -2042,7 +2063,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		    Double.prototype = Object.create(_Object.prototype);
 		    Double.prototype.__type = 'Double';
 		    Double.prototype.intValue = function () {
-		        return ___JavaRuntime.functions.createNumber(Math.floor(value), "int");
+		        return ___JavaRuntime.functions.createNumber(Math.floor(this.value), "int");
 		    };
 		    Double.prototype.doubleValue = function () {
 		        return this.value;
@@ -2515,14 +2536,26 @@ exports.___JavaRuntime = ___JavaRuntime = {
 	},
 	ops : {
 		eq: function(arg1, arg2){
-			if(arg1.constructor == Number && arg2.constructor == Number){
+			if(arg1 == undefined && arg2 == undefined){
+				//if both undefined always true
+				return true;
+			}else if(arg1 == undefined || arg2 == undefined){
+				//if at least one undefined always false
+				return false;
+			}else if(arg1.constructor == Number && arg2.constructor == Number){
 				return Number(arg1) == Number(arg2);
 			}else{
 				return arg1 == arg2;
 			}
 		},
 		neq: function(arg1, arg2){
-			if(arg1.constructor == Number && arg2.constructor == Number){
+			if(arg1 == undefined && arg2 == undefined){
+				//if both undefined always false
+				return false;
+			}else if(arg1 == undefined || arg2 == undefined){
+				//if at least one undefined always true
+				return true;
+			}else if(arg1.constructor == Number && arg2.constructor == Number){
 				return Number(arg1) != Number(arg2);
 			}else{
 				return arg1 != arg2;
