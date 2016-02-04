@@ -713,35 +713,35 @@ exports.Cashew = function(javaCode){
 				nodesWithOverload.push(emptyBody);
 			}
 		};
-		//All nodes with overload need a if/else system to determine which method it should call
+		//All methods need to validate the call
 		for (var i = 0; i < nodesWithOverload.length; i++) {
 			var originalNameNode = nodesWithOverload[i].details.originalName;
 			//going to look all methods and create the if/else for them;
-			var ifCases = [];
+			var methodSelecterBody = [];
+			var possibilitiesDeclaration = {"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__possibilities"},"init":{"type":"ArrayExpression","elements":[]}}],"kind":"var"};
+			methodSelecterBody.push(possibilitiesDeclaration);
 			for (var j = 0; j < methodsWithOverload.length; j++) {
 				//if the current nodeWithOverload is the same as the methodWithOverload
-				//create a case for it
+				//create a case for it "__possibilities.push([?])"
 				if(originalNameNode == methodsWithOverloadDetails[j].originalName){
-					//if there's no parameters arguments[0] == undefined
+					//if there's no parameters "__possibilities.push([])"
 					if(methodsWithOverloadDetails[j].params.length == 0){
-						ifCases.push(createIfForMatchingSignature([createLogicalTestForParamAmount(methodsWithOverloadDetails[j].params.length)], methodsWithOverload[j]));
+						var noArgPossibility = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"__possibilities"},"property":{"type":"Identifier","name":"push"}},"arguments":[{"type":"ArrayExpression","elements":[]}]}};
+						methodSelecterBody.push(noArgPossibility);
 					}else{
 						//needs to create a condition for each parameter
-						var logicalTests = [];
-						logicalTests.push(createLogicalTestForParamAmount(methodsWithOverloadDetails[j].params.length));
-						for (var k = 0; k < methodsWithOverloadDetails[j].params.length; k++) {
-							var currentParameter = methodsWithOverloadDetails[j].params[k];
-							logicalTest = createLogicalTestForIndexAndType(k,currentParameter.type);
-							logicalTests.push(logicalTest);
-						};
-						ifCases.push(createIfForMatchingSignature(logicalTests, methodsWithOverload[j], methodsWithOverloadDetails[j].params.length));
+						methodSelecterBody.push(createArrayElementForParams(methodsWithOverloadDetails[j].params));
 					}
 				}
 			};
+			var methodName = {"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__methodName"},"init":{"type":"Literal","value":originalNameNode,"raw":"\""+ originalNameNode +"\""}}],"kind":"var"};
+			var evalSwitcher = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"Identifier","name":"eval"},"arguments":[{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"findSignature"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}]}};
+			methodSelecterBody.push(methodName);
+			methodSelecterBody.push(evalSwitcher);
 			//creates the new body for the overloaded body
 			var overloadedBody = new node("BlockStatement");
 			overloadedBody.range = nodesWithOverload[i].details.range;
-			overloadedBody.body = ifCases;
+			overloadedBody.body = methodSelecterBody;
 			//check and push the overloaded body to the method body
 			if(nodesWithOverload[i].expression.right.type == "FunctionExpression"){
 				nodesWithOverload[i].expression.right.body = overloadedBody;
@@ -754,6 +754,21 @@ exports.Cashew = function(javaCode){
 		nodesWithoutOverload = nodesWithoutOverload.concat(nodesWithOverload);
 		nodesWithoutOverload = nodesWithoutOverload.concat(methodWithOverloadFunctionNode);
 		return nodesWithoutOverload;
+	}
+
+	var createArrayElementForParams = function createArrayElementForParams(params){
+		var exp = new node("ExpressionStatement");
+		var expCall = new node("CallExpression");
+		expCall.callee = createMemberExpressionNode(createIdentifierNode("__possibilities", [0,0]), createIdentifierNode("push",[0,0]), [0,0]);
+		expCall.arguments = [];
+		var nodes = new node("ArrayExpression");
+		nodes.elements = [];
+		for (var i = 0; i < params.length; i++) {
+			nodes.elements.push(getArgumentForName(params[i].type, [0,0]));
+		};
+		expCall.arguments.push(nodes);
+		exp.expression = expCall;
+		return exp;
 	}
 
 	var createIfForMatchingSignature = function createIfForMatchingSignature(conditions, functionNewName, paramsLength){
@@ -2415,6 +2430,100 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			}
 			//if cant check the type its wildcard type
 			return "?";
+		},
+		findSignature: function(methodSignature, args, possibleFunctions){
+			var argTypes = [];
+			for (var i = 0; i < args.length; i++) {
+				argTypes.push( ___JavaRuntime.functions.determineType(args[i]));
+			};
+			var typeMatcher = function(arg1, arg2){
+				if(arg1 == "Object"){
+					arg1 = "_Object";
+				}
+				if(arg2 == "Object"){
+					arg2 = "_Object";
+				}
+				if(arg1 == arg2){
+					return 0;
+				}else if(arg1 == "int"){
+					if(arg2 == "Integer" ||arg2 == "double" || arg2 == "_Object"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}else if(arg1 == "double"){
+					if(arg2 == "Double" || arg2 == "_Object"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}else if(arg1 == "Integer"){
+					if(arg2 == "int" || arg2 == "double"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}else if(arg1 == "Double"){
+					if(arg2 == "double"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}else if(eval(arg1 + ".prototype") instanceof eval(arg2)){
+					return 1;
+				}
+				return (-256);
+			}
+			var reducedByNumber = [];
+			for (var i = 0; i < possibleFunctions.length; i++) {
+				if(possibleFunctions[i].length == argTypes.length){
+					reducedByNumber.push(possibleFunctions[i]);
+				}
+			};
+			if(reducedByNumber.length == 0){
+				___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+			}else{
+				var exactMatch = undefined;
+				var reducedByPrototype = [];
+				for (var i = 0; i < reducedByNumber.length; i++) {
+					var sum = 0;
+					for (var j = 0; j < argTypes.length; j++) {
+						sum += typeMatcher(argTypes[j], reducedByNumber[i][j]);
+					};
+					if(sum == 0){
+						exactMatch = reducedByNumber[i];
+						break;
+					}else if(sum > 0){
+						reducedByPrototype.push(reducedByNumber[i]);
+					}
+				};
+				if(exactMatch){
+					//no cast needed
+					var finalSignature = methodSignature + possibleFunctions.indexOf(exactMatch) + "(";
+					for (var i = 0; i < exactMatch.length; i++) {
+						finalSignature += "arguments[" + i + "],"
+					};
+					if(finalSignature.charAt(finalSignature.length-1) != "("){
+						finalSignature = finalSignature.substring(0, finalSignature.length -1);
+					}
+					finalSignature += ");";
+					return finalSignature;
+				}else if(reducedByPrototype.length > 0){
+					//cast needed
+					//FIXME: need to check the precedence of variables
+					//picking the first one;
+					var finalSignature = methodSignature + possibleFunctions.indexOf(reducedByPrototype[0]) + "(";
+					for (var i = 0; i < reducedByPrototype[0].length; i++) {
+						finalSignature += "___JavaRuntime.functions.classCast("+reducedByPrototype[0][i]+", arguments[" + i + "], [0,0]),"
+					};
+					finalSignature = finalSignature.substring(0, finalSignature.length -1);
+					finalSignature += ");";
+					return finalSignature;
+				}else{
+					___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+				}
+			}
+			___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
 		},
 		createNullArrayForIndexes: function(index1, range, index2){
 			if(typeof index1 === "function"){
