@@ -648,24 +648,17 @@ exports.Cashew = function(javaCode){
 							}
 						}
 					}
-					//if there's already a method with this name in the overload pile
-					//the current should also be
-					if(methodsWithOverload.indexOf(methodName) >= 0){
-						//add the current to the overloaded pile
-						methodsWithOverload.push(methodName);
-						methodsWithOverloadDetails.push(classBodyNodes[i].details);
-						//get function definitions for the nodes overloaded
-						if(classBodyNodes[i].expression.right.type == "FunctionExpression"){
-							methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right);
-						}else if(classBodyNodes[i].expression.right.right.type == "FunctionExpression"){
-							methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right);
-						}else{
-							methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right.right);
-						}	
-					}
-					if(!methodOverload){
-						nodesWithoutOverload.push(classBodyNodes[i]);
-					}
+					//add the current to the overloaded pile
+					methodsWithOverload.push(methodName);
+					methodsWithOverloadDetails.push(classBodyNodes[i].details);
+					//get function definitions for the nodes overloaded
+					if(classBodyNodes[i].expression.right.type == "FunctionExpression"){
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right);
+					}else if(classBodyNodes[i].expression.right.right.type == "FunctionExpression"){
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right);
+					}else{
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right.right);
+					}	
 				}
 			}
 		}
@@ -681,11 +674,19 @@ exports.Cashew = function(javaCode){
 				}
 			}
 		};
+		var grouped = [];
+		//Group all signatures in methods with overload
+		
 		for (var i = 0; i < methodsWithOverload.length; i++) {
 			//keep the original method name in details
 			methodsWithOverloadDetails[i].originalName = methodsWithOverload[i];
 			//rename the signatures and build new methods
-			methodsWithOverload[i] = methodsWithOverload[i] + i;
+			if(!(methodsWithOverload[i] in grouped)){
+				grouped[methodsWithOverload[i]] = 0;
+			}else{
+				grouped[methodsWithOverload[i]] = grouped[methodsWithOverload[i]] + 1;
+			}
+			methodsWithOverload[i] = "__" + methodsWithOverload[i] + grouped[methodsWithOverload[i]];
 			var newExpressionStatement = new node("ExpressionStatement");
 			newExpressionStatement.range = methodsWithOverloadDetails[i].range;
 			newExpressionStatementAssign = new node("AssignmentExpression");
@@ -735,7 +736,7 @@ exports.Cashew = function(javaCode){
 				}
 			};
 			var methodName = {"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__methodName"},"init":{"type":"Literal","value":originalNameNode,"raw":"\""+ originalNameNode +"\""}}],"kind":"var"};
-			var evalSwitcher = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"Identifier","name":"eval"},"arguments":[{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"findSignature"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}]}};
+			var evalSwitcher = {"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"Identifier","name":"eval"},"arguments":[{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"findSignature"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}]}};
 			methodSelecterBody.push(methodName);
 			methodSelecterBody.push(evalSwitcher);
 			//creates the new body for the overloaded body
@@ -2445,31 +2446,39 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				}
 				if(arg1 == arg2){
 					return 0;
-				}else if(arg1 == "int"){
+				}
+				if(arg1 == "int"){
 					if(arg2 == "Integer" ||arg2 == "double" || arg2 == "_Object"){
 						return 1;
 					}else{
 						return (-256);
 					}
-				}else if(arg1 == "double"){
+				}
+				if(arg1 == "double"){
 					if(arg2 == "Double" || arg2 == "_Object"){
 						return 1;
 					}else{
 						return (-256);
 					}
-				}else if(arg1 == "Integer"){
+				}
+				if(arg1 == "Integer"){
 					if(arg2 == "int" || arg2 == "double"){
 						return 1;
 					}else{
 						return (-256);
 					}
-				}else if(arg1 == "Double"){
+				}
+				if(arg1 == "Double"){
 					if(arg2 == "double"){
 						return 1;
 					}else{
 						return (-256);
 					}
-				}else if(eval(arg1 + ".prototype") instanceof eval(arg2)){
+				}
+				if(arg2 == "int" || arg2 == "double"){
+					return (-256);
+				}
+				if(eval(arg1 + ".prototype") instanceof eval(arg2)){
 					return 1;
 				}
 				return (-256);
@@ -2499,7 +2508,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				};
 				if(exactMatch){
 					//no cast needed
-					var finalSignature = methodSignature + possibleFunctions.indexOf(exactMatch) + "(";
+					var finalSignature = "__" + methodSignature + possibleFunctions.indexOf(exactMatch) + "(";
 					for (var i = 0; i < exactMatch.length; i++) {
 						finalSignature += "arguments[" + i + "],"
 					};
@@ -2512,9 +2521,13 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					//cast needed
 					//FIXME: need to check the precedence of variables
 					//picking the first one;
-					var finalSignature = methodSignature + possibleFunctions.indexOf(reducedByPrototype[0]) + "(";
+					var finalSignature = "__" + methodSignature + possibleFunctions.indexOf(reducedByPrototype[0]) + "(";
 					for (var i = 0; i < reducedByPrototype[0].length; i++) {
-						finalSignature += "___JavaRuntime.functions.classCast("+reducedByPrototype[0][i]+", arguments[" + i + "], [0,0]),"
+						if(reducedByPrototype[0][i] == "int" || reducedByPrototype[0][i] == "Object" || reducedByPrototype[0][i] == "double"){
+							finalSignature += "___JavaRuntime.functions.classCast( \""+reducedByPrototype[0][i]+"\", arguments[" + i + "], [0,0]),";
+						}else{
+							finalSignature += "___JavaRuntime.functions.classCast("+reducedByPrototype[0][i]+", arguments[" + i + "], [0,0]),";
+						}
 					};
 					finalSignature = finalSignature.substring(0, finalSignature.length -1);
 					finalSignature += ");";
