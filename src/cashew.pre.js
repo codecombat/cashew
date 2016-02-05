@@ -23,9 +23,9 @@
 var methodsDictionary;
 var mainMethodCall;
 
-exports.Cashew = function(javaCode){
-	
-	___JavaRuntime.variablesDictionary = [];
+exports.Parse = function(javaCode){
+
+	___JavaRuntime.sourceCode = javaCode;
 	methodsDictionary = [];
 	constructorBodyNodes = [];
 	mainMethodCall = undefined;
@@ -71,6 +71,15 @@ exports.Cashew = function(javaCode){
 
 	getArgumentForName = function(name, range){
 		return createLiteralNode(name, "\""+name + "\"", range);
+	}
+
+	getArgumentForRange = function(range){
+		var rangeNode = new node("ArrayExpression");
+		rangeNode.range = [0,0];
+		rangeNode.elements = [];
+		rangeNode.elements.push(getArgumentForNumber(range[0], [0,0]));
+		rangeNode.elements.push(getArgumentForNumber(range[1], [0,0]));
+		return rangeNode;
 	}
 
 	getArgumentForVariable = function(name, range){
@@ -239,18 +248,9 @@ exports.Cashew = function(javaCode){
 	     	}
 	     }
 
-	     //inserting Object at the begining of the code so classes can extend it;
-		_Object = {"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_Object"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_Object"},"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"__id"}},"right":{"type":"CallExpression","callee":{"type":"Identifier","name":"generateId"},"arguments":[]}}}]},"generator":false,"expression":false},{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__id"},"init":{"type":"Literal","value":0,"raw":"0"}}],"kind":"var"},{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"generateId"},"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"UpdateExpression","operator":"++","argument":{"type":"Identifier","name":"__id"},"prefix":false}}]},"generator":false,"expression":false},{"type":"ExpressionStatement","expression":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"Object","raw":"\"Object\""}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__id"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"newId"},"init":{"type":"CallExpression","callee":{"type":"Identifier","name":"generateId"},"arguments":[]}}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"__id"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"Identifier","name":"newId"}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"newId"}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"equals"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"other"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"===","left":{"type":"ThisExpression"},"right":{"type":"Identifier","name":"other"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"toString"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"+","left":{"type":"BinaryExpression","operator":"+","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"@","raw":"\"@\""}},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"__id"}}}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_Object"}}]},"generator":false,"expression":false},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}}};
-		integerAndDouble = [{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"Integer"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"Integer"},"right":{"type":"FunctionExpression","id":{"type":"Identifier","name":"Integer"},"params":[{"type":"Identifier","name":"value"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"value"},"property":{"type":"Identifier","name":"constructor"}},"right":{"type":"Identifier","name":"Number"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"value"}},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Math"},"property":{"type":"Identifier","name":"floor"}},"arguments":[{"type":"Identifier","name":"value"}]}}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"Integer expects an int not ","raw":"\"Integer expects an int not \""},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"value"},"property":{"type":"Identifier","name":"constructor"}},"property":{"type":"Identifier","name":"name"}}}]}}]}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Integer"},"property":{"type":"Identifier","name":"prototype"}},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Object"},"property":{"type":"Identifier","name":"create"}},"arguments":[{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}}]}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Integer"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"Integer","raw":"'Integer'"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Integer"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"intValue"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"value"}}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"Integer"}}]},"generator":false,"expression":false},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"Double"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"Double"},"right":{"type":"FunctionExpression","id":{"type":"Identifier","name":"Double"},"params":[{"type":"Identifier","name":"value"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"value"},"property":{"type":"Identifier","name":"constructor"}},"right":{"type":"Identifier","name":"Number"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"value"}},"right":{"type":"Identifier","name":"value"}}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"Double expects an int not ","raw":"\"Double expects an int not \""},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"value"},"property":{"type":"Identifier","name":"constructor"}},"property":{"type":"Identifier","name":"name"}}}]}}]}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Double"},"property":{"type":"Identifier","name":"prototype"}},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Object"},"property":{"type":"Identifier","name":"create"}},"arguments":[{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}}]}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Double"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"Double","raw":"'Double'"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Double"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"doubleValue"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"value"}}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"Double"}}]},"generator":false,"expression":false},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}}}];
-		stringAndArray = [{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"String"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"compareTo"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"other"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ForStatement","init":{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"i"},"init":{"type":"Literal","value":0,"raw":"0"}}],"kind":"var"},"test":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"i"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"length"}}},"update":{"type":"UpdateExpression","operator":"++","argument":{"type":"Identifier","name":"i"},"prefix":false},"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":true,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"i"}},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Literal","value":0,"raw":"0"}]},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"other"},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Identifier","name":"i"}]}},"consequent":{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"-","left":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":true,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"i"}},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Literal","value":0,"raw":"0"}]},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"other"},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Identifier","name":"i"}]}}},"alternate":null}]}},{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"-","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"length"}},"right":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"other"},"property":{"type":"Identifier","name":"length"}}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"String"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"compareToIgnoreCase"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"other"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ForStatement","init":{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"i"},"init":{"type":"Literal","value":0,"raw":"0"}}],"kind":"var"},"test":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"i"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"length"}}},"update":{"type":"UpdateExpression","operator":"++","argument":{"type":"Identifier","name":"i"},"prefix":false},"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":true,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"i"}},"property":{"type":"Identifier","name":"toLowerCase"}},"arguments":[]},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Literal","value":0,"raw":"0"}]},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"other"},"property":{"type":"Identifier","name":"toLowerCase"}},"arguments":[]},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Identifier","name":"i"}]}},"consequent":{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"-","left":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":true,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"i"}},"property":{"type":"Identifier","name":"toLowerCase"}},"arguments":[]},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Literal","value":0,"raw":"0"}]},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"other"},"property":{"type":"Identifier","name":"toLowerCase"}},"arguments":[]},"property":{"type":"Identifier","name":"charCodeAt"}},"arguments":[{"type":"Identifier","name":"i"}]}}},"alternate":null}]}},{"type":"ReturnStatement","argument":{"type":"BinaryExpression","operator":"-","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"length"}},"right":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"other"},"property":{"type":"Identifier","name":"length"}}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"String"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"_length"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"length"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Array"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__defineGetter__"}},"arguments":[{"type":"Literal","value":"_length","raw":"\"_length\""},{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"length"}}}]},"generator":false,"expression":false}]}}];
-
-		this.rootNode.body.unshift(stringAndArray[3]);
-		this.rootNode.body.unshift(stringAndArray[2]);
-		this.rootNode.body.unshift(stringAndArray[1]);
-		this.rootNode.body.unshift(stringAndArray[0]);
-		this.rootNode.body.unshift(integerAndDouble[0]);
-		this.rootNode.body.unshift(integerAndDouble[1]);
-		this.rootNode.body.unshift(_Object);
+	  	env = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"loadEnv"}},"arguments":[]}};;
+        //insert the script that load some variables to the environment
+		this.rootNode.body.unshift(env);
 		
 	     return this.rootNode;
 	    }
@@ -285,12 +285,22 @@ exports.Cashew = function(javaCode){
 		});
 	}
 
-	var createLiteralNode = cocoJava.yy.createLiteralNode = function createLiteralNode(value, raw, range){
-		var literalNode = new node("Literal");
-		literalNode.range = range;
-		literalNode.value = value;
-		literalNode.raw = ""+raw;
-		return literalNode;
+	var createLiteralNode = cocoJava.yy.createLiteralNode = function createLiteralNode(value, raw, range, javaType){
+		if(javaType){
+			var expression = new node("CallExpression");
+			expression.range = range;
+			expression.callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("createNumber",range), range);
+			expression.arguments = [];
+			expression.arguments.push(getArgumentForNumber(value, range));
+			expression.arguments.push(getArgumentForName(javaType,range));
+			return expression;
+		}else{
+			var literalNode = new node("Literal");
+			literalNode.range = range;
+			literalNode.value = value;
+			literalNode.raw = ""+raw;
+			return literalNode;
+		}
 	}
 
 	var createIdentifierNode = cocoJava.yy.createIdentifierNode = function createIdentifierNode(name, range){
@@ -478,53 +488,19 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRightCalleeBody.range = classBodyRange;
 		classNodeExpressionRightCalleeBody.body = [];
 
+		//Init the __ref
+
+		classNodeExpressionRightCalleeBody.body.push({"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__ref"},"init":{"type":"ObjectExpression","properties":[]}}],"kind":"var"});
+
 		//Extract variables from the class
 		var variableNodes = [];
 		_.each(classBody, function(fieldNode){
-			if(fieldNode.type == "ExpressionStatement" && fieldNode.expression.type == "SequenceExpression"){
-				if(!fieldNode.expression.isPrivate){
-					var constructorExpressions = [];
-					var staticExpressions = [];
-					_.each(fieldNode.expression.expressions, function(varNode){
-						var lastMember = varNode.right.right;
-						varNode.right.right = lastMember.left;
-						constructorExpressions.push(varNode);
-						lastMember.left.object.name = className;
-						staticExpressions.push(lastMember);
-					});
-					//JSON clone
-					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
-					fieldNode.expression.expressions = staticExpressions;
-				}
-				else if(fieldNode.expression.isPrivate && fieldNode.expression.isStatic){
-					var constructorExpressions = [];
-					var staticExpressions = [];
-					_.each(fieldNode.expression.expressions, function(varNode){
-						var lastMember = varNode.right;
-						varNode.right = lastMember.left;
-						constructorExpressions.push(varNode);
-						lastMember.left.object.name = className;
-						staticExpressions.push(lastMember);
-					});
-					//JSON clone
-					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
-					fieldNode.expression.expressions = staticExpressions;
-				}else{
-					var constructorExpressions = [];
-					_.each(fieldNode.expression.expressions, function(varNode){
-						var lastMember = varNode;
-						varNode = lastMember.left;
-						constructorExpressions.push(varNode);
-					});
-					//JSON clone
-					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
-					fieldNode.expression.expressions = [];
-				}
-					
+			if(fieldNode.type == "VariableDeclaration"){
+				variableNodes.push(fieldNode);
 			}
 		});
 		//Insert the constructor
-		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, classNameRange, variableNodes, extensionName));
+		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, classNameRange, [], extensionName));
 		//reset bodyNodes to next class
 		constructorBodyNodes = [];
 
@@ -567,11 +543,17 @@ exports.Cashew = function(javaCode){
 		//".class" = __type
 		classNodeExpressionRightCalleeBody.body.push(typeNode);
 
+		//Add field vars to the class
+		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(variableNodes);
 		//Add Methods to the class
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(createMethodOverload(classBody));
 		
 		//Replaces __TemproaryClass in class body nodes and updates methods dictionary
-		replaceTemporaryClassWithClassName(classNodeExpressionRightCalleeBody.body, className);
+		if(!extensionName){
+			extensionName = "_Object";
+		}
+		replaceTemporaryClassWithClassName(classNodeExpressionRightCalleeBody.body, className, extensionName);
+		specialReplacement(classNodeExpressionRightCalleeBody.body);
 		_.each(methodsDictionary, function(methodSignature){
 			if(methodSignature.clazz == "__TemporaryClassName"){
 				methodSignature.clazz = className;
@@ -637,24 +619,17 @@ exports.Cashew = function(javaCode){
 							}
 						}
 					}
-					//if there's already a method with this name in the overload pile
-					//the current should also be
-					if(methodsWithOverload.indexOf(methodName) >= 0){
-						//add the current to the overloaded pile
-						methodsWithOverload.push(methodName);
-						methodsWithOverloadDetails.push(classBodyNodes[i].details);
-						//get function definitions for the nodes overloaded
-						if(classBodyNodes[i].expression.right.type == "FunctionExpression"){
-							methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right);
-						}else if(classBodyNodes[i].expression.right.right.type == "FunctionExpression"){
-							methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right);
-						}else{
-							methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right.right);
-						}	
-					}
-					if(!methodOverload){
-						nodesWithoutOverload.push(classBodyNodes[i]);
-					}
+					//add the current to the overloaded pile
+					methodsWithOverload.push(methodName);
+					methodsWithOverloadDetails.push(classBodyNodes[i].details);
+					//get function definitions for the nodes overloaded
+					if(classBodyNodes[i].expression.right.type == "FunctionExpression"){
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right);
+					}else if(classBodyNodes[i].expression.right.right.type == "FunctionExpression"){
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right);
+					}else{
+						methodWithOverloadFunctionNode.push(classBodyNodes[i].expression.right.right.right);
+					}	
 				}
 			}
 		}
@@ -670,20 +645,31 @@ exports.Cashew = function(javaCode){
 				}
 			}
 		};
+		var grouped = [];
+		//Group all signatures in methods with overload
+		
 		for (var i = 0; i < methodsWithOverload.length; i++) {
 			//keep the original method name in details
 			methodsWithOverloadDetails[i].originalName = methodsWithOverload[i];
 			//rename the signatures and build new methods
-			methodsWithOverload[i] = methodsWithOverload[i] + i;
-			var newExpressionStatement = new node("ExpressionStatement");
+			if(!("_"+methodsWithOverload[i] in grouped)){
+				grouped["_"+methodsWithOverload[i]] = 0;
+			}else{
+				grouped["_"+methodsWithOverload[i]] = grouped["_"+methodsWithOverload[i]] + 1;
+			}
+			//Weird bug when method is toString
+			
+			methodsWithOverload[i] = "__" + methodsWithOverload[i] + grouped["_"+methodsWithOverload[i]];
+			var newExpressionStatement = new node("VariableDeclaration");
 			newExpressionStatement.range = methodsWithOverloadDetails[i].range;
-			newExpressionStatementAssign = new node("AssignmentExpression");
+			newExpressionStatementAssign = new node("VariableDeclarator");
 			newExpressionStatementAssign.range = methodsWithOverloadDetails[i].range;
-			newExpressionStatementAssign.operator = "=";
-			newExpressionStatementAssign.left = createIdentifierNode(methodsWithOverload[i]);
-			newExpressionStatementAssign.right = methodWithOverloadFunctionNode[i];
-			newExpressionStatement.expression = newExpressionStatementAssign;
-			 methodWithOverloadFunctionNode[i] = newExpressionStatement;
+			newExpressionStatementAssign.id = createIdentifierNode(methodsWithOverload[i]);
+			newExpressionStatementAssign.init = methodWithOverloadFunctionNode[i];
+			newExpressionStatement.declarations = [];
+			newExpressionStatement.declarations.push(newExpressionStatementAssign);
+			newExpressionStatement.kind = "var";
+			methodWithOverloadFunctionNode[i] = newExpressionStatement;
 		};
 		//create the switcher
 		var nodesWithOverload = [];
@@ -702,34 +688,35 @@ exports.Cashew = function(javaCode){
 				nodesWithOverload.push(emptyBody);
 			}
 		};
-		//All nodes with overload need a if/else system to determine which method it should call
+		//All methods need to validate the call
 		for (var i = 0; i < nodesWithOverload.length; i++) {
 			var originalNameNode = nodesWithOverload[i].details.originalName;
 			//going to look all methods and create the if/else for them;
-			var ifCases = [];
+			var methodSelecterBody = [];
+			var possibilitiesDeclaration = {"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__possibilities"},"init":{"type":"ArrayExpression","elements":[]}}],"kind":"var"};
+			methodSelecterBody.push(possibilitiesDeclaration);
 			for (var j = 0; j < methodsWithOverload.length; j++) {
 				//if the current nodeWithOverload is the same as the methodWithOverload
-				//create a case for it
+				//create a case for it "__possibilities.push([?])"
 				if(originalNameNode == methodsWithOverloadDetails[j].originalName){
-					//if there's no parameters arguments[0] == undefined
+					//if there's no parameters "__possibilities.push([])"
 					if(methodsWithOverloadDetails[j].params.length == 0){
-						ifCases.push(createIfForMatchingSignature([], methodsWithOverload[j]));
+						var noArgPossibility = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"__possibilities"},"property":{"type":"Identifier","name":"push"}},"arguments":[{"type":"ArrayExpression","elements":[]}]}};
+						methodSelecterBody.push(noArgPossibility);
 					}else{
 						//needs to create a condition for each parameter
-						var logicalTests = [];
-						for (var k = 0; k < methodsWithOverloadDetails[j].params.length; k++) {
-							var currentParameter = methodsWithOverloadDetails[j].params[k];
-							logicalTest = createLogicalTestForIndexAndType(k,currentParameter.type);
-							logicalTests.push(logicalTest);
-						};
-						ifCases.push(createIfForMatchingSignature(logicalTests, methodsWithOverload[j], methodsWithOverloadDetails[j].params.length));
+						methodSelecterBody.push(createArrayElementForParams(methodsWithOverloadDetails[j].params));
 					}
 				}
 			};
+			var methodName = {"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__methodName"},"init":{"type":"Literal","value":originalNameNode,"raw":"\""+ originalNameNode +"\""}}],"kind":"var"};
+			var evalSwitcher = {"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"Identifier","name":"eval"},"arguments":[{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"findSignature"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}]}};
+			methodSelecterBody.push(methodName);
+			methodSelecterBody.push(evalSwitcher);
 			//creates the new body for the overloaded body
 			var overloadedBody = new node("BlockStatement");
 			overloadedBody.range = nodesWithOverload[i].details.range;
-			overloadedBody.body = ifCases;
+			overloadedBody.body = methodSelecterBody;
 			//check and push the overloaded body to the method body
 			if(nodesWithOverload[i].expression.right.type == "FunctionExpression"){
 				nodesWithOverload[i].expression.right.body = overloadedBody;
@@ -744,22 +731,36 @@ exports.Cashew = function(javaCode){
 		return nodesWithoutOverload;
 	}
 
+	var createArrayElementForParams = function createArrayElementForParams(params){
+		var exp = new node("ExpressionStatement");
+		var expCall = new node("CallExpression");
+		expCall.callee = createMemberExpressionNode(createIdentifierNode("__possibilities", [0,0]), createIdentifierNode("push",[0,0]), [0,0]);
+		expCall.arguments = [];
+		var nodes = new node("ArrayExpression");
+		nodes.elements = [];
+		for (var i = 0; i < params.length; i++) {
+			nodes.elements.push(getArgumentForName(params[i].type, [0,0]));
+		};
+		expCall.arguments.push(nodes);
+		exp.expression = expCall;
+		return exp;
+	}
+
 	var createIfForMatchingSignature = function createIfForMatchingSignature(conditions, functionNewName, paramsLength){
 		var testExpression;
 		var methodInvokeNodeExpressionArguments = [];
-		if(conditions.length == 0){
+		if(conditions.length == 1){
 			//the method has no parameters then arguments[0] == undefined
 			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), range);
 		}
 		else{
 			//nest all conditions to match a signature starting from 1 to nest the first 2
-			if(conditions.length == 1){
-				testExpression = conditions[0];
-			}else{
-				for (var i = 1; i < conditions.length; i++) {
-					testExpression = createExpression("&&", "LogicalExpression", conditions[i-1], conditions[i], [0,0]);
-				};
-			}
+			
+			testExpression = conditions[0];
+			for (var i = 1; i < conditions.length; i++) {
+				testExpression = createExpression("&&", "LogicalExpression", testExpression, conditions[i], [0,0]);
+			};
+			
 			//create a new Argument for each original argument
 			for (var i = 0; i < paramsLength; i++) {
 				methodInvokeNodeExpressionArguments.push(createArgumentArgumentsForIndex(i));
@@ -773,6 +774,11 @@ exports.Cashew = function(javaCode){
 		methodInvokeNodeExpression.arguments = methodInvokeNodeExpressionArguments;
 		consequentBlock = createReturnStatementNode(methodInvokeNodeExpression, [0,0]);
 		return createSimpleIfNode(testExpression, consequentBlock, [0,0], [0,0]);		
+	}
+
+	var createLogicalTestForParamAmount = function createLogicalTestForParamAmount(amount){
+		range = [0,0];
+		return createExpression("==", "BinaryExpression", createMemberExpressionNode(createIdentifierNode("arguments", range),createIdentifierNode("__xlength",range),range),  getArgumentForNumber(amount, [0,0]), range);
 	}
 
 	var createLogicalTestForIndexAndType = function createLogicalTestForIndexAndType(index, type){
@@ -814,11 +820,30 @@ exports.Cashew = function(javaCode){
 	cocoJava.yy.createOverrideDefaultConstructor = function createOverrideDefaultConstructor(modifiers, methodBodyNodes){
 		constructorBodyNodes.push(methodBodyNodes);
 	}
+	var createDetermineTypeForExpression = function createDetermineTypeForExpression(expression){
+		var determineTypeNode = new node("CallExpression");
+	 	determineTypeNode.range = [0,0];
+	 	determineTypeNode.arguments = [];
+	 	determineTypeNode.arguments.push(expression);
+		var callee = new node("MemberExpression");
+		callee.range = [0,0];
+
+		var functions = getRuntimeFunctions([0,0]);
+
+		var determineTypeProperty = createIdentifierNode("determineType", [0,0]);
+
+		callee.object = functions;
+		callee.property = determineTypeProperty;
+		callee.computed  = false;
+
+	 	determineTypeNode.callee = callee;
+	 	return determineTypeNode;
+	}
 
 	cocoJava.yy.createImportNodeForName  = function createImportNodeForName(name){
 		//when importing other classes they shoud be here
 		if(name == "java.util.ArrayList" || name == "java.util.List" || name == "java.util.*"){
-			_ArrayList = {"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"_ArrayList"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"FunctionDeclaration","id":{"type":"Identifier","name":"_ArrayList"},"params":[{"type":"Identifier","name":"type"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Identifier","name":"type"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"right":{"type":"ArrayExpression","elements":[]}}}]},"generator":false,"expression":false},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"Object"},"property":{"type":"Identifier","name":"create"}},"arguments":[{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_Object"},"property":{"type":"Identifier","name":"prototype"}}]}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"__type"}},"right":{"type":"Literal","value":"ArrayList","raw":"'ArrayList'"}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"size"}},"right":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"add"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"object"},"right":{"type":"Identifier","name":"undefined"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"index"}]}}},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"int","raw":"\"int\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Integer","raw":"\"Integer\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"index"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"index"}]}}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"double","raw":"\"double\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Double","raw":"\"Double\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"index"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"index"}]}}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"index"}]}}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"No suitable 'add' method found for ","raw":"\"No suitable 'add' method found for \""},"right":{"type":"Identifier","name":"objectType"}}]}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"push"}},"arguments":[{"type":"Identifier","name":"index"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"int","raw":"\"int\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Integer","raw":"\"Integer\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"double","raw":"\"double\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Double","raw":"\"Double\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"No suitable 'add' method found for ","raw":"\"No suitable 'add' method found for \""},"right":{"type":"Identifier","name":"objectType"}}]}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":0,"raw":"0"},{"type":"Identifier","name":"object"}]}},{"type":"ReturnStatement","argument":{"type":"Literal","value":true,"raw":"true"}}]},"alternate":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]}}]}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"get"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"set"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"},{"type":"Identifier","name":"object"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":null}],"kind":"var"},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"int","raw":"\"int\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Integer","raw":"\"Integer\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"&&","left":{"type":"BinaryExpression","operator":"==","left":{"type":"Identifier","name":"objectType"},"right":{"type":"Literal","value":"double","raw":"\"double\""}},"right":{"type":"BinaryExpression","operator":"==","left":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}},"right":{"type":"Literal","value":"Double","raw":"\"Double\""}}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"NewExpression","callee":{"type":"Identifier","name":"Integer"},"arguments":[{"type":"Identifier","name":"object"}]}}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"Identifier","name":"object"},"right":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"object"}]}}},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"Identifier","name":"objectType"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"No suitable 'add' method found for ","raw":"\"No suitable 'add' method found for \""},"right":{"type":"Identifier","name":"objectType"}}]}}]},"alternate":null},{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"old"},"init":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}}}],"kind":"var"},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!=","left":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"determineType"}},"arguments":[{"type":"Identifier","name":"index"}]},"right":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_type"}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":true,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"index"}},"right":{"type":"Identifier","name":"object"}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"old"}}]},"generator":false,"expression":false}}},{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"_ArrayList"},"property":{"type":"Identifier","name":"prototype"}},"property":{"type":"Identifier","name":"remove"}},"right":{"type":"FunctionExpression","id":null,"params":[{"type":"Identifier","name":"index"}],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"IfStatement","test":{"type":"LogicalExpression","operator":"||","left":{"type":"BinaryExpression","operator":"<","left":{"type":"Identifier","name":"index"},"right":{"type":"Literal","value":0,"raw":"0"}},"right":{"type":"BinaryExpression","operator":">","left":{"type":"Identifier","name":"index"},"right":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"length"}}}},"consequent":{"type":"BlockStatement","body":[{"type":"ThrowStatement","argument":{"type":"NewExpression","callee":{"type":"Identifier","name":"SyntaxError"},"arguments":[{"type":"Literal","value":"Index out of bounds Exception!","raw":"\"Index out of bounds Exception!\""}]}}]},"alternate":null},{"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"ThisExpression"},"property":{"type":"Identifier","name":"_arraylist"}},"property":{"type":"Identifier","name":"splice"}},"arguments":[{"type":"Identifier","name":"index"},{"type":"Literal","value":1,"raw":"1"}]}}]},"generator":false,"expression":false}}},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"_ArrayList"}}]},"generator":false,"expression":false},"property":{"type":"Identifier","name":"call"}},"arguments":[{"type":"ThisExpression"}]}}};
+			_ArrayList = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"loadLists"}},"arguments":[]}};
 			return _ArrayList;
 		}
 
@@ -833,7 +858,7 @@ exports.Cashew = function(javaCode){
 			}
 		});
 		variableDeclarationNode.isStatic = isStatic;
-		var isPrivate = undefined;
+		var isPrivate = true;
 		_.each(modifiers, function(modifier){
 			if (modifier == "public"){
 				isPrivate = false;
@@ -848,16 +873,17 @@ exports.Cashew = function(javaCode){
 			raise("Field variables are only implemented as public or private", range);
 		}else if(!isStatic && !isPrivate){
 			//FIXME change this to a "NotImplementedException"
-			raise("Instence variables are only implemented as private", range);
+			raise("Instance variables are only implemented as private", range);
 		}
 
-
+		
 		_.each(variableDeclarationNode.declarations, function(varNode){
-			varNode.type = "AssignmentExpression";
-			varNode.operator = "=";
-			varNode.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+			var newInit = new node("AssignmentExpression");
+			newInit.range = range;
+			newInit.operator = "=";
+			newInit.left = createMemberExpressionNode(createIdentifierNode("__ref", range), varNode.id, range);
 			var prototypeClass;
-			if(isStatic && !isPrivate){
+			if(!isPrivate){
 				prototypeClass = new node("AssignmentExpression");
 				prototypeClass.range = range;
 				prototypeClass.operator = "=";
@@ -865,56 +891,54 @@ exports.Cashew = function(javaCode){
 				prototypeClassRight =  new node("AssignmentExpression");
 				prototypeClassRight.range = range;
 				prototypeClassRight.operator = "=";
-				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("this", [0,0]), varNode.id, range);
-				if(varNode.init == null){
-					prototypeClassRight.right = createIdentifierNode("undefined",[0,0]);
-				}else{
-					prototypeClassRight.right = varNode.init;
-				}
+				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				prototypeClassRight.right = varNode.init;
 				prototypeClass.right = prototypeClassRight;
+				newInit.right = prototypeClass;
 			}else if (isStatic && isPrivate){
 				prototypeClass = new node("AssignmentExpression");
 				prototypeClass.range = range;
 				prototypeClass.operator = "=";
-				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("this", [0,0]), varNode.id, range);
-				if(varNode.init == null){
-					prototypeClass.right = createIdentifierNode("undefined",[0,0]);
-				}else{
-					prototypeClass.right = varNode.init;
-				}
+				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				prototypeClass.right = varNode.init;
+				newInit.right = prototypeClass;
 			}else{
-				varNode.left.object.name = "this";
-				if(varNode.init == null){
-					prototypeClass = createMemberExpressionNode(createIdentifierNode("this", [0,0]), varNode.id, range);
-				}else{
-					prototypeClass = varNode.init;
-				}
+				newInit.right = varNode.init;
 			}
 			
-			varNode.right = prototypeClass;
-			
-			delete varNode.id;
-			delete varNode.init;
+			varNode.init = newInit;
 		});
-		variableDeclarationNode.type = "SequenceExpression";
-		variableDeclarationNode.expressions = variableDeclarationNode.declarations;
-		delete  variableDeclarationNode.declarations;
-
-		return createExpressionStatementNode(variableDeclarationNode, range);
+		return variableDeclarationNode;
 	}
 
-	var replaceTemporaryClassWithClassName = function replaceTemporaryClassWithClassName(ast, className){
+	var replaceTemporaryClassWithClassName = function replaceTemporaryClassWithClassName(ast, className, extensionName){
 		for (var k in ast) {
 		    if (typeof ast[k] == "object" && ast[k] !== null) {
 				var node = ast[k];
 				if(node.type !== undefined && node.type == 'Identifier' && node.name == '__TemporaryClassName'){
 					node.name = className;
 				}
+				if(node.type !== undefined && node.type == 'Identifier' && node.name == '__SuperClass'){
+					node.name = extensionName;
+				}
 				if(node.type !== undefined && node.type == 'Identifier' && node.name == 'length'){
 					node.name = "_length";
 				}
 				ast[k] = node;
-				ast[k] = replaceTemporaryClassWithClassName(ast[k], className);
+				ast[k] = replaceTemporaryClassWithClassName(ast[k], className, extensionName);
+			}
+		}
+		return ast;
+	}
+	var specialReplacement = function specialReplacement(ast){
+		for (var k in ast) {
+		    if (typeof ast[k] == "object" && ast[k] !== null) {
+				var node = ast[k];
+				if(node.type !== undefined && node.type == 'Identifier' && node.name == '__xlength'){
+					node.name = "length";
+				}
+				ast[k] = node;
+				ast[k] = specialReplacement(ast[k]);
 			}
 		}
 		return ast;
@@ -935,29 +959,30 @@ exports.Cashew = function(javaCode){
 		var constructorCallNode = new node("CallExpression");
 		constructorCallNode.range = range;
 
-		var extensionClass;
-		//extends
-		if(extensionName == null){
-			extensionClass = createIdentifierNode("_Object", range);
-		}else{
-			extensionClass = createIdentifierNode(extensionName, range);
-		}
-		var extensionExpression = new node("ExpressionStatement");
-		extensionExpression.range = range;
-		var extensionExpressionXp = new node("CallExpression");
-		extensionExpressionXp.range = range;
-		extensionExpressionXp.callee = createMemberExpressionNode(extensionClass, createIdentifierNode("call", range), range);
-		extensionExpressionXp.arguments = [];
-		var args = new node("ThisExpression");
-		args.range = range;
-		extensionExpressionXp.arguments.push(args);
-
-		extensionExpression.expression = extensionExpressionXp;
-		constructorNodeBody.body.push(extensionExpression);
-
 		if(methodBodyNodes.length != 0){
 			//if there's a constructor start building methods
-			constructorNodeBody.body = constructorNodeBody.body.concat(createOverloadConstructorNode(className, methodBodyNodes));
+			constructorNodeBody.body = constructorNodeBody.body.concat(createOverloadConstructorNode(className, extensionName, methodBodyNodes));
+		}else{
+			//call super(); if there's no explicit constructor
+			var extensionClass;
+			//extends
+			if(extensionName == null){
+				extensionClass = createIdentifierNode("_Object", range);
+			}else{
+				extensionClass = createIdentifierNode(extensionName, range);
+			}
+			var extensionExpression = new node("ExpressionStatement");
+			extensionExpression.range = range;
+			var extensionExpressionXp = new node("CallExpression");
+			extensionExpressionXp.range = range;
+			extensionExpressionXp.callee = createMemberExpressionNode(extensionClass, createIdentifierNode("call", range), range);
+			extensionExpressionXp.arguments = [];
+			var args = new node("ThisExpression");
+			args.range = range;
+			extensionExpressionXp.arguments.push(args);
+
+			extensionExpression.expression = extensionExpressionXp;
+			constructorNodeBody.body.push(extensionExpression);
 		}
 
 		if(variableNodes){
@@ -982,23 +1007,75 @@ exports.Cashew = function(javaCode){
 		return expressionConstructor;
 	}
 
-	var createOverloadConstructorNode = function createOverloadConstructorNode(className, bodyNodes){
+	var createOverloadConstructorNode = function createOverloadConstructorNode(className, extensionName, bodyNodes){
 		var ifNodes = [];
 		for (var i = 0; i < bodyNodes.length; i++) {
 			currentConstructor = bodyNodes[i];
+			range = currentConstructor.details.range;
 			//check if constructor has the same class name
 			if(className != currentConstructor.details.methodName){
-				raise("Constructor needs to have the same name as class", currentConstructor.details.range);
+				raise("Constructor needs to have the same name as class", range);
 			}
 			//Check if there's a duplicate signature
 			for (var j = 0; j < bodyNodes.length; j++) {
 				otherConstructor = bodyNodes[j];
 				if(i != j){
 					if(currentConstructor.details.methodSignature == otherConstructor.details.methodSignature){
-						raise("Duplicated constructor signature " + currentConstructor.details.methodSignature, currentConstructor.details.range);
+						raise("Duplicated constructor signature " + currentConstructor.details.methodSignature, range);
 					}
 				}
 			};
+			var noSuperCall = false;
+			//Check if there's a super call in the constructor and if it's the first member
+			for (var j = 0; j < bodyNodes[i].length; j++) {
+				if(j != 0 && bodyNodes[i][j].expression.type == "CallExpression" && bodyNodes[i][j].expression.callee.object && (bodyNodes[i][j].expression.callee.object.name == "__SuperClass" || bodyNodes[i][j].expression.callee.object.name == "_Object")){
+					raise("Call to super must be the first statement in constructor", range);
+				}
+				if(j == 0){
+					if(bodyNodes[i][j].expression.type == "CallExpression"){
+						if(bodyNodes[i][j].expression.callee.object){
+							if(bodyNodes[i][j].expression.callee.object.name == "__SuperClass"){
+								//if the first is a superCall replaces the __SuperClass for the actual name;
+								if(extensionName == null){
+									bodyNodes[i][j].expression.callee.object.name = "_Object";
+								}else{
+									bodyNodes[i][j].expression.callee.object.name = extensionName;
+								}
+							}else if (bodyNodes[i][j].expression.callee.object.name != "_Object"){
+								//if it's not a super call for a super class and also not a super call from Object
+								noSuperCall = true;
+							}
+						}else{
+							noSuperCall = true;
+						}
+					}else{
+						noSuperCall = true;
+					}
+				}
+			};
+
+			//If there's no super call insert the super();
+			if (noSuperCall){
+				var extensionClass;
+				//extends
+				if(extensionName == null){
+					extensionClass = createIdentifierNode("_Object", range);
+				}else{
+					extensionClass = createIdentifierNode(extensionName, range);
+				}
+				var extensionExpression = new node("ExpressionStatement");
+				extensionExpression.range = range;
+				var extensionExpressionXp = new node("CallExpression");
+				extensionExpressionXp.range = range;
+				extensionExpressionXp.callee = createMemberExpressionNode(extensionClass, createIdentifierNode("call", range), range);
+				extensionExpressionXp.arguments = [];
+				var args = new node("ThisExpression");
+				args.range = range;
+				extensionExpressionXp.arguments.push(args);
+
+				extensionExpression.expression = extensionExpressionXp;
+				bodyNodes[i].unshift(extensionExpression);	
+			}
 			//Create a condition for each constructor
 			//check params anc create conditions
 			if(currentConstructor.details.params.length == 0){
@@ -1017,15 +1094,16 @@ exports.Cashew = function(javaCode){
 	}
 
 	var createVariableReplacement = function createVariableReplacement(paramName, index){
-		var varReplacement = new node("AssignmentExpression");
+		var varReplacement = new node("VariableDeclarator");
 		varReplacement.range = [0,0];
-		varReplacement.operator = "=";
-		varReplacement.left = createIdentifierNode(paramName, [0,0]);
-		varReplacement.right = createArgumentArgumentsForIndex(index);
-		var expReplacement = new node("ExpressionStatement");
-		expReplacement.range = [0,0];
-		expReplacement.expression = varReplacement;
-		return expReplacement;
+		varReplacement.id = createIdentifierNode(paramName, [0,0]);
+		varReplacement.init = createArgumentArgumentsForIndex(index);
+		var declarationReplacement = new node("VariableDeclaration");
+		declarationReplacement.range = [0,0];
+		declarationReplacement.declarations = [];
+		declarationReplacement.declarations.push(varReplacement);
+		declarationReplacement.kind = "var";
+		return declarationReplacement;
 	}
 
 	var createIfForMatchingConstructor = function createIfForMatchingConstructor(conditions, consequentBlock, paramsLength){
@@ -1033,7 +1111,7 @@ exports.Cashew = function(javaCode){
 		var methodInvokeNodeExpressionArguments = [];
 		if(conditions.length == 0){
 			//the method has no parameters then arguments[0] == undefined
-			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), range);
+			testExpression = createExpression("==", "BinaryExpression", createArgumentArgumentsForIndex(0), createIdentifierNode("undefined",[0,0]), [0,0]);
 		}
 		else{
 			//nest all conditions to match a signature starting from 1 to nest the first 2
@@ -1087,28 +1165,26 @@ exports.Cashew = function(javaCode){
 		var constructorNode = new node("NewExpression");
 		constructorNode.range = range;
 		constructorNode.callee = createIdentifierNode(methodName, methodRange);
-		//TODO: Validate argument types
 		constructorNode.arguments = argumentsNodes;
 		return constructorNode;
 	}
 
 	cocoJava.yy.createSuperInvokeNode = function createSuperInvokeNode(methodNode, superRange, range){
 		var oldCallee = methodNode.callee;
-		var innerMemberExpression = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", superRange), createIdentifierNode("__super__", superRange), range);
-		var newCallee = createMemberExpressionNode(innerMemberExpression, oldCallee, range);
+		var newCallee = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode("__SuperClass", superRange),createIdentifierNode("prototype", superRange),range), oldCallee, range);
 		methodNode.callee = newCallee;
 		return methodNode;
 	}
 
 	cocoJava.yy.createSuperConstructorNode = function createSuperConstructorNode(superRange, argumentsNodes, range){
-		var mostInnerMember = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", superRange), createIdentifierNode("__super__", superRange), superRange);
-		var innerMemberExpression = createMemberExpressionNode(mostInnerMember, createIdentifierNode("constructor", superRange), superRange);
-		var memberExpressionNode = createMemberExpressionNode(innerMemberExpression, createIdentifierNode("call", superRange), range);
 		var superInvokeNodeExpression = new node("CallExpression");
 		superInvokeNodeExpression.range = range;
-		superInvokeNodeExpression.callee = memberExpressionNode;
-		//TODO: Validate argument types
-		superInvokeNodeExpression.arguments = argumentsNodes;
+		superInvokeNodeExpression.callee = createMemberExpressionNode(createIdentifierNode("__SuperClass", superRange), createIdentifierNode("call", superRange), range);
+		superInvokeNodeExpression.arguments = [];
+		var args = new node("ThisExpression");
+		args.range = range;
+		superInvokeNodeExpression.arguments.push(args);
+		superInvokeNodeExpression.arguments = superInvokeNodeExpression.arguments.concat(argumentsNodes);
 		return superInvokeNodeExpression;
 	}
 
@@ -1139,13 +1215,11 @@ exports.Cashew = function(javaCode){
 		}
 		assignmentExpressionNode.left = assignmentNodeLeft;
 
-		if(expressionNode.type === "NewExpression"){
-			assignmentExpressionNode.right = expressionNode;
-		}else{
-			//var setNode = createRuntimeCheckAssignment(varName, varRange, expressionNode, index1, index2, assignmentRange);
-			//FIXME Removed Validations for now
-			assignmentExpressionNode.right = expressionNode;
-		}
+		
+		var setNode = createRuntimeCheckAssignment(varName, varRange, expressionNode, index1, index2, assignmentRange);
+		//FIXME Removed Validations for now
+		assignmentExpressionNode.right = setNode;
+		
 		assignmentNode.expression = assignmentExpressionNode;
 		return assignmentNode;
 	}
@@ -1201,24 +1275,59 @@ exports.Cashew = function(javaCode){
 	}
 
 	var createExpression = cocoJava.yy.createExpression = function createExpression(op, type, left, right, range){
-		var logicalNode = new node(type);
-		logicalNode.range = range;
-		logicalNode.operator = op;
-		logicalNode.left = left;
-		logicalNode.right = right;
-		return logicalNode;
+		if(op == "=="){
+			var callExpression = new node("CallExpression");
+			callExpression.range = range;
+			callExpression.callee = createMemberExpressionNode(getRuntimeOps(range), createIdentifierNode("eq",range), range);
+			callExpression.arguments = [];
+			callExpression.arguments.push(left);
+	 		callExpression.arguments.push(right);
+			return callExpression;
+		}
+		else if(op == "!="){
+			var callExpression = new node("CallExpression");
+			callExpression.range = range;
+			callExpression.callee = createMemberExpressionNode(getRuntimeOps(range), createIdentifierNode("neq",range), range);
+			callExpression.arguments = [];
+			callExpression.arguments.push(left);
+	 		callExpression.arguments.push(right);
+			return callExpression;
+		}
+		else{
+			var logicalNode = new node(type);
+			logicalNode.range = range;
+			logicalNode.operator = op;
+			logicalNode.left = left;
+			logicalNode.right = right;
+			return logicalNode;
+		}
 	}
 
-	cocoJava.yy.createUnaryExpression = function createExpression(op, expression, range){
-		var unaryNode = new node("UnaryExpression");
-		unaryNode.range = range;
-		unaryNode.operator = op;
-		unaryNode.prefix = "true";
-		unaryNode.argument = expression;
-		return unaryNode;
+	cocoJava.yy.createUnaryExpression = function createUnaryExpression(op, expression, range){
+		if(op == "-"){
+			var callExpression = new node("CallExpression");
+			callExpression.range = range;
+			callExpression.callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("createNumber",range), range);
+			callExpression.arguments = [];
+			var unaryNode = new node("UnaryExpression");
+			unaryNode.range = range;
+			unaryNode.operator = op;
+			unaryNode.prefix = "true";
+			unaryNode.argument = expression;
+			callExpression.arguments.push(unaryNode);
+	 		callExpression.arguments.push(createDetermineTypeForExpression(expression));
+			return callExpression;
+		}else{
+			var unaryNode = new node("UnaryExpression");
+			unaryNode.range = range;
+			unaryNode.operator = op;
+			unaryNode.prefix = "true";
+			unaryNode.argument = expression;
+			return unaryNode;
+		}		
 	}
 
-	cocoJava.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
+	var createTernaryNode = cocoJava.yy.createTernaryNode = function createTernaryNode(testExpression, consequentExpression, alternateExpression, expressionRange){
 		var ternaryNode = new node("ConditionalExpression");
 		ternaryNode.range = expressionRange;
 		ternaryNode.test = testExpression;
@@ -1233,7 +1342,35 @@ exports.Cashew = function(javaCode){
 		varDeclarationNode.kind = "var";
 		varDeclarationNode.javaType = type;
 		varDeclarationNode.declarations = [];
-
+		//Updates the type verification when declaring a variable;
+		for (var i = 0; i < declarators.length; i++) {
+			currentDeclarator = declarators[i];
+			if(declarators[i].init.type == "CallExpression"){
+				declarators[i].init.arguments.push(getArgumentForName(type, declarationRange));
+			}else if(declarators[i].init.type == "NewExpression"){
+				if(declarators[i].init.callee.name == "_NotInitialized"){
+					//changes the type of the not initialized
+					declarators[i].init.arguments[1] = getArgumentForName(type, declarationRange);
+				}else if(declarators[i].init.callee.name != type){
+					//Autobox
+					if(type == "int" && declarators[i].init.callee.name == "Integer"){
+						declarators[i].init = declarators[i].init.arguments[0];
+					}
+					else if(type == "double" && declarators[i].init.callee.name == "Double"){
+						declarators[i].init = declarators[i].init.arguments[0];
+						declarators[i].init.arguments[1] = getArgumentForName(type, declarationRange);
+					}
+					else if(type == "double" && declarators[i].init.callee.name == "Integer"){
+						declarators[i].init = declarators[i].init.arguments[0];
+						declarators[i].init.arguments[1] = getArgumentForName(type, declarationRange);
+					}else if(type == "Double" && declarators[i].init.callee.name == "Integer"){
+						declarators[i].init.callee.name = type;
+					}else{
+						raise("Incompatible types" , declarationRange);
+					}
+				}
+			}
+		};
 		varDeclarationNode.declarations = varDeclarationNode.declarations.concat(declarators);
 
 		return varDeclarationNode;
@@ -1245,7 +1382,14 @@ exports.Cashew = function(javaCode){
 
 		var idNode = createIdentifierNode(varName, declarationRange);
 		varDeclaratorNode.id = idNode;
-		varDeclaratorNode.init = null;
+		var initNode  = new node("NewExpression");
+		initNode.range = declarationRange;
+		initNode.callee = createIdentifierNode("_NotInitialized", declarationRange);
+		initNode.arguments = [];
+		initNode.arguments.push(getArgumentForName(varName, declarationRange));
+		initNode.arguments.push(getArgumentForName("tempType", declarationRange));
+		initNode.arguments.push(getArgumentForRange(declarationRange));
+		varDeclaratorNode.init = initNode;
 
 		return varDeclaratorNode;
 	}
@@ -1261,9 +1405,8 @@ exports.Cashew = function(javaCode){
 		if(assignment.type === "NewExpression"){
 			varDeclaratorNode.init = assignment;
 		}else{
-			//var initNode = createRuntimeCheckAssignment(varName, varRange, assignment, null, null, assignmentRange);
-			//FIXME Removed Validations for now
-			varDeclaratorNode.init = assignment;
+			var initNode = createRuntimeCheckAssignment(varName, varRange, assignment, null, null, assignmentRange);
+			varDeclaratorNode.init = initNode;
 		}
 		return varDeclaratorNode;
 	}
@@ -1273,8 +1416,11 @@ exports.Cashew = function(javaCode){
 		initNode.range = range;
 		initNode.arguments = [];
 		initNode.arguments.push(assignment);
-		initNode.arguments.push(getArgumentForVariable(varName, varRange));
-		initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		if(varName.constructor == String){
+			initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		}else{
+			initNode.arguments.push(varName);
+		}
 		if(index1){
 			initNode.arguments.push(index1);
 		}else{
@@ -1285,8 +1431,8 @@ exports.Cashew = function(javaCode){
 		}else{
 			initNode.arguments.push(getNullArgument());
 		}
-		initNode.arguments.push(getArgumentForNumber(assignment.ASTNodeID, range));
-		//FIXME changed validateSet to checkAssignment for now
+		initNode.arguments.push(getArgumentForRange(range));
+
 		var callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("checkAssignment", range), range, false);
 
 		initNode.callee = callee;
@@ -1365,18 +1511,22 @@ exports.Cashew = function(javaCode){
 		return newExpressionNode;
  	}
 
-	var createSimpleArrayNode = cocoJava.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, range){
-		var simpleArray = new node("VariableDeclarator");
-		simpleArray.range = range;
+	var createSimpleArrayNode = cocoJava.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, declarationRange){
+		var varDeclaratorNode = new node("VariableDeclarator");
+		varDeclaratorNode.range = declarationRange;
 
-		var idNode = createIdentifierNode(varName, varRange);
-		simpleArray.id = idNode;
+		var idNode = createIdentifierNode(varName, declarationRange);
+		varDeclaratorNode.id = idNode;
+		var initNode  = new node("NewExpression");
+		initNode.range = declarationRange;
+		initNode.callee = createIdentifierNode("_NotInitialized", declarationRange);
+		initNode.arguments = [];
+		initNode.arguments.push(getArgumentForName(varName, declarationRange));
+		initNode.arguments.push(getArgumentForName("tempType", declarationRange));
+		initNode.arguments.push(getArgumentForRange(declarationRange));
+		varDeclaratorNode.init = initNode;
 
-		var nodeArray = new node("ArrayExpression")
-		nodeArray.elements = [];
-		simpleArray.init = nodeArray;
-
-		return simpleArray;
+		return varDeclaratorNode;
 	}
 
 	cocoJava.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
@@ -1385,30 +1535,24 @@ exports.Cashew = function(javaCode){
 		return nullArray;
 	}
 
-	var createArrayWithNullInitialization = cocoJava.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
-		var nodeArray = new node("ArrayExpression")
-			, size = nodeExp.value || 0;
-		nodeArray.range = range;	
-		nodeArray.elements = [];
-
-		// TODO: Validar a expressão que declara o tamanho do array.
-		_.times(parseInt(size),function(){
-			var literal = getNullArgument();
-			nodeArray.elements.push(literal);
-		});
+	cocoJava.yy.createArrayWithNullInitialization = function createArrayWithNullInitialization(nodeExp, range){
+		var nodeArray = new node("CallExpression");
+		nodeArray.range = range;
+		nodeArray.callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("createNullArrayForIndexes",range), range);
+		nodeArray.arguments = [];
+		nodeArray.arguments.push(nodeExp);
+ 		nodeArray.arguments.push(getArgumentForRange(range));
 		return nodeArray;
 	}
 
 	cocoJava.yy.createTwoDimensionalArray = function createTwoDimensionalArray(nodesExp, range){
-		var nodeArray = new node("ArrayExpression");
+		var nodeArray = new node("CallExpression");
 		nodeArray.range = range;
-		nodeArray.elements = [];
-		_.times(nodesExp[0].value, function(){
-			if(nodesExp[1]){
-				var literal = createArrayWithNullInitialization(nodesExp[1],range);
-			}
-			nodeArray.elements.push(literal);
-		});
+		nodeArray.callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("createNullArrayForIndexes",range), range);
+		nodeArray.arguments = [];
+		nodeArray.arguments.push(nodesExp[0]);
+ 		nodeArray.arguments.push(getArgumentForRange(range));
+		nodeArray.arguments.push(nodesExp[1]);
 		return nodeArray;
 	}
 
@@ -1426,14 +1570,6 @@ exports.Cashew = function(javaCode){
 			}
 		};
 		return nodeArray;
-	}
-
-	cocoJava.yy.validateDeclaratorsDimension = function validateDeclaratorsDimension(declaratorNodes, type){
-		_.each(declaratorNodes, function(declaratorNode){
-			if(declaratorNode.init.elements.length > 0 && declaratorNode.init.elements[0].type == "ArrayExpression"){
-				raise("Invalid type for " + type, declaratorNode.range);
-			}
-		});
 	}
 
 	cocoJava.yy.createArrayFromInitialArray = function createArrayFromInitialArray(arrays, range){
@@ -1462,7 +1598,13 @@ exports.Cashew = function(javaCode){
 	cocoJava.yy.createSwitchNode = function createSwitchNode(discriminant, cases, range){
 		var switchNode = new node("SwitchStatement");
 		switchNode.range = range;
-		switchNode.discriminant = discriminant;
+		var correctedDiscriminant = new node("CallExpression");
+		correctedDiscriminant.range = range;
+		correctedDiscriminant.callee = createMemberExpressionNode(getRuntimeOps(range), createIdentifierNode("fixSwitch",range), range);
+		correctedDiscriminant.arguments = [];
+		correctedDiscriminant.arguments.push(discriminant);
+ 		correctedDiscriminant.arguments.push(getArgumentForRange(range));
+		switchNode.discriminant = correctedDiscriminant;
 		switchNode.cases = [];
 		switchNode.cases = switchNode.cases.concat(cases);
 		return switchNode;
@@ -1480,7 +1622,16 @@ exports.Cashew = function(javaCode){
 	var createCaseSwitchNode = cocoJava.yy.createCaseSwitchNode = function createCaseSwitchNode(testExpression, range){
 		var caseNode = new node("SwitchCase");
 		caseNode.range = range;
-		caseNode.test = testExpression;
+		var correctedTest = null;
+		if(testExpression){
+			correctedTest = new node("CallExpression");
+			correctedTest.range = range;
+			correctedTest.callee = createMemberExpressionNode(getRuntimeOps(range), createIdentifierNode("fixSwitch",range), range);
+			correctedTest.arguments = [];
+			correctedTest.arguments.push(testExpression);
+	 		correctedTest.arguments.push(getArgumentForRange(range));
+		}
+		caseNode.test = correctedTest;
 		caseNode.consequent = [];
 		return caseNode;
 	}
@@ -1553,7 +1704,23 @@ exports.Cashew = function(javaCode){
 		blockNode.body = blockNode.body.concat(forBlock);
 
 		forNode.body = blockNode;
-
+		/*var forEnclose = new node("ExpressionStatement");
+		forEnclose.range = forRange;
+		forEnclose.expression = new node("CallExpression");
+		forEnclose.expression.range = forRange;
+		forEnclose.expression.callee = new node("FunctionExpression");
+		forEnclose.expression.callee.range = forRange;
+		forEnclose.expression.callee.id = null;
+		forEnclose.expression.callee.params = [];
+		forEnclose.expression.callee.defaults = [];
+		forEnclose.expression.callee.body = new node("BlockStatement");
+		forEnclose.expression.callee.body.range = forRange;
+		forEnclose.expression.callee.body.body = [];
+		forEnclose.expression.callee.body.body.push(forNode);
+		forEnclose.expression.callee.generator = false;
+		forEnclose.expression.callee.expression = false;
+		forEnclose.expression.arguments = [];
+		return forEnclose;*/
 		return forNode;
 	}
 
@@ -1564,7 +1731,10 @@ exports.Cashew = function(javaCode){
 
 		enhancedForExpressionExpression = new node("CallExpression");
 		enhancedForExpressionExpression.range = range;
-		enhancedForExpressionExpression.callee = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode(arraylist,arraylistRange),createIdentifierNode("_arraylist",range),range), createIdentifierNode("forEach"),range);
+
+		enhancedConditional = createTernaryNode(createExpression("instanceof", "BinaryExpression", createIdentifierNode(arraylist,[0,0]),createIdentifierNode("_ArrayList",[0,0]),[0,0]), createMemberExpressionNode(createIdentifierNode(arraylist,arraylistRange),createIdentifierNode("_arraylist",range),range), createIdentifierNode(arraylist, [0,0]), [0,0]);
+
+		enhancedForExpressionExpression.callee = createMemberExpressionNode(enhancedConditional, createIdentifierNode("forEach"),range);
 
 		
 
@@ -1590,7 +1760,7 @@ exports.Cashew = function(javaCode){
 		return enhancedForExpression;
 	}
 
-	cocoJava.yy.createConsoleLogExpression = function createConsoleLogExpression(expression, range){
+	cocoJava.yy.createConsoleLogExpression = function createConsoleLogExpression(printType, expression, range){
 		var consoleLogNode = new node("CallExpression");
 		consoleLogNode.range = range;
 		consoleLogNode.arguments = [];
@@ -1600,7 +1770,13 @@ exports.Cashew = function(javaCode){
 
 		var functions = getRuntimeFunctions(range);
 
-		var printProperty = createIdentifierNode("print", range);
+		var printProperty;
+		if(printType == "System.out.print"){
+			printProperty = createIdentifierNode("print", range);
+		}else{
+			printProperty = createIdentifierNode("println", range);
+		}
+			
 
 		callee.object = functions;
 		callee.property = printProperty;
@@ -1615,14 +1791,13 @@ exports.Cashew = function(javaCode){
 		var classCastNode = new node("CallExpression");
 		classCastNode.range = range;
 		classCastNode.arguments = [];
-		if(type === "int" || type === "double"){
+		if(type === "int" || type === "double" || type === "Object"){
 			classCastNode.arguments.push(getArgumentForName(type, typeRange));
-		}else if(type === "Integer" || type === "Double" || type ===  "String" || type ===  "boolean" || type ===  "Boolean"){
-			raise("Invalid Class cast", range);
 		}else{
 			classCastNode.arguments.push(createIdentifierNode(type, typeRange));
 		}
 		classCastNode.arguments.push(expression);
+		classCastNode.arguments.push(getArgumentForRange(range));
 		classCastNode.callee = createMemberExpressionNode(getRuntimeFunctions(range),createIdentifierNode("classCast", range),range, false);
 		return classCastNode;
 	}
@@ -1664,7 +1839,15 @@ exports.Cashew = function(javaCode){
 		}
 		throw err;
 	}
-	
+	//Add call to BufferedConsole and print it;
+	var consolePrintNode = new node("ExpressionStatement");
+	var consoleCall = new node("CallExpression");
+	consoleCall.callee  = createMemberExpressionNode(getRuntimeFunctions([0,0]),createIdentifierNode("printLog", [0,0]),[0,0]);
+	consoleCall.arguments = [];
+	consolePrintNode.expression = consoleCall;
+
+	ast.body.push(consolePrintNode);
+
 	return ast;
 }
 
@@ -1754,547 +1937,677 @@ exports.toNode = function(p){
   return node;
   function node(){}
 }
-/* These are included in the code directly*/
 
-String.prototype.compareTo = function (other){
-	for(var i = 0; i < this.length; i++){
-		if(this[i].charCodeAt(0) != other.charCodeAt(i))
-			return this[i].charCodeAt(0) - other.charCodeAt(i);
-
-	}
-	return this.length - other.length;
-}
-String.prototype.compareToIgnoreCase = function (other){
-	for(var i = 0; i < this.length; i++){
-		if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
-			return this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i);
-
-	}
-	return this.length - other.length;
-}
-
-String.prototype._length = function(){
-	return this.length;
-}
-
-Array.prototype.__defineGetter__("_length", function(){return this.length});
-
-_Object = function() {
-
-	function _Object() {
-		this.__id = generateId();
-	}
-
-	var __id = 0;
-
-	function generateId() { 
-		return id++; 
-	}
-
-	_Object.prototype.__type == "Object";
-
-	_Object.prototype.__id = function() {
-		var newId = generateId();
-		this.__id = function() { return newId; };
-		return newId;
-	};
-
-	_Object.prototype.equals = function(other) {
-		return this === other;
-	};
-
-	_Object.prototype.toString= function() {
-		return this.__type + "@" + this.__id;
-	};
-	return _Object;
-
-}.call(this);
-
-Integer = function () {
-    Integer = function Integer(value) {
-        _Object.call(this);
-        if(value.constructor == Number){
-        	this.value = Math.floor(value);
-        }else{
-        	throw new SyntaxError("Integer*expects*an*int*not*" + value.constructor.name);
-        }
-    };
-    Integer.prototype = Object.create(_Object.prototype);
-    Integer.prototype.__type = 'Integer';
-    Integer.prototype.intValue = function () {
-        return this.value;
-    };
-    return Integer;
-}.call(this);
-
-Double = function () {
-    Double = function Double(value) {
-        _Object.call(this);
-        if(value.constructor == Number){
-        	this.value = value;
-        }else{
-        	throw new SyntaxError("Double*expects*an*int*not*" + value.constructor.name);
-        }
-    };
-    Double.prototype = Object.create(_Object.prototype);
-    Double.prototype.__type = 'Double';
-    Double.prototype.doubleValue = function () {
-        return this.value;
-    };
-    return Double;
-}.call(this);
-
-_ArrayList = function() {
-
-	function _ArrayList(type) {
-		_Object.call(this);
-		this._type = type;
-		this._arraylist = [];
-	}
-	_ArrayList.prototype = Object.create(_Object.prototype);
-	_ArrayList.prototype.__type = 'ArrayList';
-	_ArrayList.prototype.size = function() {
-		return this._arraylist.length;
-	};
-
-	_ArrayList.prototype.add = function(index, object) {
-		//hacky way so we can have method overload
-		if (object == undefined) {
-			objectType = ___JavaRuntime.functions.determineType(index);
-			if(objectType == "int" && this._type == "Integer"){
-				index = new Integer(index);
-			}
-			if(objectType == "double" && this._type == "Double"){
-				index = new Integer(index);
-			}
-			//updates the type after autoboxing;
-			objectType = ___JavaRuntime.functions.determineType(index);
-			if(objectType !=  this._type){
-				throw new SyntaxError("No*suitable*'add'*method*found*for*" + objectType);
-			}
-			this._arraylist.push(index);
-			return true;
-		} else {
-			objectType = ___JavaRuntime.functions.determineType(object);
-			if(objectType == "int" && this._type == "Integer"){
-				object = new Integer(object);
-			}
-			if(objectType == "double" && this._type == "Double"){
-				object = new Integer(object);
-			}
-			//updates the type after autoboxing;
-			object = ___JavaRuntime.functions.determineType(object);
-			if(objectType !=  this._type){
-				throw new SyntaxError("No*suitable*'add'*method*found*for*" + objectType);
-			}
-			if (index > 0 && index < this._arraylist.length) {
-				this._arraylist.splice(index, 0, object);
-				return true;
-			} else {
-				throw new SyntaxError("Index*out*of*bounds*Exception!");
-			}
+exports.___JavaRuntime = ___JavaRuntime = {
+	BufferedConsole : "",
+	sourceCode: "",
+	raise : function(message, range) {
+		var offset = range[0];
+		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
+	    for (var line = 1, cur = 0;;) {
+			lineBreak.lastIndex = cur;
+			var match = lineBreak.exec(___JavaRuntime.sourceCode);
+			if (match && match.index < offset) {
+				++line;
+				cur = match.index + match[0].length;
+			} else break;
 		}
-	};
-
-	_ArrayList.prototype.get = function(index) {
-		if (index < 0 || index > this._arraylist.length) {
-			throw new SyntaxError("Index*out*of*bounds*Exception!");
-		}
-		return this._arraylist[index];
-	};
-
-	_ArrayList.prototype.set = function(index, object) {
-		var old;
-		objectType = ___JavaRuntime.functions.determineType(object);
-		if(objectType == "int" && this._type == "Integer"){
-			object = new Integer(object);
-		}
-		if(objectType == "double" && this._type == "Double"){
-			object = new Integer(object);
-		}
-		//updates the type after autoboxing;
-		object = ___JavaRuntime.functions.determineType(object);
-		if(objectType !=  this._type){
-			throw new SyntaxError("No*suitable*'add'*method*found*for*" + objectType);
-		}
-		if (index < 0 || index > this._arraylist.length) {
-			throw new SyntaxError("Index*out*of*bounds*Exception!");
-		}
-		var old = this._arraylist[index];
-		if(___JavaRuntime.functions.determineType(index) !=  this._type){
-			throw new SyntaxError("Index*out*of*bounds*Exception!");	
-		}
-		this._arraylist[index] = object;
-		return old;
-	};
-
-	_ArrayList.prototype.remove = function(index) {
-		if (index < 0 || index > this._arraylist.length) {
-			throw new SyntaxError("Index*out*of*bounds*Exception!");
-		}
-		return this._arraylist.splice(index,1);
-	};
-
-	return _ArrayList;
-
-}.call(this);
-/* ---------------------------- */
-exports.___JavaRuntime = ___JavaRuntime = { 
-	variablesDictionary : [],
-	extend : function(child, parent) { 
-		hasProp = {}.hasOwnProperty;
-		for (var key in parent) { 
-			if (hasProp.call(parent, key)) child[key] = parent[key]; 
-		} 
-		function ctor() { 
-			this.constructor = child; 
-		} 
-		ctor.prototype = parent.prototype; 
-		child.prototype = new ctor(); 
-		child.__super__ = parent.prototype; 
-		
-		return child; 
+		var loc = {line: line, column: offset - cur};
+		var err = new SyntaxError(message);
+		err.pos = range[0]; err.loc = loc; err.range = range;
+		throw err;
 	},
+	loadEnv: function(){
+		___JavaRuntime.BufferedConsole = "";
+		String.prototype.compareTo = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].charCodeAt(0) != other.charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
 
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+		String.prototype.compareToIgnoreCase = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
+
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+
+		String.prototype._length = function(){
+			return ___JavaRuntime.functions.createNumber(this.length, "int");
+		};
+		
+		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
+
+		_Object = function() {
+
+			function _Object() {
+				this.__id = generateId();
+			}
+
+			var __id = 0;
+
+			function generateId() { 
+				return __id++; 
+			}
+
+			_Object.prototype.__type = "Object";
+
+			_Object.prototype.__id = function() {
+				var newId = generateId();
+				this.__id = function() { return newId; };
+				return newId;
+			};
+
+			_Object.prototype.equals = function(other) {
+				return this === other;
+			};
+
+			_Object.prototype.toString= function() {
+				if(this.__string){
+					return this.__string;
+				}
+				return this.__type + "@" + this.__id;
+			};
+			
+			return _Object;
+
+		}.call(this);
+		_NotInitialized = function() {
+
+			_NotInitialized = function _NotInitialized(name, type, range) {
+				this._name = name;
+				this._initType = type;
+				this._range = range;
+			}
+
+			_NotInitialized.prototype.toString= function() {
+				___JavaRuntime.raise("Variable " + this._name + " might not have been initialized", this._range);
+			};
+			return _NotInitialized;
+
+		}.call(this);
+		Integer = function () {
+		    Integer = function Integer(value) {
+		        _Object.call(this);
+		        if(value.constructor == Number){
+		        	this.value = ___JavaRuntime.functions.createNumber(Math.floor(value), "int");
+		        }else{
+		        	throw new SyntaxError("Integer expects an int not " + value.constructor.name);
+		        }
+		    };
+		    Integer.prototype = Object.create(_Object.prototype);
+		    Integer.prototype.__type = 'Integer';
+		    Integer.prototype.intValue = function () {
+		        return this.value;
+		    };
+		    Integer.prototype.toString = function () {
+		        return "" + this.value;
+		    };
+		    return Integer;
+		}.call(this);
+
+		Double = function () {
+		    Double = function Double(value) {
+		        _Object.call(this);
+		        if(value.constructor == Number){
+		        	this.value = ___JavaRuntime.functions.createNumber(value, "double");
+		        }else{
+		        	throw new SyntaxError("Double expects an int not " + value.constructor.name);
+		        }
+		    };
+		    Double.prototype = Object.create(_Object.prototype);
+		    Double.prototype.__type = 'Double';
+		    Double.prototype.intValue = function () {
+		        return ___JavaRuntime.functions.createNumber(Math.floor(this.value), "int");
+		    };
+		    Double.prototype.doubleValue = function () {
+		        return this.value;
+		    };
+		    Double.prototype.toString = function () {
+		    	if(this.value%1 != 0){
+		    		return "" + this.value;
+		    	}else{
+		    		return "" + this.value.toFixed(1);
+		    	}
+		    };
+		    return Double;
+		}.call(this);
+
+		_ArrayList = function(){
+			_ArrayList = function _ArrayList(type) {
+				_Object.call(this);
+				throw new SyntaxError("Cannot find ArrayList");
+			}
+			return _ArrayList;
+		}.call(this);
+	},
+	loadLists : function(){ 
+		_ArrayList = function() {
+
+			function _ArrayList(type) {
+				_Object.call(this);
+				this._type = type;
+				this._arraylist = [];
+			}
+			_ArrayList.prototype = Object.create(_Object.prototype);
+			_ArrayList.prototype.__type = 'ArrayList';
+			_ArrayList.prototype.size = function() {
+				return this._arraylist.length;
+			};
+
+			_ArrayList.prototype.add = function(index, object) {
+				//hacky way so we can have method overload
+				if (object == undefined) {
+					objectType = ___JavaRuntime.functions.determineType(index);
+					if(objectType == "int" && this._type == "Integer"){
+						index = new Integer(index);
+					}
+					if(objectType == "double" && this._type == "Double"){
+						index = new Integer(index);
+					}
+					//updates the type after autoboxing;
+					objectType = ___JavaRuntime.functions.determineType(index);
+					if(objectType !=  this._type){
+						throw new SyntaxError("No suitable 'add' method found for " + objectType);
+					}
+					this._arraylist.push(index);
+					return true;
+				} else {
+					objectType = ___JavaRuntime.functions.determineType(object);
+					if(objectType == "int" && this._type == "Integer"){
+						object = new Integer(object);
+					}
+					if(objectType == "double" && this._type == "Double"){
+						object = new Integer(object);
+					}
+					//updates the type after autoboxing;
+					object = ___JavaRuntime.functions.determineType(object);
+					if(objectType !=  this._type){
+						throw new SyntaxError("No suitable 'add' method found for " + objectType);
+					}
+					if (index > 0 && index < this._arraylist.length) {
+						this._arraylist.splice(index, 0, object);
+						return true;
+					} else {
+						throw new SyntaxError("Index out of bounds Exception!");
+					}
+				}
+			};
+
+			_ArrayList.prototype.get = function(index) {
+				if (index < 0 || index > this._arraylist.length) {
+					throw new SyntaxError("Index out of bounds Exception!");
+				}
+				return this._arraylist[index];
+			};
+
+			_ArrayList.prototype.set = function(index, object) {
+				var old;
+				objectType = ___JavaRuntime.functions.determineType(object);
+				if(objectType == "int" && this._type == "Integer"){
+					object = new Integer(object);
+				}
+				if(objectType == "double" && this._type == "Double"){
+					object = new Integer(object);
+				}
+				//updates the type after autoboxing;
+				objectType = ___JavaRuntime.functions.determineType(object);
+				if(objectType !=  this._type){
+					throw new SyntaxError("No suitable 'set' method found for " + objectType);
+				}
+				if (index < 0 || index > this._arraylist.length) {
+					throw new SyntaxError("Index out of bounds Exception!");
+				}
+				var old = this._arraylist[index];
+				if(___JavaRuntime.functions.determineType(index) == "int" || ___JavaRuntime.functions.determineType(index)== "Integer"){
+					if(___JavaRuntime.functions.determineType(index) == "Integer"){
+						this._arraylist[index.intValue()] = object;
+						}else{
+							this._arraylist[index] = object;
+						}
+						return old;
+				}else{
+					throw new SyntaxError("Incompatible types required: int, found: " + ___JavaRuntime.functions.determineType(index));	
+				}
+			};
+
+			_ArrayList.prototype.remove = function(index) {
+				if (index < 0 || index > this._arraylist.length) {
+					throw new SyntaxError("Index out of bounds Exception!");
+				}
+				return this._arraylist.splice(index,1);
+			};
+
+			return _ArrayList;
+
+		}.call(this);
+
+	},
 	functions : {
-		print: function(str){
-			console.log(str);
+		printLog: function(str){
+			console.log(___JavaRuntime.BufferedConsole);
 		},
-		//FIXME: chaneged validateSet to checkAssignment, most validations will be in the AST soon
-		checkAssignment: function(value, variable, arrayIndex1, arrayIndex2, javaType, range){
+		print: function(str){
+			___JavaRuntime.BufferedConsole += str;
+		},
+		println: function(str){
+			___JavaRuntime.BufferedConsole += str;
+			___JavaRuntime.BufferedConsole += "\n";
+		},
+		createNumber: function(value, javaType){
+			var _temp = new Number(value);
+			_temp._type = javaType;
+			return _temp;
+		}
+		,
+		//FIXME: validations on arrays pending
+		checkAssignment: function(value, variable, arrayIndex1, arrayIndex2, range, javaType){
 			if(typeof value === "function")
 				value = value();
-
-			var varRawType;
-
-			if (javaType){
-				varRawType = javaType.replace(/\[/g,'').replace(/\]/g,'');
-				if(javaType.indexOf("[][]")>-1){
-					//if either the new value and the variable are arrays
-					if (value.constructor === Array){
-						if(value[0].constructor === Array){
-							//both are arrays: fine
-						}else{
-							throw new SyntaxError("Incompatible types");
-						}
-					}else{
-						//if the value is an array but it's not 2-d
-						throw new SyntaxError("Incompatible types");
-					}
-				} else if(javaType.indexOf("[]")>-1){
-					//if both value and variables are arrays
-					if (value.constructor === Array && arrayIndex1 == undefined){
-						if(value[0].constructor === Array){
-							//if value is a 2-d array
-							throw new SyntaxError("Incompatible types");
-						}else{
-							//value is a 1-d array: fine
-						}
-					}else{
-						//variable is array but value isn't
-						throw new SyntaxError("Incompatible types");
-					}
+			var tValue =  ___JavaRuntime.functions.determineType(value);
+			var tVariable;
+			if(javaType){
+				tVariable = javaType;
+			}else{
+				if(arrayIndex2){
+					tVariable = ___JavaRuntime.functions.determineType(variable[arrayIndex1][arrayIndex2]);	
+				}else if(arrayIndex1){
+					tVariable = ___JavaRuntime.functions.determineType(variable[arrayIndex1]);
 				}else{
-					if(javaType == 'int' || javaType == 'Integer'){
-						if(value.constructor == Number){
-							return Math.floor(value);
-						}else{
-							throw new SyntaxError("Int cannot accept " + value.constructor);
-						}
-					}else if(javaType == 'double' || javaType == 'Double'){
-						if(value.constructor == Number){
-							return value;
-						}else{
-							throw new SyntaxError("Double cannot accept " + value.constructor);
-						}
-					}else if(javaType == 'String'){
-						if(value.constructor  == String){
-							return value;
-						}else{
-							throw new SyntaxError("String cannot accept " + value.constructor);
-						}
-					}	
+					tVariable = ___JavaRuntime.functions.determineType(variable);
+				}	
+			}
+			if(tValue == tVariable){
+				//if both have the same type just return the value
+				return value;
+			}else{
+				if(tVariable == "Object"){
+					//if primitives, wrap them into objects
+					if(tValue == "int"){
+						return new Integer(value);
+					}else if (tVariable == "double"){
+						return new Double(value);
+					}else{
+						return value;
+					}
+				}
+				//Autobox
+				if(tVariable == "int" && tValue == "Integer"){
+					return value.intValue();
+				}else if(tVariable == "Integer" && tValue == "int"){
+					return new Integer(value);
+				}else if(tVariable == "double" && tValue == "Integer"){
+					var _temp = value.intValue();
+					_temp._type = "double";
+					return _temp;
+				}else if(tVariable == "double" && tValue == "int"){
+					value._type = "double";
+					return value;
+				}else if(tVariable == "double" && tValue == "Double"){
+					return value.doubleValue();
+				}else if(tVariable == "Double" && tValue == "Integer"){
+					return new Double(value.intValue());
+				}else if(tVariable == "Double" && tValue == "int"){
+					return new Double(value);
+				}else if(tVariable == "Double" && tValue == "double"){
+					return new Double(value);
 				}
 			}
-			if(variable){
-				//If the variable is assigned already we can try determine the type
-				//Check first if the variable is an array
-				if (variable.constructor == Array){
-					if (variable[0].constructor == Array){
-						//variable is a 2-d array
-						if (value.constructor === Array){
-							if(value[0].constructor === Array){
-								// value is also a 2-d array: fine
-							}else{
-								//value isnt a 2-d array
-								throw new SyntaxError("Incompatible types");
-							}
-						}else{
-							//value isnt an array
-							throw new SyntaxError("Incompatible types");
-						}
-					}else{
-						//variable is a 1-d array
-						if (value.constructor === Array){
-							if(value[0].constructor === Array){
-								//value isnt a 1-d array
-								throw new SyntaxError("Incompatible types");
-							}else{
-								// value is also a 1-d array: fine
-							}
-						}
-					}
-				}else{
-					//if it's not an array it could be an integer, double, string, userType
-					if(variable.constructor == Number){
-						if(variable % 1 != 0){
-							//current variable is a double
-							if(value.constructor == Number){
-								return value;
-							}else{
-								throw new SyntaxError("Double cannot accept " + value.constructor);
-							}
-						}else{
-							//current variable is an int
-							if(value.constructor == Number){
-								return Math.floor(value);
-							}else{
-								throw new SyntaxError("Int cannot accept " + value.constructor);
-							}
-						}
-					}else if(variable.constructor == String){
-						if(value.constructor  == String){
-							return value;
-						}else{
-							throw new SyntaxError("String cannot accept " + value.constructor);
-						}
-					}
-				}
-			}else{
-				//If we cant check returns the variable anyway
+			if(tVariable == "?" || tValue == "?"){
+				//if variable has a wildcard type, we cant validate
 				return value;
 			}
-		},
-		validateSet: function(value, variable, arrayIndex1, arrayIndex2, ASTNodeID){
-			if(typeof value === "function")
-				value = value();
-			
-			//Removes the '__' from the variable name
-			var index = parseInt(variableName.substring(2));
-			var varRawType = ___JavaRuntime.variablesDictionary[index].type;
-			var type;
-			//check the type
-			if(___JavaRuntime.variablesDictionary[index].type.indexOf("[][]")>-1){
-				//if either the new value and the variable are arrays
-				if (value.constructor === Array){
-					if(value[0].constructor === Array){
-						if(value instanceof _Object){
-							type = variable.type;
-							type = type + "[][]"
-						}else{
-							type = varRawType;
-						}
-					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
-						//if the assign contains 1 index the variable can receive an array
-						varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
-						if(value instanceof _Object){
-							type = variable.type;
-							type = type + "[]"
-						}else{
-							type = varRawType;
-						}
-					}else{
-						throw new SyntaxError("Incompatible types");
-					}
-				} else if (arrayIndex2 != undefined && value.constructor !== Array){
-					//if the assign contains 2 indexes the variable can receive only the basic type
-					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
-				}else{
-					//if the variable is an array but the value is incompatible
-					throw new SyntaxError("Incompatible types");
-				}
-			} else if(___JavaRuntime.variablesDictionary[index].type.indexOf("[]")>-1){
-				//if both value and variables are arrays
-				if (value.constructor === Array && arrayIndex1 == undefined){
-					if(value[0].constructor === Array){
-						throw new SyntaxError("Incompatible types");
-					}
-					if(value instanceof _Object){
-						type = variable.type;
-						type = type + "[]"
-					}else{
-						type = varRawType;
-					}
-				}else if(arrayIndex1 != undefined){
-					//if there's an index the array can recive only the basic type
-
-					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
-				}else{
-					throw new SyntaxError("Incompatible types");
-				}
-
-			}
-			
-			if(arrayIndex1){
-				if(typeof arrayIndex1 === "function")
-					arrayIndex1 = arrayIndex1();
-				if(typeof arrayIndex1 != 'number' || arrayIndex1 % 1 !== 0){
-					throw new SyntaxError("Array index must be an integer");
-				}else if(variable.constructor !== Array){
-					throw new SyntaxError("Incompatible types");
-				}else if(arrayIndex1 < 0 || arrayIndex1 >= variable.length){
-					throw new SyntaxError("Array index out of bounds");
-				}
-			}
-			if(arrayIndex2){
-				if(typeof arrayIndex2 === "function")
-					arrayIndex2 = arrayIndex2();
-				if(typeof arrayIndex2 != 'number' || arrayIndex2 % 1 !== 0){
-					throw new SyntaxError("Array index must be an integer");
-				}else if(variable.constructor !== Array){
-					throw new SyntaxError("Incompatible types");
-				}else if(arrayIndex2 < 0 || arrayIndex2 >= variable[arrayIndex1].length){
-					throw new SyntaxError("Array index out of bounds");
-				}
-			}
-			switch (varRawType){
-				case 'int':
-					if (typeof value === 'number'){
-						return Math.floor(value);
-					}
-					throw new SyntaxError("This is not an int maybe a cast is missing");
-					break;
-				case 'double':
-					if (typeof value === 'number'){
-						return value;
-					}
-					throw new SyntaxError("This is not a double maybe a cast is missing");
-					break;
-				case 'boolean':
-					if (typeof value === 'boolean'){
-						return value;
-					}
-					throw new SyntaxError("This is not a boolean maybe a cast is missing");
-					break;
-				case 'String':
-					if (typeof value === 'string'){
-						return value;
-					}
-					throw new SyntaxError("This is not a String maybe a cast is missing");
-					break;
-				case type:
-					return value;
-					break;
-				default:
-					break;
-			}
+			___JavaRuntime.raise("Incompatible types required " + tVariable + " found " + tValue, range);
 		},
 		determineType: function(value){
 			if(value == undefined){
 				return undefined;
 			}
+			if(value instanceof _NotInitialized){
+				return value._initType;
+			}
+			
 			if (value.constructor == Array){
-				if (value[0].constructor == Array){
-					if(value[0][0].constructor == Number){
-						if(value[0][0] % 1 != 0){
-							//current variable is a double array
-							return "double[][]";
-						}else{
-							//current variable is an int
-							return "int[][]";
-						}
-					}else if(value[0][0].constructor == String){
-						return "String[][]";
-					}else if(typeof value[0][0] == "object"){
-						if(value[0][0].__type){
-							return value[0][0].__type + "[][]";
-						}
-					}
-				}else{
-					//current variable is an 1-d array
-					if(value[0].constructor == Number){
-						if(value[0] % 1 != 0){
-							//current variable is a double array
-							return "double[]";
-						}else{
-							//current variable is an int
-							return "int[]";
-						}
-					}else if(value[0].constructor == String){
-						return "String[]";
-					}else if(typeof value[0] == "object"){
-						if(value[0].__type){
-							return value[0].__type + "[]";
-						}
-					}
-				}
-		}else{
+				return "?";
+			}else{
 				//if it's not an array it could be an integer, double, string, userType
 				if(value.constructor == Number){
-					if(value % 1 != 0){
-						//current variable is a double
-						return "double";
-					}else{
-						//current variable is an int
-						return "int";
-					}
+					return value._type;
 				}else if(value.constructor == String){
 					return "String";
-				}else if(typeof value == "object"){
+				}else if(value instanceof _Object){
 					if(value.__type){
 						return value.__type;
 					}
 				}
 			}
+			if(typeof(value) === "boolean"){
+				return "boolean"
+			}
 			//if cant check the type its wildcard type
 			return "?";
 		},
-		validateIndex: function(value, range){
-			if(typeof value === "function")
-				value = value();
-			if (typeof value === 'number'){
-						if (value % 1 === 0){
-							return value;
-						}else{
-							throw new SyntaxError("Possible loss of precision, received double, expected int");
-						}
+		findSignature: function(methodSignature, args, possibleFunctions){
+			var argTypes = [];
+			for (var i = 0; i < args.length; i++) {
+				argTypes.push( ___JavaRuntime.functions.determineType(args[i]));
+			};
+			var typeMatcher = function(arg1, arg2){
+				if(arg1 == "Object"){
+					arg1 = "_Object";
+				}
+				if(arg2 == "Object"){
+					arg2 = "_Object";
+				}
+				if(arg1 == arg2){
+					return 0;
+				}
+				if(arg1 == "int"){
+					if(arg2 == "Integer" ||arg2 == "double" || arg2 == "_Object"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg1 == "double"){
+					if(arg2 == "Double" || arg2 == "_Object"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg1 == "Integer"){
+					if(arg2 == "int" || arg2 == "double"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg1 == "Double"){
+					if(arg2 == "double"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg2 == "int" || arg2 == "double"){
+					return (-256);
+				}
+				if(eval(arg1 + ".prototype") instanceof eval(arg2)){
+					return 1;
+				}
+				return (-256);
 			}
-			throw new SyntaxError("Incompatible types, received "+ typeof value  +", expected int");
-
-		},
-		classCast: function(type, value){
-			if(typeof type === "string"){
-				if (typeof value === "number"){
-						if(type === "int"){
-							return Math.floor(value);
+			var reducedByNumber = [];
+			for (var i = 0; i < possibleFunctions.length; i++) {
+				if(possibleFunctions[i].length == argTypes.length){
+					reducedByNumber.push(possibleFunctions[i]);
+				}
+			};
+			if(reducedByNumber.length == 0){
+				___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+			}else{
+				var exactMatch = undefined;
+				var reducedByPrototype = [];
+				for (var i = 0; i < reducedByNumber.length; i++) {
+					var sum = 0;
+					for (var j = 0; j < argTypes.length; j++) {
+						sum += typeMatcher(argTypes[j], reducedByNumber[i][j]);
+					};
+					if(sum == 0){
+						exactMatch = reducedByNumber[i];
+						break;
+					}else if(sum > 0){
+						reducedByPrototype.push(reducedByNumber[i]);
+					}
+				};
+				if(exactMatch){
+					//no cast needed
+					var finalSignature = "__" + methodSignature + possibleFunctions.indexOf(exactMatch) + "(";
+					for (var i = 0; i < exactMatch.length; i++) {
+						finalSignature += "arguments[" + i + "],"
+					};
+					if(finalSignature.charAt(finalSignature.length-1) != "("){
+						finalSignature = finalSignature.substring(0, finalSignature.length -1);
+					}
+					finalSignature += ");";
+					return finalSignature;
+				}else if(reducedByPrototype.length > 0){
+					//cast needed
+					//FIXME: need to check the precedence of variables
+					//picking the first one;
+					var finalSignature = "__" + methodSignature + possibleFunctions.indexOf(reducedByPrototype[0]) + "(";
+					for (var i = 0; i < reducedByPrototype[0].length; i++) {
+						if(reducedByPrototype[0][i] == "int" || reducedByPrototype[0][i] == "Object" || reducedByPrototype[0][i] == "double"){
+							finalSignature += "___JavaRuntime.functions.classCast( \""+reducedByPrototype[0][i]+"\", arguments[" + i + "], [0,0]),";
 						}else{
-							return value;
+							finalSignature += "___JavaRuntime.functions.classCast("+reducedByPrototype[0][i]+", arguments[" + i + "], [0,0]),";
+						}
+					};
+					finalSignature = finalSignature.substring(0, finalSignature.length -1);
+					finalSignature += ");";
+					return finalSignature;
+				}else{
+					___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+				}
+			}
+			___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+		},
+		createNullArrayForIndexes: function(index1, range, index2, arrayType){
+			if(typeof index1 === "function"){
+				index1 = index1();
+			}
+			tIndex1 = ___JavaRuntime.functions.determineType(index1);
+			if(tIndex1 != "int"){
+				if(tIndex1 != "Integer"){
+					___JavaRuntime.raise("Possible loss of precision, received " + tIndex1 + ", expected int");
+				}
+				index1 = index1.intValue;
+			}
+			var type = index2;
+			if(arguments.length == 4){
+				type = arrayType;
+				if(typeof index2 === "function"){
+					index2 = index2();
+				}
+				tIndex2 = ___JavaRuntime.functions.determineType(index2);
+				if(tIndex2 != "int"){
+					if(tIndex2 != "Integer"){
+						___JavaRuntime.raise("Possible loss of precision, received " + tIndex2 + ", expected int");
+					}
+					index2 = index2.intValue;
+				}
+			}
+			var _tempArray = [];
+			for (var i = 0; i < index1; i++) {
+				if(index2){
+					var _tempArray2 = [];
+					for (var j = 0; j < index2; j++) {
+						if(type){
+							_tempArray2.push(new _NotInitialized("arr",type.replace("[","").replace("[","").replace("]","").replace("]",""),range));
+						}else{
+							_tempArray2.push(new _NotInitialized("arr","?",range));
+						}
+						
+					};
+					_tempArray.push(_tempArray2);
+				}else{
+					if(type){
+						_tempArray.push(new _NotInitialized("arr",type.replace("[","").replace("]",""),range));
+					}else{
+						_tempArray.push(new _NotInitialized("arr","?",range));
+					}
+					
+				}
+			};
+			return _tempArray;	
+		},
+		classCast: function(type, arg, range){
+			var cloneObject = function(obj) {
+			    if(obj.constructor == Number){
+			    	var clone = new Number(obj);
+			    	if(obj._type){
+			        	clone._type = obj._type;
+			        }
+			        return clone;
+			    }
+			    if(obj.constructor == String){
+			    	var clone = obj;
+			        return clone;
+			    }
+			    var clone = new obj.constructor();
+			    for(var i in obj) {
+			        if(typeof(obj[i])=="object"  && obj[i] != null){
+			            clone[i] = cloneObject(obj[i]);
+			        }else{
+			            clone[i] = obj[i];
+			        }
+			    }
+			    clone.__proto__ = obj.__proto__;
+			    return clone;
+			}
+			var value = cloneObject(arg);
+			if(type.constructor == String){
+				if (value.constructor == Number){
+						if(type === "int"){
+							return ___JavaRuntime.functions.createNumber(Math.floor(value), "int");
+						}else if (type === "double"){
+							return ___JavaRuntime.functions.createNumber(value, "double");
 						}
 					}
-			}else{
-				if(value instanceof type){
-					return type;
+				if(value instanceof Integer){
+					if(type === "int"){
+						return value.intValue();
+					}else if (type === "double"){
+						return ___JavaRuntime.functions.createNumber(value.intValue(), "double");
+					}
+				}
+				if(value instanceof _Object && value.hasOwnProperty("value")){
+					if(type === "int"){
+						return ___JavaRuntime.functions.createNumber(Math.floor(value.value),"int");
+					}else if (type === "double"){
+						return ___JavaRuntime.functions.createNumber(value.value, "double");
+					}
+				}
+				if(value instanceof Double){
+					if(type === "int"){
+						return ___JavaRuntime.functions.createNumber(Math.floor(value.doubleValue()), "int");
+					}else if (type === "double"){
+						return value.doubleValue();
+					}
+				}
+				if(type == "Object"){
+					if(value instanceof _Object){
+						//if it's an object instance convert back to object
+						value.__type = "Object";
+						value.__proto__ = Object.create(_Object.prototype).__proto__;
+						return value;
+					}else{
+						//if it isn't an object and it's a number wrap it to it's class
+						if (value.constructor == Number){
+							if(value._type == "double"){
+								return  ___JavaRuntime.functions.classCast("Object",___JavaRuntime.functions.classCast(Double, value, range),range);
+							}else if(value._type == "int"){
+								return  ___JavaRuntime.functions.classCast("Object",___JavaRuntime.functions.classCast(Integer, value, range),range);
+							}
+						}
+						if (value.constructor == String){
+							var __temp;
+							__temp = new _Object();
+							__temp.__string = value;
+							return __temp
+						}
+					}
+				}
+				___JavaRuntime.raise("Incompatible types " + value.__type + " cannot be cast to " + type, range);
+			}
+			else if(type == String){
+				if(value instanceof _Object){
+					if(value.hasOwnProperty("__string")){
+						return value.__string;
+					}else{
+						___JavaRuntime.raise("Invalid Class cast " + value.__type + " cannot be cast to String", range);
+					}
 				}else{
-					throw new SyntaxError("Invalid Class cast");
+					return ""+ value;
+				}
+			}
+			else if(value.constructor == Number){
+				if(type == Integer){
+					return new Integer(value);
+				}
+				if(type == Double){
+					return new Double(value);
+				}
+			}
+			else{
+				if(value instanceof _Object){
+					value.__proto__ = Object.create(type.prototype).__proto__;
+					value.__type = value.__proto__.__type;
+					return value;
+				}else {
+					___JavaRuntime.raise("Invalid Class cast", range);
 				}
 			}
 		}
 	},
 	ops : {
+		eq: function(arg1, arg2){
+			if(arg1 == undefined && arg2 == undefined){
+				//if both undefined always true
+				return true;
+			}else if(arg1 == undefined || arg2 == undefined){
+				//if at least one undefined always false
+				return false;
+			}else if(arg1.constructor == Number && arg2.constructor == Number){
+				return Number(arg1) == Number(arg2);
+			}else{
+				return arg1 == arg2;
+			}
+		},
+		neq: function(arg1, arg2){
+			if(arg1 == undefined && arg2 == undefined){
+				//if both undefined always false
+				return false;
+			}else if(arg1 == undefined || arg2 == undefined){
+				//if at least one undefined always true
+				return true;
+			}else if(arg1.constructor == Number && arg2.constructor == Number){
+				return Number(arg1) != Number(arg2);
+			}else{
+				return arg1 != arg2;
+			}
+		},
+		//Needed since switch in javascript does '===' and can't compare object numbers
+		fixSwitch: function(arg, range){
+			tArg = ___JavaRuntime.functions.determineType(arg);
+			if(tArg == "String"){
+				return arg
+			}else if(tArg == "Integer"){
+				return Number(arg.intValue());
+			}else if (tArg == "int"){
+				return Number(arg);
+			}
+			___JavaRuntime.raise("Switch requires int or String but got " + tArg, range);
+		},
 		add: function(arg1, arg2){
 			tArg1 = ___JavaRuntime.functions.determineType(arg1);
 			tArg2 = ___JavaRuntime.functions.determineType(arg2);
 			if(tArg1 != "String" && tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
 				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
 			}
-			if(tArg1 != "String" && tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
-			}
 			if(tArg1 == "Integer" || tArg1 == "Double"){
 				arg1 = arg1.value;
 			}
 			if(tArg2 == "Integer" || tArg2 == "Double"){
 				arg2 = arg2.value;
+			}
+			if(tArg1 == "String"){
+				return arg1 + arg2;
 			}
 			if(tArg1 == "Integer"){
 				return new Integer(Math.floor(arg1 + arg2));
@@ -2303,18 +2616,18 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				return new Double(arg1 + arg2);
 			}
 			if(tArg1 == "int"){
-				return Math.floor(arg1 + arg2);
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 + arg2), "int");
 			}
-			return arg1 + arg2;
+			return ___JavaRuntime.functions.createNumber(arg1 + arg2, "double");
 		},
 		sub: function(arg1, arg2){
 			tArg1 = ___JavaRuntime.functions.determineType(arg1);
 			tArg2 = ___JavaRuntime.functions.determineType(arg2);
 			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+				throw new SyntaxError("Bad operand type for '-' got " + tArg1);
 			}
 			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+				throw new SyntaxError("Bad operand type for '-' got " + tArg2);
 			}
 			if(tArg1 == "Integer" || tArg1 == "Double"){
 				arg1 = arg1.value;
@@ -2329,18 +2642,18 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				return new Double(arg1 - arg2);
 			}
 			if(tArg1 == "int"){
-				return Math.floor(arg1 - arg2);
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 - arg2), "int");
 			}
-			return arg1 - arg2;
+			return ___JavaRuntime.functions.createNumber(arg1 - arg2, "double");
 		},
 		mul: function(arg1, arg2){
 			tArg1 = ___JavaRuntime.functions.determineType(arg1);
 			tArg2 = ___JavaRuntime.functions.determineType(arg2);
 			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+				throw new SyntaxError("Bad operand type for '*' got " + tArg1);
 			}
 			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+				throw new SyntaxError("Bad operand type for '*' got " + tArg2);
 			}
 			if(tArg1 == "Integer" || tArg1 == "Double"){
 				arg1 = arg1.value;
@@ -2355,18 +2668,18 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				return new Double(arg1 * arg2);
 			}
 			if(tArg1 == "int"){
-				return Math.floor(arg1 * arg2);
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 * arg2), "int");
 			}
-			return arg1 * arg2;
+			return ___JavaRuntime.functions.createNumber(arg1 * arg2, "double");
 		},
 		div: function(arg1, arg2){
 			tArg1 = ___JavaRuntime.functions.determineType(arg1);
 			tArg2 = ___JavaRuntime.functions.determineType(arg2);
 			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+				throw new SyntaxError("Bad operand type for '/' got " + tArg1);
 			}
 			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+				throw new SyntaxError("Bad operand type for '/' got " + tArg2);
 			}
 			if(tArg1 == "Integer" || tArg1 == "Double"){
 				arg1 = arg1.value;
@@ -2381,18 +2694,18 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				return new Double(arg1 / arg2);
 			}
 			if(tArg1 == "int"){
-				return Math.floor(arg1 / arg2);
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 / arg2), "int");
 			}
-			return arg1 / arg2;
+			return ___JavaRuntime.functions.createNumber(arg1 / arg2, "double");
 		},
 		mod: function(arg1, arg2){
 			tArg1 = ___JavaRuntime.functions.determineType(arg1);
 			tArg2 = ___JavaRuntime.functions.determineType(arg2);
 			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg1);
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
 			}
 			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
-				throw new SyntaxError("Bad operand type for '+' got " + tArg2);
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
 			}
 			if(tArg1 == "Integer" || tArg1 == "Double"){
 				arg1 = arg1.value;
@@ -2407,9 +2720,9 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				return new Double(arg1 % arg2);
 			}
 			if(tArg1 == "int"){
-				return Math.floor(arg1 % arg2);
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 % arg2), "int");
 			}
-			return arg1 % arg2;
+			return ___JavaRuntime.functions.createNumber(arg1 % arg2, "double");
 		},
 	},
 }

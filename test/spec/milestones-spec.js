@@ -29,6 +29,7 @@ if ( !insideAether ) {
 			buffer += what + "\n";
 		}
 		var code = [
+			'import java.util.*;',
 			'public class MyClass {',
 			'	' + extra.join("\n\t"),
 			'	public static ' + type + ' output() {',
@@ -53,6 +54,7 @@ if ( !insideAether ) {
 			buffer += what + "\n";
 		}
 		var code = [
+			'import java.util.*;',
 			'public class MyClass {',
 			'	' + extra.join("\n\t"),
 			'	public static ' + type + ' output() {',
@@ -118,7 +120,7 @@ function cts(type, code, expected) {
 function structureIf(cond, expected) {
 	ct(cond, 'String', [
 		'if (' + cond + ' ) return "Positive";',
-		'return "Negitive";'
+		'return "Negative";'
 	], expected);
 }
 
@@ -168,8 +170,8 @@ describe('JAVAM - 05 - string concatenation', function() {
 
 describe('JAVAM - 05 - if statements', function() {
 	structureIf('true', 'Positive');
-	structureIf('false', 'Negitive');
-	structureIf('true && false', 'Negitive');
+	structureIf('false', 'Negative');
+	structureIf('true && false', 'Negative');
 });
 
 describe('JAVAM - 05 - for loops', function() {
@@ -248,7 +250,7 @@ describe('JAVAM - 07 - class definition', function() {
 
 describe('JAVAM - 07 - 2d arrays', function() {
 	ct('simple', 'int', [
-		'int[][] multi = new int[5][];',
+		'int[][] multi = new int[5][10];',
 		'multi[0] = new int[10];',
 		'multi[1] = new int[10];',
 		'multi[2] = new int[10];',
@@ -337,14 +339,15 @@ describe('JAVAM - 07 - switch', function() {
 
 	ct('keep falling', 'String', [
 		'int x = 2;',
+		'String r = "";',
 		'switch ( x ) {',
-		'	case 1: System.out.println("No");',
-		'	case 2: System.out.println("A");',
-		'	case 3: System.out.println("B");',
-		'	case 4: System.out.println("C");',
-		'   default: return "Yes";',
+		'	case 1: r += "No";',
+		'	case 2: r += "A";',
+		'	case 3: r += "B";',
+		'	case 4: r += "C";',
+		'   default: return r + "Yes";',
 		'}'
-	], "A\nB\nC\nYes");
+	], "ABCYes");
 
 });
 
@@ -388,8 +391,8 @@ describe('JAVAM - 07 - bitwise operators', function() {
 
 describe('JAVAM - 07 - complex if statements', function() {
 	structureIf('2+2 == 4', 'Positive');
-	structureIf('2+2 == 5', 'Negitive');
-	structureIf('2+2 != 4', 'Negitive');
+	structureIf('2+2 == 5', 'Negative');
+	structureIf('2+2 != 4', 'Negative');
 	structureIf('2+2 != 5', 'Positive');
 });
 
@@ -433,10 +436,10 @@ describe('JAVAM - 09 - String class', function () {
 		'	else return -1;',
 		'}'
 	]
-	ct('compareTo', 'int', ['return x("Apple".compareTo("Boat"));'], extra, '-1');
-	ct('compareTo', 'int', ['return x("Boat".compareTo("Boat"));'], extra, '0');
-	ct('compareTo', 'int', ['return x("apple".compareTo("Boat"));'], extra, '1');
-	ct('compareTo', 'int', ['return x("apple".compareToIgnoreCase("Boat"));'], extra, '-1');
+	ct('compareTo 1', 'int', ['return x("Apple".compareTo("Boat"));'], extra, '-1');
+	ct('compareTo 2', 'int', ['return x("Boat".compareTo("Boat"));'], extra, '0');
+	ct('compareTo 3', 'int', ['return x("apple".compareTo("Boat"));'], extra, '1');
+	ct('compareTo 4', 'int', ['return x("apple".compareToIgnoreCase("Boat"));'], extra, '-1');
 	cts('int', 'String s = "capital"; return s.length();', '7');
 	cts('int', 'return "capital".length();', '7');
 	cts('int', 'return "".length();', '0');
@@ -493,17 +496,17 @@ describe('JAVAM - 09 - Constructors ', function() {
 });
 
 describe('JAVAM - 09 - Object as SuperClass ', function() {
-	ct('equals', 'int', [
+	ct('equals 1', 'int', [
 		'MyClass c = new MyClass();',
 		'if ( c.equals(c) ) return 1;',
 		'return 0;',
 	], '1')
-	ct('equals', 'int', [
+	ct('equals 2', 'int', [
 		'MyClass c = new MyClass();',
 		'if ( c.equals(new MyClass()) ) return 1;',
 		'return 0;',
 	], '0')
-	ct('equals', 'String', [
+	ct('equals 3', 'String', [
 		'return new MyClass().toString();'
 	], [
 		'public String toString() {',
@@ -540,13 +543,13 @@ describe('JAVAM - 09 - Autoboxing ', function() {
 		'	return 3 * d.intValue();', 
 		'}',
 	];
-	ct('intValue', 'int', ['return a(10);'], extra, '20');
-	ct('intValue', 'int', ['return a((Object)10);'], extra, '30');
+	ct('intValue 1', 'int', ['return a(10);'], extra, '20');
+	ct('intValue 2', 'int', ['return a((Object)10);'], extra, '30');
 	ct('intValueCasting', 'int', ['return b(20);'], extra, '100');
 	ct('intString', 'String', ['return c(8);'], extra, '8');
 
-	ct('doubleValue', 'double', ['return d(10.0);'], extra, '20.0');
-	ct('doubleValue', 'double', ['return d((Object)10.0);'], extra, '30.0');
+	ct('doubleValue 1', 'double', ['return d(10.0);'], extra, '20.0');
+	ct('doubleValue 2', 'double', ['return d((Object)10.0);'], extra, '30.0');
 	ct('doubleValueCasting', 'double', ['return e(20.0);'], extra, '60.0');
 	ct('doubleString', 'String', ['return c(8.0);'], extra, '8.0');
 

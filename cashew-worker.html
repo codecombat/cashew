@@ -43,14 +43,14 @@
       };
     })();
 
-    var Cashew = cashew.Cashew;
+    var Parser = cashew.Parse;
 
     function submitCode(){
       var code = editor.getValue();
       outputText.innerHTML = '';
 
       try {
-        var ast = Cashew(code);
+        var ast = Parser(code);
         // Display the AST text
         astHigh.setValue(JSON.stringify(ast, null, 2));
         astHigh.gotoLine(1);
