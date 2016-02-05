@@ -37,7 +37,7 @@ if ( !insideAether ) {
 			'	}',
 			'}'
 		];
-		var Cashew = cashew.Cashew;
+		var Cashew = cashew.Parse;
 		var parsedAST = Cashew(code.join("\n"));
 		var js = escodegen.generate(parsedAST);
 		js = "(function(___JavaRuntime){" + js + "return MyClass.output();})(cashew.___JavaRuntime);";
