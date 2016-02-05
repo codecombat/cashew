@@ -894,10 +894,6 @@ variable_initializer
     {
       $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
     }
- /* |  variable_declarator_id OPERATOR_ASSIGNMENT constructor_call
-    {
-      $$ = yy.createVarDeclaratorNodeWithInit($1, @1.range, $3, @3.range, @$.range);
-    }*/
   ;
 
 
@@ -916,7 +912,7 @@ array_declarators
 array_declarator
   : array_declarator_id
     {
-      $$ = yy.createSimpleArrayNode($1, @$.range);
+      $$ = yy.createVarDeclaratorNodeNoInit($1, @$.range);
     }
   | array_initializer
     {

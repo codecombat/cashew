@@ -23,7 +23,7 @@
 var methodsDictionary;
 var mainMethodCall;
 
-exports.Cashew = function(javaCode){
+exports.Parse = function(javaCode){
 
 	___JavaRuntime.sourceCode = javaCode;
 	methodsDictionary = [];
@@ -488,53 +488,19 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRightCalleeBody.range = classBodyRange;
 		classNodeExpressionRightCalleeBody.body = [];
 
+		//Init the __ref
+
+		classNodeExpressionRightCalleeBody.body.push({"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__ref"},"init":{"type":"ObjectExpression","properties":[]}}],"kind":"var"});
+
 		//Extract variables from the class
 		var variableNodes = [];
 		_.each(classBody, function(fieldNode){
-			if(fieldNode.type == "ExpressionStatement" && fieldNode.expression.type == "SequenceExpression"){
-				if(!fieldNode.expression.isPrivate){
-					var constructorExpressions = [];
-					var staticExpressions = [];
-					_.each(fieldNode.expression.expressions, function(varNode){
-						var lastMember = varNode.right.right;
-						varNode.right.right = lastMember.left;
-						constructorExpressions.push(varNode);
-						lastMember.left.object.name = className;
-						staticExpressions.push(lastMember);
-					});
-					//JSON clone
-					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
-					fieldNode.expression.expressions = staticExpressions;
-				}
-				else if(fieldNode.expression.isPrivate && fieldNode.expression.isStatic){
-					var constructorExpressions = [];
-					var staticExpressions = [];
-					_.each(fieldNode.expression.expressions, function(varNode){
-						var lastMember = varNode.right;
-						varNode.right = lastMember.left;
-						constructorExpressions.push(varNode);
-						lastMember.left.object.name = className;
-						staticExpressions.push(lastMember);
-					});
-					//JSON clone
-					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
-					fieldNode.expression.expressions = staticExpressions;
-				}else{
-					var constructorExpressions = [];
-					_.each(fieldNode.expression.expressions, function(varNode){
-						var lastMember = varNode;
-						varNode = lastMember.left;
-						constructorExpressions.push(varNode);
-					});
-					//JSON clone
-					variableNodes.push(JSON.parse(JSON.stringify(fieldNode)));
-					fieldNode.expression.expressions = [];
-				}
-					
+			if(fieldNode.type == "VariableDeclaration"){
+				variableNodes.push(fieldNode);
 			}
 		});
 		//Insert the constructor
-		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, classNameRange, variableNodes, extensionName));
+		classNodeExpressionRightCalleeBody.body.push(createConstructorNode(className, constructorBodyNodes, classNameRange, [], extensionName));
 		//reset bodyNodes to next class
 		constructorBodyNodes = [];
 
@@ -577,6 +543,8 @@ exports.Cashew = function(javaCode){
 		//".class" = __type
 		classNodeExpressionRightCalleeBody.body.push(typeNode);
 
+		//Add field vars to the class
+		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(variableNodes);
 		//Add Methods to the class
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(createMethodOverload(classBody));
 		
@@ -905,16 +873,17 @@ exports.Cashew = function(javaCode){
 			raise("Field variables are only implemented as public or private", range);
 		}else if(!isStatic && !isPrivate){
 			//FIXME change this to a "NotImplementedException"
-			raise("Instence variables are only implemented as private", range);
+			raise("Instance variables are only implemented as private", range);
 		}
 
-
+		
 		_.each(variableDeclarationNode.declarations, function(varNode){
-			varNode.type = "AssignmentExpression";
-			varNode.operator = "=";
-			varNode.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+			var newInit = new node("AssignmentExpression");
+			newInit.range = range;
+			newInit.operator = "=";
+			newInit.left = createMemberExpressionNode(createIdentifierNode("__ref", range), varNode.id, range);
 			var prototypeClass;
-			if(isStatic && !isPrivate){
+			if(!isPrivate){
 				prototypeClass = new node("AssignmentExpression");
 				prototypeClass.range = range;
 				prototypeClass.operator = "=";
@@ -922,42 +891,24 @@ exports.Cashew = function(javaCode){
 				prototypeClassRight =  new node("AssignmentExpression");
 				prototypeClassRight.range = range;
 				prototypeClassRight.operator = "=";
-				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("this", [0,0]), varNode.id, range);
-				if(varNode.init == null){
-					prototypeClassRight.right = createIdentifierNode("undefined",[0,0]);
-				}else{
-					prototypeClassRight.right = varNode.init;
-				}
+				prototypeClassRight.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				prototypeClassRight.right = varNode.init;
 				prototypeClass.right = prototypeClassRight;
+				newInit.right = prototypeClass;
 			}else if (isStatic && isPrivate){
 				prototypeClass = new node("AssignmentExpression");
 				prototypeClass.range = range;
 				prototypeClass.operator = "=";
-				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("this", [0,0]), varNode.id, range);
-				if(varNode.init == null){
-					prototypeClass.right = createIdentifierNode("undefined",[0,0]);
-				}else{
-					prototypeClass.right = varNode.init;
-				}
+				prototypeClass.left = createMemberExpressionNode(createIdentifierNode("__TemporaryClassName", [0,0]), varNode.id, range);
+				prototypeClass.right = varNode.init;
+				newInit.right = prototypeClass;
 			}else{
-				varNode.left.object.name = "this";
-				if(varNode.init == null){
-					prototypeClass = createMemberExpressionNode(createIdentifierNode("this", [0,0]), varNode.id, range);
-				}else{
-					prototypeClass = varNode.init;
-				}
+				newInit.right = varNode.init;
 			}
 			
-			varNode.right = prototypeClass;
-			
-			delete varNode.id;
-			delete varNode.init;
+			varNode.init = newInit;
 		});
-		variableDeclarationNode.type = "SequenceExpression";
-		variableDeclarationNode.expressions = variableDeclarationNode.declarations;
-		delete  variableDeclarationNode.declarations;
-
-		return createExpressionStatementNode(variableDeclarationNode, range);
+		return variableDeclarationNode;
 	}
 
 	var replaceTemporaryClassWithClassName = function replaceTemporaryClassWithClassName(ast, className, extensionName){
@@ -1455,7 +1406,6 @@ exports.Cashew = function(javaCode){
 			varDeclaratorNode.init = assignment;
 		}else{
 			var initNode = createRuntimeCheckAssignment(varName, varRange, assignment, null, null, assignmentRange);
-			//FIXME Removed Validations for now
 			varDeclaratorNode.init = initNode;
 		}
 		return varDeclaratorNode;
@@ -1482,7 +1432,7 @@ exports.Cashew = function(javaCode){
 			initNode.arguments.push(getNullArgument());
 		}
 		initNode.arguments.push(getArgumentForRange(range));
-		//FIXME changed validateSet to checkAssignment for now
+
 		var callee = createMemberExpressionNode(getRuntimeFunctions(range), createIdentifierNode("checkAssignment", range), range, false);
 
 		initNode.callee = callee;
@@ -1561,18 +1511,22 @@ exports.Cashew = function(javaCode){
 		return newExpressionNode;
  	}
 
-	var createSimpleArrayNode = cocoJava.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, range){
-		var simpleArray = new node("VariableDeclarator");
-		simpleArray.range = range;
+	var createSimpleArrayNode = cocoJava.yy.createSimpleArrayNode = function createSimpleArrayNode(varName, varRange, declarationRange){
+		var varDeclaratorNode = new node("VariableDeclarator");
+		varDeclaratorNode.range = declarationRange;
 
-		var idNode = createIdentifierNode(varName, varRange);
-		simpleArray.id = idNode;
+		var idNode = createIdentifierNode(varName, declarationRange);
+		varDeclaratorNode.id = idNode;
+		var initNode  = new node("NewExpression");
+		initNode.range = declarationRange;
+		initNode.callee = createIdentifierNode("_NotInitialized", declarationRange);
+		initNode.arguments = [];
+		initNode.arguments.push(getArgumentForName(varName, declarationRange));
+		initNode.arguments.push(getArgumentForName("tempType", declarationRange));
+		initNode.arguments.push(getArgumentForRange(declarationRange));
+		varDeclaratorNode.init = initNode;
 
-		var nodeArray = new node("ArrayExpression")
-		nodeArray.elements = [];
-		simpleArray.init = nodeArray;
-
-		return simpleArray;
+		return varDeclaratorNode;
 	}
 
 	cocoJava.yy.createArrayWithInitNode = function createArrayWithInitNode(varName, varRange, initNode, range){
@@ -1750,7 +1704,23 @@ exports.Cashew = function(javaCode){
 		blockNode.body = blockNode.body.concat(forBlock);
 
 		forNode.body = blockNode;
-
+		/*var forEnclose = new node("ExpressionStatement");
+		forEnclose.range = forRange;
+		forEnclose.expression = new node("CallExpression");
+		forEnclose.expression.range = forRange;
+		forEnclose.expression.callee = new node("FunctionExpression");
+		forEnclose.expression.callee.range = forRange;
+		forEnclose.expression.callee.id = null;
+		forEnclose.expression.callee.params = [];
+		forEnclose.expression.callee.defaults = [];
+		forEnclose.expression.callee.body = new node("BlockStatement");
+		forEnclose.expression.callee.body.range = forRange;
+		forEnclose.expression.callee.body.body = [];
+		forEnclose.expression.callee.body.body.push(forNode);
+		forEnclose.expression.callee.generator = false;
+		forEnclose.expression.callee.expression = false;
+		forEnclose.expression.arguments = [];
+		return forEnclose;*/
 		return forNode;
 	}
 
@@ -2009,7 +1979,6 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		String.prototype._length = function(){
 			return ___JavaRuntime.functions.createNumber(this.length, "int");
 		};
-
 		
 		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
 
@@ -2099,7 +2068,11 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		        return this.value;
 		    };
 		    Double.prototype.toString = function () {
-		        return "" + this.value;
+		    	if(this.value%1 != 0){
+		    		return "" + this.value;
+		    	}else{
+		    		return "" + this.value.toFixed(1);
+		    	}
 		    };
 		    return Double;
 		}.call(this);
@@ -2240,7 +2213,13 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			if(javaType){
 				tVariable = javaType;
 			}else{
-				tVariable = ___JavaRuntime.functions.determineType(variable);	
+				if(arrayIndex2){
+					tVariable = ___JavaRuntime.functions.determineType(variable[arrayIndex1][arrayIndex2]);	
+				}else if(arrayIndex1){
+					tVariable = ___JavaRuntime.functions.determineType(variable[arrayIndex1]);
+				}else{
+					tVariable = ___JavaRuntime.functions.determineType(variable);
+				}	
 			}
 			if(tValue == tVariable){
 				//if both have the same type just return the value
@@ -2278,125 +2257,11 @@ exports.___JavaRuntime = ___JavaRuntime = {
 					return new Double(value);
 				}
 			}
-			if(tVariable == "?"){
+			if(tVariable == "?" || tValue == "?"){
 				//if variable has a wildcard type, we cant validate
 				return value;
 			}
 			___JavaRuntime.raise("Incompatible types required " + tVariable + " found " + tValue, range);
-		},
-		validateSet: function(value, variable, arrayIndex1, arrayIndex2, ASTNodeID){
-			if(typeof value === "function")
-				value = value();
-			
-			//Removes the '__' from the variable name
-			var index = parseInt(variableName.substring(2));
-			var varRawType = ___JavaRuntime.variablesDictionary[index].type;
-			var type;
-			//check the type
-			if(___JavaRuntime.variablesDictionary[index].type.indexOf("[][]")>-1){
-				//if either the new value and the variable are arrays
-				if (value.constructor === Array){
-					if(value[0].constructor === Array){
-						if(value instanceof _Object){
-							type = variable.type;
-							type = type + "[][]"
-						}else{
-							type = varRawType;
-						}
-					}else if(arrayIndex1 != undefined && value[0].constructor !== Array){
-						//if the assign contains 1 index the variable can receive an array
-						varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
-						if(value instanceof _Object){
-							type = variable.type;
-							type = type + "[]"
-						}else{
-							type = varRawType;
-						}
-					}else{
-						throw new SyntaxError("Incompatible types");
-					}
-				} else if (arrayIndex2 != undefined && value.constructor !== Array){
-					//if the assign contains 2 indexes the variable can receive only the basic type
-					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace(/\[/g,'').replace(/\]/g,'');
-				}else{
-					//if the variable is an array but the value is incompatible
-					throw new SyntaxError("Incompatible types");
-				}
-			} else if(___JavaRuntime.variablesDictionary[index].type.indexOf("[]")>-1){
-				//if both value and variables are arrays
-				if (value.constructor === Array && arrayIndex1 == undefined){
-					if(value[0].constructor === Array){
-						throw new SyntaxError("Incompatible types");
-					}
-					if(value instanceof _Object){
-						type = variable.type;
-						type = type + "[]"
-					}else{
-						type = varRawType;
-					}
-				}else if(arrayIndex1 != undefined){
-					//if there's an index the array can recive only the basic type
-
-					varRawType = ___JavaRuntime.variablesDictionary[index].type.replace('[','').replace(']','');
-				}else{
-					throw new SyntaxError("Incompatible types");
-				}
-
-			}
-			
-			if(arrayIndex1){
-				if(typeof arrayIndex1 === "function")
-					arrayIndex1 = arrayIndex1();
-				if(typeof arrayIndex1 != 'number' || arrayIndex1 % 1 !== 0){
-					throw new SyntaxError("Array index must be an integer");
-				}else if(variable.constructor !== Array){
-					throw new SyntaxError("Incompatible types");
-				}else if(arrayIndex1 < 0 || arrayIndex1 >= variable.length){
-					throw new SyntaxError("Array index out of bounds");
-				}
-			}
-			if(arrayIndex2){
-				if(typeof arrayIndex2 === "function")
-					arrayIndex2 = arrayIndex2();
-				if(typeof arrayIndex2 != 'number' || arrayIndex2 % 1 !== 0){
-					throw new SyntaxError("Array index must be an integer");
-				}else if(variable.constructor !== Array){
-					throw new SyntaxError("Incompatible types");
-				}else if(arrayIndex2 < 0 || arrayIndex2 >= variable[arrayIndex1].length){
-					throw new SyntaxError("Array index out of bounds");
-				}
-			}
-			switch (varRawType){
-				case 'int':
-					if (typeof value === 'number'){
-						return Math.floor(value);
-					}
-					throw new SyntaxError("This is not an int maybe a cast is missing");
-					break;
-				case 'double':
-					if (typeof value === 'number'){
-						return value;
-					}
-					throw new SyntaxError("This is not a double maybe a cast is missing");
-					break;
-				case 'boolean':
-					if (typeof value === 'boolean'){
-						return value;
-					}
-					throw new SyntaxError("This is not a boolean maybe a cast is missing");
-					break;
-				case 'String':
-					if (typeof value === 'string'){
-						return value;
-					}
-					throw new SyntaxError("This is not a String maybe a cast is missing");
-					break;
-				case type:
-					return value;
-					break;
-				default:
-					break;
-			}
 		},
 		determineType: function(value){
 			if(value == undefined){
@@ -2405,30 +2270,10 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			if(value instanceof _NotInitialized){
 				return value._initType;
 			}
+			
 			if (value.constructor == Array){
-				if (value[0].constructor == Array){
-					if(value[0][0].constructor == Number){
-						return value[0][0]._type;
-					}else if(value[0][0].constructor == String){
-						return "String[][]";
-					}else if(typeof value[0][0] == "object"){
-						if(value[0][0].__type){
-							return value[0][0].__type + "[][]";
-						}
-					}
-				}else{
-					//current variable is an 1-d array
-					if(value[0].constructor == Number){
-						return value[0]._type;
-					}else if(value[0].constructor == String){
-						return "String[]";
-					}else if(typeof value[0] == "object"){
-						if(value[0].__type){
-							return value[0].__type + "[]";
-						}
-					}
-				}
-		}else{
+				return "?";
+			}else{
 				//if it's not an array it could be an integer, double, string, userType
 				if(value.constructor == Number){
 					return value._type;
@@ -2552,7 +2397,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			}
 			___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
 		},
-		createNullArrayForIndexes: function(index1, range, index2){
+		createNullArrayForIndexes: function(index1, range, index2, arrayType){
 			if(typeof index1 === "function"){
 				index1 = index1();
 			}
@@ -2563,7 +2408,9 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				}
 				index1 = index1.intValue;
 			}
-			if(index2){
+			var type = index2;
+			if(arguments.length == 4){
+				type = arrayType;
 				if(typeof index2 === "function"){
 					index2 = index2();
 				}
@@ -2580,11 +2427,21 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				if(index2){
 					var _tempArray2 = [];
 					for (var j = 0; j < index2; j++) {
-						 _tempArray2.push(null);
+						if(type){
+							_tempArray2.push(new _NotInitialized("arr",type.replace("[","").replace("[","").replace("]","").replace("]",""),range));
+						}else{
+							_tempArray2.push(new _NotInitialized("arr","?",range));
+						}
+						
 					};
 					_tempArray.push(_tempArray2);
 				}else{
-					_tempArray.push(null);
+					if(type){
+						_tempArray.push(new _NotInitialized("arr",type.replace("[","").replace("]",""),range));
+					}else{
+						_tempArray.push(new _NotInitialized("arr","?",range));
+					}
+					
 				}
 			};
 			return _tempArray;	

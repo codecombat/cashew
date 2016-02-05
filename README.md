@@ -7,19 +7,15 @@ JavaScript-based Java parser.  Outputs an abstract syntax tree as specified by t
 
 Java is the target language.
 
-
-### Coming Soon!
-This is a work in progress please do not rely on this for production usage
-
 ## Using Cashew
 
 Cashew ("cashew.js" file) is the Java transpiller. To run it simply serve the html and js files or install it using "npm install cashew-js". 
-then call function "Cashew" with the code as parameter.
+then call function "Parse" with the code as parameter.
 
     var cashew  = require('cashew-js');
-    var ast = cashew.Cashew(stringCode);
+    var ast = cashew.Parse(stringCode);
 
-Cashew provides a runtime "___JavaRuntime" with functions used by the transpilled code to run. The parser will automatically include the call of the "main method" from the first class of the code. 
+Cashew provides a runtime "___JavaRuntime" with functions used by the transpilled code to run. The parser will automatically include the call of the "main method" from the first class of the code. You can also wrap the AST in a function with a static call of your choice (or keep the original call to the 'first main') by "cashew.wrapFunction" specifying the ast, a functionName, (a className, and a  staticCall if you want to override the call for the 'first main') 
 
 ### How cashew works?
 Cashew uses [jison](http://zaach.github.io/jison/)  to transpile Java code into JavaScript. The grammar used by cashew is "coco-java.jison" (read more about jison grammars [here](http://zaach.github.io/jison/docs/#specifying-a-language) ).
@@ -34,8 +30,7 @@ Cashew web uses [ESCODEGEN](https://github.com/estools/escodegen) in the web int
 
 You can test basics [here](https://rawgit.com/codecombat/cashew/master/cashew-worker.html)!
 
-You can also run some unit tests [here](https://cdn.rawgit.com/codecombat/cashew/master/test/Runner.html)!
 
 ## Get in touch
 
-Please use the [GitHub issues](https://github.com/codecombat/cashew/issues), or [email Carlos](mailto:carlos@codecombat.com)
+Please use the [GitHub issues](https://github.com/codecombat/cashew/issues), or [email Lucas](mailto:farias.jlucas@gmail.com)

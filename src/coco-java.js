@@ -469,7 +469,7 @@ case 114: case 120: case 136: case 232:
       this.$ = $$[$0-2];
     
 break;
-case 115:
+case 115: case 121:
 
       this.$ = yy.createVarDeclaratorNodeNoInit($$[$0], this._$.range);
     
@@ -477,11 +477,6 @@ break;
 case 118:
 
       this.$ = yy.createVarDeclaratorNodeWithInit($$[$0-2], _$[$0-2].range, $$[$0], _$[$0].range, this._$.range);
-    
-break;
-case 121:
-
-      this.$ = yy.createSimpleArrayNode($$[$0], this._$.range);
     
 break;
 case 124:

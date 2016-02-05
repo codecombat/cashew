@@ -1,6 +1,6 @@
 {
   "name": "cashew-js",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A JavaToJavaScript parser, outputs a Mozilla AST ",
   "main": "cashew.js",
   "repository": {
@@ -14,7 +14,7 @@
     "JAVA",
     "MozillaAST"
   ],
-  "author": "Claudia Farias, Gustavo Sizilio, Lucas Farias & Rafael Monteiro",
+  "author": "Lucas Farias",
   "license": [
     {
       "type": "MIT",
@@ -30,6 +30,7 @@
     "grunt-cli": "^0.1.13",
     "grunt-contrib-uglify": "^0.11.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-notify": "^0.4.3",
     "grunt-shell": "^1.1.2",
     "jasmine-node": "^1.14.5",
     "jison": "^0.4.16"
