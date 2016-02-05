@@ -496,17 +496,17 @@ describe('JAVAM - 09 - Constructors ', function() {
 });
 
 describe('JAVAM - 09 - Object as SuperClass ', function() {
-	ct('equals', 'int', [
+	ct('equals 1', 'int', [
 		'MyClass c = new MyClass();',
 		'if ( c.equals(c) ) return 1;',
 		'return 0;',
 	], '1')
-	ct('equals', 'int', [
+	ct('equals 2', 'int', [
 		'MyClass c = new MyClass();',
 		'if ( c.equals(new MyClass()) ) return 1;',
 		'return 0;',
 	], '0')
-	ct('equals', 'String', [
+	ct('equals 3', 'String', [
 		'return new MyClass().toString();'
 	], [
 		'public String toString() {',

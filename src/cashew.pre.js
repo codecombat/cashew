@@ -581,6 +581,9 @@ exports.Cashew = function(javaCode){
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(createMethodOverload(classBody));
 		
 		//Replaces __TemproaryClass in class body nodes and updates methods dictionary
+		if(!extensionName){
+			extensionName = "_Object";
+		}
 		replaceTemporaryClassWithClassName(classNodeExpressionRightCalleeBody.body, className, extensionName);
 		specialReplacement(classNodeExpressionRightCalleeBody.body);
 		_.each(methodsDictionary, function(methodSignature){
@@ -681,21 +684,24 @@ exports.Cashew = function(javaCode){
 			//keep the original method name in details
 			methodsWithOverloadDetails[i].originalName = methodsWithOverload[i];
 			//rename the signatures and build new methods
-			if(!(methodsWithOverload[i] in grouped)){
-				grouped[methodsWithOverload[i]] = 0;
+			if(!("_"+methodsWithOverload[i] in grouped)){
+				grouped["_"+methodsWithOverload[i]] = 0;
 			}else{
-				grouped[methodsWithOverload[i]] = grouped[methodsWithOverload[i]] + 1;
+				grouped["_"+methodsWithOverload[i]] = grouped["_"+methodsWithOverload[i]] + 1;
 			}
-			methodsWithOverload[i] = "__" + methodsWithOverload[i] + grouped[methodsWithOverload[i]];
-			var newExpressionStatement = new node("ExpressionStatement");
+			//Weird bug when method is toString
+			
+			methodsWithOverload[i] = "__" + methodsWithOverload[i] + grouped["_"+methodsWithOverload[i]];
+			var newExpressionStatement = new node("VariableDeclaration");
 			newExpressionStatement.range = methodsWithOverloadDetails[i].range;
-			newExpressionStatementAssign = new node("AssignmentExpression");
+			newExpressionStatementAssign = new node("VariableDeclarator");
 			newExpressionStatementAssign.range = methodsWithOverloadDetails[i].range;
-			newExpressionStatementAssign.operator = "=";
-			newExpressionStatementAssign.left = createIdentifierNode(methodsWithOverload[i]);
-			newExpressionStatementAssign.right = methodWithOverloadFunctionNode[i];
-			newExpressionStatement.expression = newExpressionStatementAssign;
-			 methodWithOverloadFunctionNode[i] = newExpressionStatement;
+			newExpressionStatementAssign.id = createIdentifierNode(methodsWithOverload[i]);
+			newExpressionStatementAssign.init = methodWithOverloadFunctionNode[i];
+			newExpressionStatement.declarations = [];
+			newExpressionStatement.declarations.push(newExpressionStatementAssign);
+			newExpressionStatement.kind = "var";
+			methodWithOverloadFunctionNode[i] = newExpressionStatement;
 		};
 		//create the switcher
 		var nodesWithOverload = [];
@@ -884,7 +890,7 @@ exports.Cashew = function(javaCode){
 			}
 		});
 		variableDeclarationNode.isStatic = isStatic;
-		var isPrivate = undefined;
+		var isPrivate = true;
 		_.each(modifiers, function(modifier){
 			if (modifier == "public"){
 				isPrivate = false;
@@ -1214,7 +1220,7 @@ exports.Cashew = function(javaCode){
 
 	cocoJava.yy.createSuperInvokeNode = function createSuperInvokeNode(methodNode, superRange, range){
 		var oldCallee = methodNode.callee;
-		var newCallee = createMemberExpressionNode(createIdentifierNode("__SuperClass", superRange), oldCallee, range);
+		var newCallee = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode("__SuperClass", superRange),createIdentifierNode("prototype", superRange),range), oldCallee, range);
 		methodNode.callee = newCallee;
 		return methodNode;
 	}
@@ -1460,7 +1466,11 @@ exports.Cashew = function(javaCode){
 		initNode.range = range;
 		initNode.arguments = [];
 		initNode.arguments.push(assignment);
-		initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		if(varName.constructor == String){
+			initNode.arguments.push(getArgumentForVariable(varName, varRange));
+		}else{
+			initNode.arguments.push(varName);
+		}
 		if(index1){
 			initNode.arguments.push(index1);
 		}else{
@@ -2028,8 +2038,12 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			};
 
 			_Object.prototype.toString= function() {
+				if(this.__string){
+					return this.__string;
+				}
 				return this.__type + "@" + this.__id;
 			};
+			
 			return _Object;
 
 		}.call(this);
@@ -2041,7 +2055,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				this._range = range;
 			}
 
-			_Object.prototype.toString= function() {
+			_NotInitialized.prototype.toString= function() {
 				___JavaRuntime.raise("Variable " + this._name + " might not have been initialized", this._range);
 			};
 			return _NotInitialized;
@@ -2575,7 +2589,31 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			};
 			return _tempArray;	
 		},
-		classCast: function(type, value, range){
+		classCast: function(type, arg, range){
+			var cloneObject = function(obj) {
+			    if(obj.constructor == Number){
+			    	var clone = new Number(obj);
+			    	if(obj._type){
+			        	clone._type = obj._type;
+			        }
+			        return clone;
+			    }
+			    if(obj.constructor == String){
+			    	var clone = obj;
+			        return clone;
+			    }
+			    var clone = new obj.constructor();
+			    for(var i in obj) {
+			        if(typeof(obj[i])=="object"  && obj[i] != null){
+			            clone[i] = cloneObject(obj[i]);
+			        }else{
+			            clone[i] = obj[i];
+			        }
+			    }
+			    clone.__proto__ = obj.__proto__;
+			    return clone;
+			}
+			var value = cloneObject(arg);
 			if(type.constructor == String){
 				if (value.constructor == Number){
 						if(type === "int"){
@@ -2612,16 +2650,20 @@ exports.___JavaRuntime = ___JavaRuntime = {
 						value.__proto__ = Object.create(_Object.prototype).__proto__;
 						return value;
 					}else{
-						//if it isn't an object and it's a number set the value as a new number;
-
-						var __temp   = new _Object();
+						//if it isn't an object and it's a number wrap it to it's class
 						if (value.constructor == Number){
-							__temp.value = value;
+							if(value._type == "double"){
+								return  ___JavaRuntime.functions.classCast("Object",___JavaRuntime.functions.classCast(Double, value, range),range);
+							}else if(value._type == "int"){
+								return  ___JavaRuntime.functions.classCast("Object",___JavaRuntime.functions.classCast(Integer, value, range),range);
+							}
 						}
 						if (value.constructor == String){
+							var __temp;
+							__temp = new _Object();
 							__temp.__string = value;
+							return __temp
 						}
-						return __temp
 					}
 				}
 				___JavaRuntime.raise("Incompatible types " + value.__type + " cannot be cast to " + type, range);
