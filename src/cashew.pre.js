@@ -327,48 +327,6 @@ exports.Parse = function(javaCode){
 		return memberExpressionNode;
 	}
 
-	//FIXME disabling validations for now
-	var createUpdateClassVariableReference = cocoJava.yy.createUpdateClassVariableReference = function createUpdateClassVariableReference(variableNodes, className, block){
-		/*_.each(variableNodes, function(variableNode){
-			_.each(variableNode.declarations, function(varNode){
-				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
-					"class", className, "", variableNode.ASTNodeID);
-				findUpdateChildren(block, newVar);
-				___JavaRuntime.variablesDictionary.push(newVar);
-			});
-		});*/
-	}
-
-	cocoJava.yy.createUpdateMethodVariableReference = function createUpdateMethodVariableReference(variableNodes, methodProperties, block){
-		/*_.each(variableNodes, function(variableNode){
-			var newVar = new variableEntry(variableNode.declarations[0].id.name, "", variableNode.javaType, 
-				"method", "", methodProperties.methodSignature, variableNode.ASTNodeID);
-			findUpdateChildren(block, newVar);
-			___JavaRuntime.variablesDictionary.push(newVar);
-		});*/
-	}
-
-	createUpdateParamVariableReference = function createUpdateParamVariableReference(paramNodes, methodProperties, block){
-		/*_.each(paramNodes, function(paramNode){
-			var newVar = new variableEntry(paramNode.name, "", paramNode.javaType, 
-				"method", "", methodProperties.methodSignature, paramNode.ASTNodeID);
-			findUpdateChildren(block, newVar);
-			findUpdateChildren(paramNodes, newVar);
-			___JavaRuntime.variablesDictionary.push(newVar);
-		});*/
-	}
-
-	cocoJava.yy.createUpdateBlockVariableReference = function createUpdateBlockVariableReference(variableNodes, block){
-		/*_.each(variableNodes, function(variableNode){
-			_.each(variableNode.declarations, function(varNode){
-				var newVar = new variableEntry(varNode.id.name, "", variableNode.javaType, 
-					"", "", "", variableNode.ASTNodeID);
-				findUpdateChildren(block, newVar);
-				___JavaRuntime.variablesDictionary.push(newVar);
-			});
-		});*/
-	}
-
 	var createMethodDeclarationNode = cocoJava.yy.createMethodDeclarationNode = function createMethodDeclarationNode(methodSignatureObject, headerRange, methodBodyNodes, methodBodyRange, range){
 		if(methodSignatureObject.returnType == 'void'){
 			_.each(methodBodyNodes , function(bodyNode){
@@ -383,6 +341,21 @@ exports.Parse = function(javaCode){
 				isStatic = true;
 			}
 		});
+		if(isStatic){
+			(function refCheck(ast){
+				for (var k in ast) {
+				    if (typeof ast[k] == "object" && ast[k] !== null) {
+						var node = ast[k];
+						if(node.type !== undefined && node.type == 'Identifier' && node.name == '__ref'){
+							raise("Cannot reference this in a static context", node.range);
+						}
+						ast[k] = node;
+						ast[k] = refCheck(ast[k]);
+					}
+				}
+				return ast;
+			})(methodBodyNodes)
+		}
 
 		var isPrivate = true;
 		_.each(methodSignatureObject.modifiers, function(modifier){
@@ -427,7 +400,6 @@ exports.Parse = function(javaCode){
 				newParam.javaType = param.type;
 				paramNodes.push(newParam);
 			});
-			createUpdateParamVariableReference(paramNodes, methodSignatureObject, methodBodyNodes);
 			functionDeclarationNodeAssignmentRight.params = paramNodes;
 		}
 		functionDeclarationNodeAssignmentRight.defaults = [];

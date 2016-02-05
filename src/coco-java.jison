@@ -304,7 +304,6 @@ class_declaration
         }
       });
       $$ = yy.createSimpleClassDeclarationNode($3, @3.range, bodyNodes, @4.range, @$.range);
-      yy.createUpdateClassVariableReference(variables, $3, $$);
     }
   | 'public' KEYWORD_CLASS CLASS_IDENTIFIER KEYWORD_EXTENDS CLASS_IDENTIFIER class_body
     {
@@ -316,7 +315,6 @@ class_declaration
         }
       });
       $$ = yy.createClassExtendedDeclarationNode($3, @3.range, $6, @6.range, $5, @5.range, @$.range);
-      yy.createUpdateClassVariableReference(variables, $3, $$);
     }
   | KEYWORD_CLASS CLASS_IDENTIFIER class_body 
     {
@@ -328,7 +326,6 @@ class_declaration
         }
       });
       $$ = yy.createSimpleClassDeclarationNode($2, @2.range, $3, @3.range, @$.range);
-      yy.createUpdateClassVariableReference(variables, $2, $$);
     }
   | KEYWORD_CLASS CLASS_IDENTIFIER KEYWORD_EXTENDS CLASS_IDENTIFIER class_body
     {
@@ -340,7 +337,6 @@ class_declaration
         }
       });
       $$ = yy.createClassExtendedDeclarationNode($2, @2.range, $5, @5.range, $4, @4.range, @$.range);
-      yy.createUpdateClassVariableReference(variables, $2, $$);
     }
   ;
 
@@ -623,7 +619,6 @@ block
             variables.push(statements);
           }
         });
-      yy.createUpdateBlockVariableReference(variables, blockStatements);
       $$ = blockStatements;
 
     }
@@ -1021,14 +1016,6 @@ assignment
     {
       $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
     }
-/*  | variable_invocation OPERATOR_ASSIGNMENT constructor_call
-    {
-      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
-    }
-  | IDENTIFIER OPERATOR_ASSIGNMENT constructor_call
-    {
-      $$ = yy.createVariableAttribution($1, @1.range, @$.range, $3);
-    }*/
   | variable_invocation '+=' expression
     {
       var identifierVar = new yy.createIdentifierNode($1, @1.range);
@@ -1381,6 +1368,10 @@ primary
     {
       $$ = $2;
     }
+  | KEYWORD_THIS
+    {
+      $$ = yy.createIdentifierNode("__ref", @$.range);
+    }
   ;
 
 method_invocation
@@ -1430,10 +1421,6 @@ variable_invocation
     {
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
     }
-  | KEYWORD_THIS OPERATOR_CALL IDENTIFIER
-    {
-      $$ = yy.createInvokeNode("this", @1.range, $3, @3.range, @$.range);
-    }
   ;
 
 static_method_invocation
@@ -1470,10 +1457,6 @@ instance_method_invocation
   | method_invocation OPERATOR_CALL simple_method_invocation
     {
       $$ = yy.createInvokeNode($1, @1.range, $3, @3.range, @$.range);
-    }
-  | KEYWORD_THIS OPERATOR_CALL simple_method_invocation
-    {
-      $$ = yy.createInvokeNode("this", @1.range, $3, @3.range, @$.range);
     }
   ;
 
