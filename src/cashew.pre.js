@@ -520,7 +520,7 @@ exports.Parse = function(javaCode){
 		//Add Methods to the class
 		classNodeExpressionRightCalleeBody.body = classNodeExpressionRightCalleeBody.body.concat(createMethodOverload(classBody));
 		
-		//Replaces __TemproaryClass in class body nodes and updates methods dictionary
+		//Replaces __TemporaryClass in class body nodes and updates methods dictionary
 		if(!extensionName){
 			extensionName = "_Object";
 		}
@@ -931,18 +931,52 @@ exports.Parse = function(javaCode){
 		var constructorCallNode = new node("CallExpression");
 		constructorCallNode.range = range;
 
+		//__ref = this;
+		var expRef = new node("ExpressionStatement");
+		expRef.range = range;
+		var expRefExp =  new node("AssignmentExpression");
+		expRefExp.range = range;
+		expRefExp.operator = "=";
+		expRefExp.left = createIdentifierNode("__ref",range);
+		expRefExp.right = new node("ThisExpression");
+		expRef.expression = expRefExp;
+		constructorNodeBody.body.push(expRef);
+
+		//Inherits super methods
+		var defNode = new node("VariableDeclaration");
+		defNode.range = range;
+		defNode.kind = "var";
+		defNode.declarations = [];
+
+		defDeclaration = new node("VariableDeclarator");
+		defDeclaration.range = range;
+		defDeclaration.id = createIdentifierNode("def", range);
+		defDeclaration.init = new node("CallExpression");
+		defDeclaration.init.range = range;
+
+		defDeclaration.init.callee = createMemberExpressionNode(createIdentifierNode("Object", range), createIdentifierNode("create",range), range);
+		defDeclaration.init.arguments = [];
+
+		var extensionClass;
+			//extends
+		if(extensionName == null){
+			extensionClass = createIdentifierNode("_Object", range);
+		}else{
+			extensionClass = createIdentifierNode(extensionName, range);
+		}
+
+		var superArgs =  createMemberExpressionNode(extensionClass, createIdentifierNode("prototype", range), range);
+		defDeclaration.init.arguments.push(superArgs);
+		defNode.declarations.push(defDeclaration);
+
+		constructorNodeBody.body.push(defNode);
+		constructorNodeBody.body.push({"type":"ForInStatement","left":{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"n"},"init":null}],"kind":"var"},"right":{"type":"Identifier","name":"def"},"body":{"type":"BlockStatement","body":[{"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"item"},"init":{"type":"MemberExpression","computed":true,"object":{"type":"Identifier","name":"def"},"property":{"type":"Identifier","name":"n"}}}],"kind":"var"},{"type":"IfStatement","test":{"type":"BinaryExpression","operator":"instanceof","left":{"type":"Identifier","name":"item"},"right":{"type":"Identifier","name":"Function"}},"consequent":{"type":"BlockStatement","body":[{"type":"ExpressionStatement","expression":{"type":"AssignmentExpression","operator":"=","left":{"type":"MemberExpression","computed":true,"object":{"type":"Identifier","name":"__ref"},"property":{"type":"BinaryExpression","operator":"+","left":{"type":"Literal","value":"__super__","raw":"\"__super__\""},"right":{"type":"Identifier","name":"n"}}},"right":{"type":"Identifier","name":"item"}}}]},"alternate":null}]},"each":false});
+
 		if(methodBodyNodes.length != 0){
 			//if there's a constructor start building methods
 			constructorNodeBody.body = constructorNodeBody.body.concat(createOverloadConstructorNode(className, extensionName, methodBodyNodes));
 		}else{
 			//call super(); if there's no explicit constructor
-			var extensionClass;
-			//extends
-			if(extensionName == null){
-				extensionClass = createIdentifierNode("_Object", range);
-			}else{
-				extensionClass = createIdentifierNode(extensionName, range);
-			}
 			var extensionExpression = new node("ExpressionStatement");
 			extensionExpression.range = range;
 			var extensionExpressionXp = new node("CallExpression");
@@ -1143,7 +1177,8 @@ exports.Parse = function(javaCode){
 
 	cocoJava.yy.createSuperInvokeNode = function createSuperInvokeNode(methodNode, superRange, range){
 		var oldCallee = methodNode.callee;
-		var newCallee = createMemberExpressionNode(createMemberExpressionNode(createIdentifierNode("__SuperClass", superRange),createIdentifierNode("prototype", superRange),range), oldCallee, range);
+		oldCallee.name = "__super__" + oldCallee.name;
+		var newCallee = createMemberExpressionNode(createIdentifierNode("__ref", superRange), oldCallee, range);
 		methodNode.callee = newCallee;
 		return methodNode;
 	}
