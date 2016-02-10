@@ -1711,24 +1711,41 @@ exports.Parse = function(javaCode){
 		blockNode.body = blockNode.body.concat(forBlock);
 
 		forNode.body = blockNode;
-		/*var forEnclose = new node("ExpressionStatement");
+		var forEnclose = new node("CallExpression");
 		forEnclose.range = forRange;
-		forEnclose.expression = new node("CallExpression");
-		forEnclose.expression.range = forRange;
-		forEnclose.expression.callee = new node("FunctionExpression");
-		forEnclose.expression.callee.range = forRange;
-		forEnclose.expression.callee.id = null;
-		forEnclose.expression.callee.params = [];
-		forEnclose.expression.callee.defaults = [];
-		forEnclose.expression.callee.body = new node("BlockStatement");
-		forEnclose.expression.callee.body.range = forRange;
-		forEnclose.expression.callee.body.body = [];
-		forEnclose.expression.callee.body.body.push(forNode);
-		forEnclose.expression.callee.generator = false;
-		forEnclose.expression.callee.expression = false;
-		forEnclose.expression.arguments = [];
-		return forEnclose;*/
-		return forNode;
+		forEnclose.callee = new node("FunctionExpression");
+		forEnclose.callee.range = forRange;
+		forEnclose.callee.id = null;
+		forEnclose.callee.params = [];
+		forEnclose.callee.defaults = [];
+		forEnclose.callee.body = new node("BlockStatement");
+		forEnclose.callee.body.range = forRange;
+		forEnclose.callee.body.body = [];
+		forEnclose.callee.body.body.push(forNode);
+		forEnclose.callee.generator = false;
+		forEnclose.callee.expression = false;
+		forEnclose.arguments = [];
+        
+        forVarBlock = new node("BlockStatement");
+        forVarBlock.range = forRange;
+
+        forVarBlock.body = [];
+
+        forVarDeclaration =  new node("VariableDeclaration")
+        forVarDeclaration.range = forRange;
+        forVarDeclaration.declarations = [];
+        forVarDeclaration.kind = "var";
+
+        forVarDeclarator = new node("VariableDeclarator");
+        forVarDeclarator.range = forRange;
+        forVarDeclarator.id = createIdentifierNode("__forReturn", forRange);
+        forVarDeclarator.init = forEnclose;
+        forVarDeclaration.declarations.push(forVarDeclarator);
+
+        forVarBlock.body.push(forVarDeclaration);
+        forVarBlock.body.push({"type":"IfStatement","test":{"type":"BinaryExpression","operator":"!==","left":{"type":"Identifier","name":"__forReturn"},"right":{"type":"Identifier","name":"undefined"}},"consequent":{"type":"BlockStatement","body":[{"type":"ReturnStatement","argument":{"type":"Identifier","name":"__forReturn"}}]},"alternate":null});
+
+		return forVarBlock;
 	}
 
 	cocoJava.yy.createEnhancedForStatement = function createEnhancedForStatement(typeVar, varName, varRange, arraylist, arraylistRange, forBlock, blockRange, range){
