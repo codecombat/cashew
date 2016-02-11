@@ -248,7 +248,7 @@ exports.Parse = function(javaCode){
 	     	}
 	     }
 
-	  	env = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"loadEnv"}},"arguments":[]}};;
+	  	env = {"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"loadEnv"}},"arguments":[]}};
         //insert the script that load some variables to the environment
 		this.rootNode.body.unshift(env);
 		
@@ -464,6 +464,10 @@ exports.Parse = function(javaCode){
 
 		classNodeExpressionRightCalleeBody.body.push({"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__ref"},"init":{"type":"ObjectExpression","properties":[]}}],"kind":"var"});
 
+		//Init the __funArr
+
+		classNodeExpressionRightCalleeBody.body.push({"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__funArr"},"init":{"type":"ArrayExpression","elements":[]}}],"kind":"var"});
+
 		//Extract variables from the class
 		var variableNodes = [];
 		_.each(classBody, function(fieldNode){
@@ -632,15 +636,14 @@ exports.Parse = function(javaCode){
 			//Weird bug when method is toString
 			
 			methodsWithOverload[i] = "__" + methodsWithOverload[i] + grouped["_"+methodsWithOverload[i]];
-			var newExpressionStatement = new node("VariableDeclaration");
+			var newExpressionStatement = new node("ExpressionStatement");
 			newExpressionStatement.range = methodsWithOverloadDetails[i].range;
-			newExpressionStatementAssign = new node("VariableDeclarator");
+			newExpressionStatementAssign = new node("AssignmentExpression");
+			newExpressionStatementAssign.operator = "=";
 			newExpressionStatementAssign.range = methodsWithOverloadDetails[i].range;
-			newExpressionStatementAssign.id = createIdentifierNode(methodsWithOverload[i]);
-			newExpressionStatementAssign.init = methodWithOverloadFunctionNode[i];
-			newExpressionStatement.declarations = [];
-			newExpressionStatement.declarations.push(newExpressionStatementAssign);
-			newExpressionStatement.kind = "var";
+			newExpressionStatementAssign.left = createMemberExpressionNode(createIdentifierNode("__funArr", methodsWithOverloadDetails[i].range), getArgumentForName(methodsWithOverload[i], methodsWithOverloadDetails[i].range),methodsWithOverloadDetails[i].range, true);
+			newExpressionStatementAssign.right = methodWithOverloadFunctionNode[i];
+			newExpressionStatement.expression = newExpressionStatementAssign;
 			methodWithOverloadFunctionNode[i] = newExpressionStatement;
 		};
 		//create the switcher
@@ -682,7 +685,7 @@ exports.Parse = function(javaCode){
 				}
 			};
 			var methodName = {"type":"VariableDeclaration","declarations":[{"type":"VariableDeclarator","id":{"type":"Identifier","name":"__methodName"},"init":{"type":"Literal","value":originalNameNode,"raw":"\""+ originalNameNode +"\""}}],"kind":"var"};
-			var evalSwitcher = {"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"Identifier","name":"eval"},"arguments":[{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"findSignature"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}]}};
+			var evalSwitcher = {"type":"ReturnStatement","argument":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":true,"object":{"type":"Identifier","name":"__funArr"},"property":{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"findMethodName"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}},"property":{"type":"Identifier","name":"apply"}},"arguments":[{"type":"Literal","value":null,"raw":"null"},{"type":"CallExpression","callee":{"type":"MemberExpression","computed":false,"object":{"type":"MemberExpression","computed":false,"object":{"type":"Identifier","name":"___JavaRuntime"},"property":{"type":"Identifier","name":"functions"}},"property":{"type":"Identifier","name":"getProperArgs"}},"arguments":[{"type":"Identifier","name":"__methodName"},{"type":"Identifier","name":"arguments"},{"type":"Identifier","name":"__possibilities"}]}]}};
 			methodSelecterBody.push(methodName);
 			methodSelecterBody.push(evalSwitcher);
 			//creates the new body for the overloaded body
@@ -2315,7 +2318,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			//if cant check the type its wildcard type
 			return "?";
 		},
-		findSignature: function(methodSignature, args, possibleFunctions){
+		findMethodName: function(methodSignature, args, possibleFunctions){
 			var argTypes = [];
 			for (var i = 0; i < args.length; i++) {
 				argTypes.push( ___JavaRuntime.functions.determineType(args[i]));
@@ -2391,35 +2394,115 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				};
 				if(exactMatch){
 					//no cast needed
-					var finalSignature = "__" + methodSignature + possibleFunctions.indexOf(exactMatch) + "(";
-					for (var i = 0; i < exactMatch.length; i++) {
-						finalSignature += "arguments[" + i + "],"
-					};
-					if(finalSignature.charAt(finalSignature.length-1) != "("){
-						finalSignature = finalSignature.substring(0, finalSignature.length -1);
-					}
-					finalSignature += ");";
-					return finalSignature;
+					return "__" + methodSignature + possibleFunctions.indexOf(exactMatch);
 				}else if(reducedByPrototype.length > 0){
 					//cast needed
 					//FIXME: need to check the precedence of variables
 					//picking the first one;
-					var finalSignature = "__" + methodSignature + possibleFunctions.indexOf(reducedByPrototype[0]) + "(";
-					for (var i = 0; i < reducedByPrototype[0].length; i++) {
-						if(reducedByPrototype[0][i] == "int" || reducedByPrototype[0][i] == "Object" || reducedByPrototype[0][i] == "double"){
-							finalSignature += "___JavaRuntime.functions.classCast( \""+reducedByPrototype[0][i]+"\", arguments[" + i + "], [0,0]),";
-						}else{
-							finalSignature += "___JavaRuntime.functions.classCast("+reducedByPrototype[0][i]+", arguments[" + i + "], [0,0]),";
-						}
-					};
-					finalSignature = finalSignature.substring(0, finalSignature.length -1);
-					finalSignature += ");";
-					return finalSignature;
+					return "__" + methodSignature + possibleFunctions.indexOf(reducedByPrototype[0]);
 				}else{
 					___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
 				}
 			}
 			___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+		},
+		getProperArgs: function(methodSignature, args, possibleFunctions){
+			var argTypes = [];
+			for (var i = 0; i < args.length; i++) {
+				argTypes.push( ___JavaRuntime.functions.determineType(args[i]));
+			};
+			var typeMatcher = function(arg1, arg2){
+				if(arg1 == "Object"){
+					arg1 = "_Object";
+				}
+				if(arg2 == "Object"){
+					arg2 = "_Object";
+				}
+				if(arg1 == arg2){
+					return 0;
+				}
+				if(arg1 == "int"){
+					if(arg2 == "Integer" ||arg2 == "double" || arg2 == "_Object"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg1 == "double"){
+					if(arg2 == "Double" || arg2 == "_Object"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg1 == "Integer"){
+					if(arg2 == "int" || arg2 == "double"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg1 == "Double"){
+					if(arg2 == "double"){
+						return 1;
+					}else{
+						return (-256);
+					}
+				}
+				if(arg2 == "int" || arg2 == "double"){
+					return (-256);
+				}
+				if(eval(arg1 + ".prototype") instanceof eval(arg2)){
+					return 1;
+				}
+				return (-256);
+			}
+			var reducedByNumber = [];
+			for (var i = 0; i < possibleFunctions.length; i++) {
+				if(possibleFunctions[i].length == argTypes.length){
+					reducedByNumber.push(possibleFunctions[i]);
+				}
+			};
+			if(reducedByNumber.length == 0){
+				___JavaRuntime.raise("No suitable "+ methodSignature + " method found for " + argTypes, [0,0]);
+			}else{
+				var exactMatch = undefined;
+				var reducedByPrototype = [];
+				for (var i = 0; i < reducedByNumber.length; i++) {
+					var sum = 0;
+					for (var j = 0; j < argTypes.length; j++) {
+						sum += typeMatcher(argTypes[j], reducedByNumber[i][j]);
+					};
+					if(sum == 0){
+						exactMatch = reducedByNumber[i];
+						break;
+					}else if(sum > 0){
+						reducedByPrototype.push(reducedByNumber[i]);
+					}
+				};
+				if(exactMatch){
+					var retArgs = [];
+					//no cast needed
+					for (var i = 0; i < exactMatch.length; i++) {
+						retArgs.push(args[i]);
+					};
+					return retArgs;
+				}else{
+					//cast needed
+					var retArgs = [];
+					//FIXME: need to check the precedence of variables
+					//picking the first one;
+					for (var i = 0; i < reducedByPrototype[0].length; i++) {
+
+						if(reducedByPrototype[0][i] == "int" || reducedByPrototype[0][i] == "Object" || reducedByPrototype[0][i] == "double"){
+							retArgs.push(___JavaRuntime.functions.classCast(reducedByPrototype[0][i], args[i], [0,0]));
+						}else{
+							retArgs.push(___JavaRuntime.functions.classCast(eval(reducedByPrototype[0][i]), args[i], [0,0]));
+						}
+					};
+					return retArgs;
+				}
+			}
 		},
 		createNullArrayForIndexes: function(index1, range, index2, arrayType){
 			if(typeof index1 === "function"){
