@@ -1965,51 +1965,7 @@ exports.toNode = function(p){
   function node(){}
 }
 
-exports.___JavaRuntime = ___JavaRuntime = {
-	BufferedConsole : "",
-	sourceCode: "",
-	raise : function(message, range) {
-		var offset = range[0];
-		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
-	    for (var line = 1, cur = 0;;) {
-			lineBreak.lastIndex = cur;
-			var match = lineBreak.exec(___JavaRuntime.sourceCode);
-			if (match && match.index < offset) {
-				++line;
-				cur = match.index + match[0].length;
-			} else break;
-		}
-		var loc = {line: line, column: offset - cur};
-		var err = new SyntaxError(message);
-		err.pos = range[0]; err.loc = loc; err.range = range;
-		throw err;
-	},
-	loadEnv: function(){
-		___JavaRuntime.BufferedConsole = "";
-		String.prototype.compareTo = function (other){
-			for(var i = 0; i < this.length; i++){
-				if(this[i].charCodeAt(0) != other.charCodeAt(i))
-					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
-
-			}
-			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
-		};
-		String.prototype.compareToIgnoreCase = function (other){
-			for(var i = 0; i < this.length; i++){
-				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
-					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
-
-			}
-			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
-		};
-
-		String.prototype._length = function(){
-			return ___JavaRuntime.functions.createNumber(this.length, "int");
-		};
-		
-		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
-
-		_Object = function() {
+exports._Object = _Object = function() {
 
 			function _Object() {
 				this.__id = generateId();
@@ -2043,7 +1999,8 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			return _Object;
 
 		}.call(this);
-		_NotInitialized = function() {
+
+exports._NotInitialized = _NotInitialized = function() {
 
 			_NotInitialized = function _NotInitialized(name, type, range) {
 				this._name = name;
@@ -2057,7 +2014,8 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			return _NotInitialized;
 
 		}.call(this);
-		Integer = function () {
+
+exports.Integer = Integer = function () {
 		    Integer = function Integer(value) {
 		        _Object.call(this);
 		        if(value.constructor == Number){
@@ -2077,7 +2035,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		    return Integer;
 		}.call(this);
 
-		Double = function () {
+exports.Double = Double = function () {
 		    Double = function Double(value) {
 		        _Object.call(this);
 		        if(value.constructor == Number){
@@ -2104,16 +2062,7 @@ exports.___JavaRuntime = ___JavaRuntime = {
 		    return Double;
 		}.call(this);
 
-		_ArrayList = function(){
-			_ArrayList = function _ArrayList(type) {
-				_Object.call(this);
-				throw new SyntaxError("Cannot find ArrayList");
-			}
-			return _ArrayList;
-		}.call(this);
-	},
-	loadLists : function(){ 
-		_ArrayList = function() {
+exports._ArrayList = _ArrayList = function() {
 
 			function _ArrayList(type) {
 				_Object.call(this);
@@ -2213,10 +2162,59 @@ exports.___JavaRuntime = ___JavaRuntime = {
 
 		}.call(this);
 
+exports.___JavaRuntime = ___JavaRuntime = {
+	BufferedConsole : "",
+	sourceCode: "",
+	raise : function(message, range) {
+		var offset = range[0];
+		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
+	    for (var line = 1, cur = 0;;) {
+			lineBreak.lastIndex = cur;
+			var match = lineBreak.exec(___JavaRuntime.sourceCode);
+			if (match && match.index < offset) {
+				++line;
+				cur = match.index + match[0].length;
+			} else break;
+		}
+		var loc = {line: line, column: offset - cur};
+		var err = new SyntaxError(message);
+		err.pos = range[0]; err.loc = loc; err.range = range;
+		throw err;
+	},
+	loadEnv: function(){
+		___JavaRuntime.BufferedConsole = "";
+		String.prototype.compareTo = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].charCodeAt(0) != other.charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
+
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+		String.prototype.compareToIgnoreCase = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
+
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+
+		String.prototype._length = function(){
+			return ___JavaRuntime.functions.createNumber(this.length, "int");
+		};
+		
+		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
+	},
+	loadLists : function(){ 
+		
+
 	},
 	functions : {
-		printLog: function(str){
-			console.log(___JavaRuntime.BufferedConsole);
+		printLog: function(){
+			if(___JavaRuntime.BufferedConsole != ""){
+				console.log(___JavaRuntime.BufferedConsole);
+			}
 		},
 		print: function(str){
 			___JavaRuntime.BufferedConsole += str;
