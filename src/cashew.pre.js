@@ -1258,6 +1258,24 @@ exports.Parse = function(javaCode){
 			case '%':
 				operation = "mod";
 				break;
+			case '>>':
+				operation = "rhs";
+				break;
+			case '>>>':
+				operation = "zrhs";
+				break;
+			case '<<':
+				operation = "lhs";
+				break;
+			case '&':
+				operation = "iand";
+				break;
+			case '|':
+				operation = "ior";
+				break;
+			case '^':
+				operation = "xor";
+				break;
 			default:
 				raise('Invalid Operation', range);
 				break;
@@ -1326,6 +1344,13 @@ exports.Parse = function(javaCode){
 			unaryNode.argument = expression;
 			callExpression.arguments.push(unaryNode);
 	 		callExpression.arguments.push(createDetermineTypeForExpression(expression));
+			return callExpression;
+		}else if(op == "~"){
+			var callExpression = new node("CallExpression");
+			callExpression.range = range;
+			callExpression.callee = createMemberExpressionNode(getRuntimeOps(range), createIdentifierNode("nay",range), range);
+			callExpression.arguments = [];
+			callExpression.arguments.push(expression);
 			return callExpression;
 		}else{
 			var unaryNode = new node("UnaryExpression");
@@ -2062,9 +2087,54 @@ exports.Double = Double = function () {
 		    return Double;
 		}.call(this);
 
-exports._ArrayList = _ArrayList = function() {
+exports.___JavaRuntime = ___JavaRuntime = {
+	BufferedConsole : "",
+	sourceCode: "",
+	raise : function(message, range) {
+		var offset = range[0];
+		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
+	    for (var line = 1, cur = 0;;) {
+			lineBreak.lastIndex = cur;
+			var match = lineBreak.exec(___JavaRuntime.sourceCode);
+			if (match && match.index < offset) {
+				++line;
+				cur = match.index + match[0].length;
+			} else break;
+		}
+		var loc = {line: line, column: offset - cur};
+		var err = new SyntaxError(message);
+		err.pos = range[0]; err.loc = loc; err.range = range;
+		throw err;
+	},
+	loadEnv: function(){
+		___JavaRuntime.BufferedConsole = "";
+		String.prototype.compareTo = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].charCodeAt(0) != other.charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
 
-			function _ArrayList(type) {
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+		String.prototype.compareToIgnoreCase = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
+
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+
+		String.prototype._length = function(){
+			return ___JavaRuntime.functions.createNumber(this.length, "int");
+		};
+		
+		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
+	},
+	loadLists : function(){ 
+		_ArrayList = function() {
+
+			_ArrayList = function _ArrayList(type) {
 				_Object.call(this);
 				this._type = type;
 				this._arraylist = [];
@@ -2161,54 +2231,6 @@ exports._ArrayList = _ArrayList = function() {
 			return _ArrayList;
 
 		}.call(this);
-
-exports.___JavaRuntime = ___JavaRuntime = {
-	BufferedConsole : "",
-	sourceCode: "",
-	raise : function(message, range) {
-		var offset = range[0];
-		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
-	    for (var line = 1, cur = 0;;) {
-			lineBreak.lastIndex = cur;
-			var match = lineBreak.exec(___JavaRuntime.sourceCode);
-			if (match && match.index < offset) {
-				++line;
-				cur = match.index + match[0].length;
-			} else break;
-		}
-		var loc = {line: line, column: offset - cur};
-		var err = new SyntaxError(message);
-		err.pos = range[0]; err.loc = loc; err.range = range;
-		throw err;
-	},
-	loadEnv: function(){
-		___JavaRuntime.BufferedConsole = "";
-		String.prototype.compareTo = function (other){
-			for(var i = 0; i < this.length; i++){
-				if(this[i].charCodeAt(0) != other.charCodeAt(i))
-					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
-
-			}
-			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
-		};
-		String.prototype.compareToIgnoreCase = function (other){
-			for(var i = 0; i < this.length; i++){
-				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
-					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
-
-			}
-			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
-		};
-
-		String.prototype._length = function(){
-			return ___JavaRuntime.functions.createNumber(this.length, "int");
-		};
-		
-		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
-	},
-	loadLists : function(){ 
-		
-
 	},
 	functions : {
 		printLog: function(){
@@ -2828,6 +2850,181 @@ exports.___JavaRuntime = ___JavaRuntime = {
 				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 % arg2), "int");
 			}
 			return ___JavaRuntime.functions.createNumber(arg1 % arg2, "double");
+		},
+		rhs: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 >> arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 >> arg2);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 >> arg2), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(arg1 >> arg2, "double");
+		},
+		zrhs: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 >>> arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 >>> arg2);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 >>> arg2), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(arg1 >>> arg2, "double");
+		},
+		lhs: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 << arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 << arg2);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 << arg2), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(arg1 << arg2, "double");
+		},
+		xor: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 ^ arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 ^ arg2);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 ^ arg2), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(arg1 ^ arg2, "double");
+		},
+		iand: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 & arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 & arg2);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 & arg2), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(arg1 & arg2, "double");
+		},
+		ior: function(arg1, arg2){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			tArg2 = ___JavaRuntime.functions.determineType(arg2);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg2 != "int" && tArg2 != "double" && tArg2 != "Integer"  && tArg2 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg2);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg2 == "Integer" || tArg2 == "Double"){
+				arg2 = arg2.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(arg1 | arg2));
+			}
+			if(tArg1 == "Double"){
+				return new Double(arg1 | arg2);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(arg1 | arg2), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(arg1 | arg2, "double");
+		},
+		nay: function(arg1){
+			tArg1 = ___JavaRuntime.functions.determineType(arg1);
+			if(tArg1 != "int" && tArg1 != "double" && tArg1 != "Integer"  && tArg1 != "Double"){
+				throw new SyntaxError("Bad operand type for '%' got " + tArg1);
+			}
+			if(tArg1 == "Integer" || tArg1 == "Double"){
+				arg1 = arg1.value;
+			}
+			if(tArg1 == "Integer"){
+				return new Integer(Math.floor(~arg1));
+			}
+			if(tArg1 == "Double"){
+				return new Double(~arg1);
+			}
+			if(tArg1 == "int"){
+				return ___JavaRuntime.functions.createNumber(Math.floor(~arg1), "int");
+			}
+			return ___JavaRuntime.functions.createNumber(~arg1, "double");
 		},
 	},
 }

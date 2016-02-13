@@ -1206,7 +1206,7 @@ inclusive_or_expression
     }
   | inclusive_or_expression OPERATOR_INCLUSIVE_OR exclusive_or_expression
     {
-      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
     }
   ;
 
@@ -1217,7 +1217,7 @@ exclusive_or_expression
     }
   | exclusive_or_expression OPERATOR_XOR and_expression
     {
-      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
     }
   ;
 
@@ -1228,7 +1228,7 @@ and_expression
     }
   | and_expression OPERATOR_INCLUSIVE_AND equality_expression
     {
-      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+      $$ = yy.createMathOperation($2, $1, $3, @$.range);
     }
   ;
 
@@ -1277,15 +1277,15 @@ shift_expression
     }
   | shift_expression OPERATOR_LEFTSHIFT additive_expression
     {
-      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+       $$ = yy.createMathOperation($2, $1, $3, @$.range);
     }
   | shift_expression OPERATOR_RIGHTSHIFT additive_expression
     {
-      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+       $$ = yy.createMathOperation($2, $1, $3, @$.range);
     }
   | shift_expression OPERATOR_ZEROFILL_RIGHTSHIFT additive_expression
     {
-      $$ = yy.createExpression($2, "BinaryExpression", $1, $3, @$.range);
+       $$ = yy.createMathOperation($2, $1, $3, @$.range);
     }
   ;
 

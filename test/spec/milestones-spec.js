@@ -26,6 +26,9 @@ if ( !insideAether ) {
 	var evaluateJS =function (type, body, extra) {
 		var buffer = "";
 		cashew.___JavaRuntime.functions.print = function(what) {
+			buffer += what;
+		}
+		cashew.___JavaRuntime.functions.println = function(what) {
 			buffer += what + "\n";
 		}
 		var code = [

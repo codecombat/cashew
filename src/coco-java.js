@@ -600,14 +600,19 @@ case 172: case 174:
       this.$ = yy.createExpression($$[$0-1], "LogicalExpression", $$[$0-2], $$[$0], this._$.range);
     
 break;
-case 176: case 178: case 180: case 182: case 183: case 185: case 186: case 187: case 188: case 190: case 191: case 192:
+case 176: case 178: case 180: case 194: case 195: case 197: case 198: case 199:
+
+      this.$ = yy.createMathOperation($$[$0-1], $$[$0-2], $$[$0], this._$.range);
+    
+break;
+case 182: case 183: case 185: case 186: case 187: case 188:
 
       this.$ = yy.createExpression($$[$0-1], "BinaryExpression", $$[$0-2], $$[$0], this._$.range);
     
 break;
-case 194: case 195: case 197: case 198: case 199:
+case 190: case 191: case 192:
 
-      this.$ = yy.createMathOperation($$[$0-1], $$[$0-2], $$[$0], this._$.range);
+       this.$ = yy.createMathOperation($$[$0-1], $$[$0-2], $$[$0], this._$.range);
     
 break;
 case 201: case 202: case 203:
