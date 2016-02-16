@@ -2087,52 +2087,7 @@ exports.Double = Double = function () {
 		    return Double;
 		}.call(this);
 
-exports.___JavaRuntime = ___JavaRuntime = {
-	BufferedConsole : "",
-	sourceCode: "",
-	raise : function(message, range) {
-		var offset = range[0];
-		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
-	    for (var line = 1, cur = 0;;) {
-			lineBreak.lastIndex = cur;
-			var match = lineBreak.exec(___JavaRuntime.sourceCode);
-			if (match && match.index < offset) {
-				++line;
-				cur = match.index + match[0].length;
-			} else break;
-		}
-		var loc = {line: line, column: offset - cur};
-		var err = new SyntaxError(message);
-		err.pos = range[0]; err.loc = loc; err.range = range;
-		throw err;
-	},
-	loadEnv: function(){
-		___JavaRuntime.BufferedConsole = "";
-		String.prototype.compareTo = function (other){
-			for(var i = 0; i < this.length; i++){
-				if(this[i].charCodeAt(0) != other.charCodeAt(i))
-					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
-
-			}
-			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
-		};
-		String.prototype.compareToIgnoreCase = function (other){
-			for(var i = 0; i < this.length; i++){
-				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
-					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
-
-			}
-			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
-		};
-
-		String.prototype._length = function(){
-			return ___JavaRuntime.functions.createNumber(this.length, "int");
-		};
-		
-		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
-	},
-	loadLists : function(){ 
-		_ArrayList = function() {
+exports._ArrayList = _ArrayList = function() {
 
 			_ArrayList = function _ArrayList(type) {
 				_Object.call(this);
@@ -2231,6 +2186,53 @@ exports.___JavaRuntime = ___JavaRuntime = {
 			return _ArrayList;
 
 		}.call(this);
+
+exports.___JavaRuntime = ___JavaRuntime = {
+	BufferedConsole : "",
+	sourceCode: "",
+	raise : function(message, range) {
+		var offset = range[0];
+		var lineBreak = /\r\n|[\n\r\u2028\u2029]/g;
+	    for (var line = 1, cur = 0;;) {
+			lineBreak.lastIndex = cur;
+			var match = lineBreak.exec(___JavaRuntime.sourceCode);
+			if (match && match.index < offset) {
+				++line;
+				cur = match.index + match[0].length;
+			} else break;
+		}
+		var loc = {line: line, column: offset - cur};
+		var err = new SyntaxError(message);
+		err.pos = range[0]; err.loc = loc; err.range = range;
+		throw err;
+	},
+	loadEnv: function(){
+		___JavaRuntime.BufferedConsole = "";
+		String.prototype.compareTo = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].charCodeAt(0) != other.charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].charCodeAt(0) - other.charCodeAt(i), "int");
+
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+		String.prototype.compareToIgnoreCase = function (other){
+			for(var i = 0; i < this.length; i++){
+				if(this[i].toLowerCase().charCodeAt(0) != other.toLowerCase().charCodeAt(i))
+					return ___JavaRuntime.functions.createNumber(this[i].toLowerCase().charCodeAt(0) - other.toLowerCase().charCodeAt(i), "int");
+
+			}
+			return ___JavaRuntime.functions.createNumber(this.length - other.length, "int");
+		};
+
+		String.prototype._length = function(){
+			return ___JavaRuntime.functions.createNumber(this.length, "int");
+		};
+		
+		Array.prototype.__defineGetter__("_length", function(){return ___JavaRuntime.functions.createNumber(this.length, "int")});
+	},
+	loadLists : function(){ 
+		
 	},
 	functions : {
 		printLog: function(){
