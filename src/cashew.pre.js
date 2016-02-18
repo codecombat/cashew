@@ -1880,7 +1880,6 @@ exports.Parse = function(javaCode){
 	try{
 		ast = cocoJava.parse(javaCode);
 	}catch(err){
-		console.dir(err);
 		if(err.hash){
 			err.message = "Unexpected " + err.hash.text;
 			if(err.hash.expected.indexOf("'LINE_TERMINATOR'") >= 0 ){
