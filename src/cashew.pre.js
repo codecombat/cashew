@@ -1880,6 +1880,7 @@ exports.Parse = function(javaCode){
 	try{
 		ast = cocoJava.parse(javaCode);
 	}catch(err){
+		console.dir(err);
 		if(err.hash){
 			err.message = "Unexpected " + err.hash.text;
 			if(err.hash.expected.indexOf("'LINE_TERMINATOR'") >= 0 ){
@@ -1887,7 +1888,7 @@ exports.Parse = function(javaCode){
 			};
 
 			err.loc = {line: err.hash.line, column: err.hash.loc.first_column};
-			err.range = err.hash.range
+			err.range = err.hash.loc.range
 		}
 		throw err;
 	}
